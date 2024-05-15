@@ -1,0 +1,40 @@
+{
+  "name": "avalanche",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.0.3",
+    "@tanstack/react-query": "^5.36.0",
+    "@web3modal/wagmi": "^4.1.11",
+    "big.js": "^6.2.1",
+    "decimal.js-light": "^2.5.1",
+    "lodash.flatmap": "^4.5.0",
+    "next": "14.2.3",
+    "numeral": "^2.0.6",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-hot-toast": "^2.4.1",
+    "tiny-invariant": "^1.3.3",
+    "toformat": "^2.0.0",
+    "viem": "^2.10.3",
+    "wagmi": "^2.8.6"
+  },
+  "devDependencies": {
+    "@types/lodash.flatmap": "^4.5.9",
+    "@types/node": "^20",
+    "@types/numeral": "^2.0.5",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.3",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
