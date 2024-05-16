@@ -151,7 +151,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
             >
               {token ? (
                 <>
-                  <Image
+                  <img
                     src={token?.icon ?? DEFAULT_IMAGE_URL}
                     width={20}
                     height={20}

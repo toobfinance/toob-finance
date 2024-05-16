@@ -16,6 +16,7 @@ import { useState } from "react"
 import { useReadContracts } from "wagmi"
 import { Address, erc20Abi, getAddress, isAddress } from "viem"
 import { ChainId } from "@/packages/chain"
+import { TOKEN_LIST } from "@/packages/config"
 
 interface TokenListModalProps {
   currentToken?: Type
@@ -122,6 +123,31 @@ const TokenListModal: React.FC<TokenListModalProps> = ({
                       onSelectItem={onSelectItem}
                     />
                   ) : null}
+                  {filter.length >= 3
+                    ? TOKEN_LIST.filter((item) =>
+                        item.name?.match(
+                          new RegExp(filter, "i") ||
+                            item.symbol?.match(new RegExp(filter, "i"))
+                        )
+                      ).map((item) => {
+                        const token = new Token({
+                          address: item.address,
+                          name: item.name,
+                          symbol: item.symbol,
+                          chainId: ChainId.ARBITRUM_ONE,
+                          decimals: item.decimals,
+                          icon: item.icon,
+                        })
+
+                        return (
+                          <TokenListItem
+                            key={token.id}
+                            token={token}
+                            onSelectItem={onSelectItem}
+                          />
+                        )
+                      })
+                    : null}
                 </div>
               </DialogPanel>
             </TransitionChild>

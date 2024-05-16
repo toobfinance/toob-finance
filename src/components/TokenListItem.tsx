@@ -38,7 +38,7 @@ const TokenListItem: React.FC<TokenListItemProps> = ({
       onClick={onSelectItem(token)}
     >
       <div className="flex items-center">
-        <Image
+        <img
           src={token?.icon ?? DEFAULT_IMAGE_URL}
           width={32}
           height={32}
