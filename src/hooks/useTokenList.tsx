@@ -13,6 +13,7 @@ const useTokenList = () => {
           name: item.name,
           symbol: item.symbol,
           icon: item.icon,
+          category: item.category,
         })
   )
 

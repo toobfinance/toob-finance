@@ -1,0 +1,3 @@
+export const ROUTER_ADDR = "0x0030e173df395b55dc446f2cbb39435650ccb90f"
+
+export const EXECUTOR_ADDR = "0x8d3d65f675f096db9f27fc4162757a5162ef103a"

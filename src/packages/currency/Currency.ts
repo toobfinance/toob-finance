@@ -35,6 +35,8 @@ export abstract class Currency {
 
   public readonly icon?: string | undefined
 
+  public readonly category?: string | undefined
+
   /**
    * Constructs an instance of the abstract class `Currency`.
    * @param chainId the chain ID on which this currency resides
@@ -49,12 +51,14 @@ export abstract class Currency {
     symbol,
     name,
     icon,
+    category,
   }: {
     chainId: number | string
     decimals: number | string
     symbol?: string | undefined
     name?: string | undefined
     icon?: string | undefined
+    category?: string | undefined
   }) {
     const chainId = Number(_chainId) as ChainId
     const decimals = Number(_decimals)
@@ -69,6 +73,7 @@ export abstract class Currency {
     this.symbol = symbol
     this.name = name
     this.icon = icon
+    this.category = category
   }
 
   /**

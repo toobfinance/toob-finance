@@ -6,18 +6,17 @@ import TokenListModal from "../TokenListModal"
 import { ARB, Amount, Token, Type, USDC, USDT } from "@/packages/currency"
 import { DEFAULT_IMAGE_URL, NATIVE_GAS_FEE } from "@/constants"
 import Image from "next/image"
-import useSwapParams from "../../hooks/useSwapParams"
 import { useAccount, useBalance } from "wagmi"
 import { ChainId } from "@/packages/chain"
-import { usePrice } from "@/packages/prices"
 
 interface SwapSideProps {
   side: "From" | "To"
-  amount: string
+  amount: string | undefined
   setAmount?: any
   token?: Type
   setToken: any
   className?: string
+  price?: string
 }
 
 const SwapSide: React.FC<SwapSideProps> = ({
@@ -25,6 +24,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
   amount,
   setAmount,
   token,
+  price,
   setToken,
   className,
 }) => {
@@ -42,11 +42,6 @@ const SwapSide: React.FC<SwapSideProps> = ({
       enabled: Boolean(address) && Boolean(token),
       refetchInterval: 30000,
     },
-  })
-
-  const { data: price } = usePrice({
-    address: token?.wrapped?.address,
-    chainId: ChainId.ARBITRUM_ONE,
   })
 
   const onMax = () => {
@@ -169,7 +164,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
         </div>
         {amount && price ? (
           <p className="text-[#afa392] text-sm mt-1">
-            ~${(Number(amount) * Number(price.toFixed(6))).toFixed(2)}
+            ~${Number(price).toFixed(2)}
           </p>
         ) : null}
       </div>

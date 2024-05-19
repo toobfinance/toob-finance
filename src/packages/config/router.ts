@@ -21,6 +21,6 @@ export const BASES_TO_CHECK_TRADES_AGAINST: {
     USDT[ChainId.ARBITRUM_ONE],
     USDCe[ChainId.ARBITRUM_ONE],
     // DAI[ChainId.ARBITRUM_ONE],
-    // ARB[ChainId.ARBITRUM_ONE],
+    ARB[ChainId.ARBITRUM_ONE],
   ],
 }

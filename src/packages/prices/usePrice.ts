@@ -2,36 +2,25 @@ import { useQuery } from "@tanstack/react-query"
 import { Fraction } from "../math"
 import { parseUnits } from "viem"
 import { ChainId } from "../chain"
-
-const COINGECKO_TERMINAL_CHAIN_ID: { [chainId in ChainId]: string } = {
-  [ChainId.ARBITRUM_ONE]: "arbitrum",
-}
+import axios from "axios"
 
 interface UsePrice {
   chainId: ChainId | undefined
   address: string | undefined
+  enabled?: boolean
 }
 
-export const usePrice = ({ chainId, address }: UsePrice) => {
+export const usePrice = ({ chainId, address, enabled }: UsePrice) => {
   return useQuery({
-    queryKey: [
-      chainId &&
-        `https://api.geckoterminal.com/api/v2/networks/${COINGECKO_TERMINAL_CHAIN_ID[chainId]}/tokens/${address}`,
-    ],
+    queryKey: [chainId, address],
     queryFn: async () => {
       if (!chainId) return new Fraction(0, 1)
-      const data = await fetch(
-        `https://api.geckoterminal.com/api/v2/networks/${COINGECKO_TERMINAL_CHAIN_ID[chainId]}/tokens/${address}`
-      ).then((response) => response.json())
-      return new Fraction(
-        parseUnits(
-          parseFloat(data?.data?.attributes?.price_usd ?? "0").toFixed(18),
-          18
-        ).toString(),
-        parseUnits("1", 18).toString()
+      const { data } = await axios.get(
+        `https://api.odos.xyz/pricing/token/${chainId}/${address}`
       )
+      return data?.price ?? 0
     },
-    enabled: Boolean(chainId && address),
+    enabled: Boolean(chainId && address) && Boolean(enabled),
     staleTime: 900000, // 15 mins
     refetchOnWindowFocus: false,
   })

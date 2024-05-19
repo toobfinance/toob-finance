@@ -19,7 +19,7 @@ export class Native extends Currency {
     symbol: string
     name: string
   }) {
-    super({ ...native, icon: "/media/eth.webp" })
+    super({ ...native, icon: "/media/eth.webp", category: "Native" })
     this.id = `${native.chainId}:NATIVE`
     this.symbol = native.symbol
     this.name = native.name

@@ -1,12 +1,12 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 import Exchange from "../svgs/Exchange"
 import SwapSide from "./SwapSide"
 import useSwapParams from "../../hooks/useSwapParams"
 import SwapButton from "./SwapButton"
 import useSwapTrade from "@/hooks/useSwapTrade"
-import { tryParseAmount } from "@/packages/currency"
+import { Amount, tryParseAmount } from "@/packages/currency"
 import SettingPopup from "../SettingPopup"
 import SwapDetails from "./SwapDetails"
 
@@ -57,6 +57,7 @@ const SwapPanel = () => {
             setToken={setTokenIn}
             amount={amountIn}
             setAmount={setAmountIn}
+            price={trade.data?.inValues?.[0]}
           />
 
           <div className="flex items-center w-full justify-center">
@@ -74,7 +75,15 @@ const SwapPanel = () => {
             side="To"
             token={tokenOut}
             setToken={setTokenOut}
-            amount={(trade.data as any)?.amountOut?.toExact() ?? ""}
+            amount={
+              trade.data?.outAmounts?.[0] && tokenOut
+                ? Amount.fromRawAmount(
+                    tokenOut,
+                    trade.data?.outAmounts?.[0]
+                  ).toExact()
+                : undefined
+            }
+            price={trade.data?.outValues?.[0]}
           />
           <SwapDetails trade={trade} />
           <SwapButton trade={trade} />

@@ -1,12 +1,5 @@
 export const DEFAULT_TOKEN_LIST = [
   {
-    address: "0x676F7ED2D4829460f73468b36Be49e0D6505107F",
-    symbol: "TOOB",
-    name: "Toob",
-    decimals: 18,
-    icon: "/media/toob.png",
-  },
-  {
     symbol: "ETH",
     name: "Ether",
     native: true,
@@ -14,11 +7,20 @@ export const DEFAULT_TOKEN_LIST = [
     icon: "/media/eth.webp",
   },
   {
+    address: "0x676F7ED2D4829460f73468b36Be49e0D6505107F",
+    symbol: "TOOB",
+    name: "Toob",
+    decimals: 18,
+    icon: "/media/toob.png",
+    category: "Meme",
+  },
+  {
     address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
     symbol: "WETH",
     name: "Wrapped Ether",
     decimals: 18,
     icon: "/media/weth.png",
+    category: "Top",
   },
   {
     address: "0x912CE59144191C1204E64559FE8253a0e49E6548",
@@ -33,6 +35,7 @@ export const DEFAULT_TOKEN_LIST = [
     name: "USD Coin",
     decimals: 6,
     icon: "/media/usdc.png",
+    category: "Stablecoins",
   },
   {
     address: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
@@ -40,6 +43,7 @@ export const DEFAULT_TOKEN_LIST = [
     name: "Bridged USDC",
     decimals: 6,
     icon: "/media/usdc.png",
+    category: "Stablecoins",
   },
   {
     address: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
@@ -47,6 +51,7 @@ export const DEFAULT_TOKEN_LIST = [
     name: "Tether Token",
     decimals: 6,
     icon: "/media/usdt.png",
+    category: "Stablecoins",
   },
   {
     address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
@@ -54,6 +59,7 @@ export const DEFAULT_TOKEN_LIST = [
     name: "Dai",
     decimals: 18,
     icon: "/media/dai.png",
+    category: "Stablecoins",
   },
   {
     address: "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",
@@ -61,6 +67,7 @@ export const DEFAULT_TOKEN_LIST = [
     name: "Wrapped BTC",
     decimals: 8,
     icon: "/media/wbtc.png",
+    category: "Top",
   },
   {
     symbol: "SIZE",
@@ -68,6 +75,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x939727d85D99d0aC339bF1B76DfE30Ca27C19067",
     icon: "/media/size.jpg",
     decimals: 18,
+    category: "Meme",
   },
   {
     symbol: "BOOP",
@@ -75,6 +83,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x13A7DeDb7169a17bE92B0E3C7C2315B46f4772B3",
     icon: "/media/boop.png",
     decimals: 18,
+    category: "Meme",
   },
   {
     symbol: "AIDOGE",
@@ -82,6 +91,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x09E18590E8f76b6Cf471b3cd75fE1A1a9D2B2c2b",
     icon: "/media/aidoge.svg",
     decimals: 6,
+    category: "Meme",
   },
   {
     symbol: "SMOL",
@@ -89,6 +99,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x9E64D3b9e8eC387a9a58CED80b71Ed815f8D82B5",
     icon: "/media/smol.jpg",
     decimals: 18,
+    category: "Meme",
   },
   {
     symbol: "MOON",
@@ -96,6 +107,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x24404DC041d74cd03cFE28855F555559390C931b",
     icon: "/media/moons.png",
     decimals: 18,
+    category: "SoFi",
   },
   {
     symbol: "iGRAIL",
@@ -103,6 +115,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x2eF354C71CaAb6dC7469bB3C99642878cCD1143F",
     icon: "/media/igrail.png",
     decimals: 18,
+    category: "Meme",
   },
   {
     symbol: "PEPE",
@@ -110,6 +123,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x25d887Ce7a35172C62FeBFD67a1856F20FaEbB00",
     icon: "/media/pepe.jpg",
     decimals: 18,
+    category: "Meme",
   },
   {
     symbol: "DMT",
@@ -117,6 +131,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x8B0E6f19Ee57089F7649A455D89D7bC6314D04e8",
     icon: "/media/dmt.png",
     decimals: 18,
+    category: "GameFi",
   },
   {
     symbol: "BONK",
@@ -124,6 +139,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x09199d9A5F4448D0848e4395D065e1ad9c4a1F74",
     icon: "/media/bonk.png",
     decimals: 5,
+    category: "Meme",
   },
   {
     symbol: "DEAGLE",
@@ -131,6 +147,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x7E6A0A3d5Cb736868fe5D0943C7593f185081ED2",
     icon: "/media/deagle.webp",
     decimals: 18,
+    category: "Meme",
   },
   {
     symbol: "NOLA",
@@ -138,6 +155,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0xe934ab7e98d81e39477b1e47b961876c2d902598",
     icon: "/media/nola.png",
     decimals: 18,
+    category: "Meme",
   },
   {
     symbol: "ZELEBOBA",
@@ -145,6 +163,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0xf0d43f46cea02bbb5e616bf6d795d4f8719cd80d",
     icon: "/media/zeleboba.jpg",
     decimals: 9,
+    category: "Meme",
   },
   {
     symbol: "BO",
@@ -152,6 +171,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x60460971a3d79ef265dfafa393ffbce97d91e8b8",
     icon: "/media/bo.webp",
     decimals: 18,
+    category: "Meme",
   },
   {
     symbol: "KNOW",
@@ -159,6 +179,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x6b5b5eac259e883b484ed879d43dd4d616a90e65",
     icon: "/media/know.png",
     decimals: 18,
+    category: "Meme",
   },
   {
     symbol: "KIBSHI",
@@ -166,6 +187,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0xf525e73bdeb4ac1b0e741af3ed8a8cbb43ab0756",
     icon: "/media/kibshi.png",
     decimals: 18,
+    category: "Meme",
   },
   {
     symbol: "BONER",
@@ -173,6 +195,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0xf9ca0ec182a94f6231df9b14bd147ef7fb9fa17c",
     icon: "/media/boner.png",
     decimals: 18,
+    category: "Meme",
   },
   {
     symbol: "SHARBI",
@@ -180,6 +203,7 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0xaa54e84a3e6e5a80288d2c2f8e36ea5ca3a3ca30",
     icon: "/media/sharbi.png",
     decimals: 9,
+    category: "Meme",
   },
   {
     symbol: "ADoge",
@@ -187,6 +211,15 @@ export const DEFAULT_TOKEN_LIST = [
     address: "0x155f0DD04424939368972f4e1838687d6a831151",
     icon: "/media/adoge.png",
     decimals: 18,
+    category: "Meme",
+  },
+  {
+    symbol: "DONUT",
+    name: "Donut",
+    address: "0xf42e2b8bc2af8b110b65be98db1321b1ab8d44f5",
+    icon: "/media/donut.png",
+    decimals: 18,
+    category: "SoFi",
   },
 ]
 

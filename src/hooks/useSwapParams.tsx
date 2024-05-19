@@ -1,7 +1,7 @@
 "use client"
 
 import { ChainId } from "@/packages/chain"
-import { TOOB, Type } from "@/packages/currency"
+import { Native, TOOB, Type } from "@/packages/currency"
 import React, { useState } from "react"
 
 interface SwapParamsType {
@@ -17,7 +17,7 @@ interface SwapParamsType {
 }
 
 const defaultVal: SwapParamsType = {
-  tokenIn: TOOB[ChainId.ARBITRUM_ONE],
+  tokenIn: Native.onChain(ChainId.ARBITRUM_ONE),
   tokenOut: undefined,
   amountIn: "",
   amountOut: "",
@@ -40,7 +40,7 @@ export const SwapParamsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [amountIn, setAmountIn] = useState("")
   const [amountOut, setAmountOut] = useState("")
   const [tokenIn, setTokenIn] = useState<Type | undefined>(
-    TOOB[ChainId.ARBITRUM_ONE]
+    Native.onChain(ChainId.ARBITRUM_ONE)
   )
   const [tokenOut, setTokenOut] = useState<Type | undefined>()
 

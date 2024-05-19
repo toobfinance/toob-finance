@@ -1,7 +1,9 @@
 import { UseQueryResult } from "@tanstack/react-query"
 import ChevronDown from "../svgs/ChevronDown"
 import { useState } from "react"
-import { Price } from "@/packages/currency"
+import { Amount, Price } from "@/packages/currency"
+import useSwapParams from "@/hooks/useSwapParams"
+import useSettings from "@/hooks/useSettings"
 
 interface SwapDetailsProps {
   trade: UseQueryResult<any, Error>
@@ -10,38 +12,31 @@ interface SwapDetailsProps {
 const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
   const [open, setOpen] = useState(false)
   const [reverted, setReverted] = useState(false)
+  const { tokenIn, tokenOut } = useSwapParams()
+  const { slippage } = useSettings()
 
   const swapPrice =
-    trade.data?.amountIn &&
-    trade.data?.amountOut &&
-    trade.data?.route?.status !== "NoWay"
-      ? new Price({
-          baseAmount: trade?.data?.amountIn,
-          quoteAmount: trade?.data?.amountOut,
-        })
+    trade.data && tokenIn && tokenOut
+      ? new Price(
+          tokenIn,
+          tokenOut,
+          trade.data?.inAmounts?.[0] ?? "0",
+          trade.data?.outAmounts?.[0] ?? "0"
+        )
       : undefined
 
-  return trade.data &&
-    trade.data?.amountIn &&
-    trade.data?.amountOut &&
-    trade.data?.route?.status !== "NoWay" ? (
+  return trade.data && tokenIn && tokenOut ? (
     <div className="mt-4 border rounded-2xl px-4 border-[#e2cdae]">
       <div className="relative min-h-10 flex items-center justify-between cursor-pointer">
         <button
           className="text-[#1f1d1a] text-sm font-semibold z-[1]"
           onClick={() => setReverted(!reverted)}
         >
-          1{" "}
-          {!reverted
-            ? trade?.data?.amountIn?.currency?.symbol
-            : trade.data?.amountOut?.currency?.symbol}{" "}
-          ={" "}
+          1 {!reverted ? tokenIn.symbol : tokenOut.symbol} ={" "}
           {!reverted
             ? swapPrice?.toSignificant(9)
             : swapPrice?.invert()?.toSignificant(9)}{" "}
-          {!reverted
-            ? trade?.data?.amountOut?.currency?.symbol
-            : trade?.data?.amountIn?.currency?.symbol}
+          {!reverted ? tokenOut.symbol : tokenIn.symbol}
         </button>
         <button
           className="absolute top-0 left-0 right-0 bottom-0 w-full h-full"
@@ -57,21 +52,31 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
           <div className="flex items-start justify-between">
             <span className="text-[#7c7872] text-sm">Expected Output:</span>
             <span className="text-[#1f1d1a] text-sm font-semibold">
-              {trade.data?.amountOut?.toSignificant(6)}{" "}
-              {trade.data?.amountOut?.currency?.symbol}
+              {Amount.fromRawAmount(
+                tokenOut,
+                trade.data?.outAmounts?.[0] ?? "0"
+              ).toSignificant(6)}{" "}
+              {tokenOut.symbol}
             </span>
           </div>
           <div className="flex items-start justify-between">
             <span className="text-[#7c7872] text-sm">Minimum Received:</span>
             <span className="text-[#1f1d1a] text-sm font-semibold">
-              {trade.data?.minAmountOut?.toSignificant(6)}{" "}
-              {trade.data?.minAmountOut?.currency?.symbol}
+              {Amount.fromRawAmount(
+                tokenOut,
+                (BigInt(trade.data?.outAmounts?.[0] ?? "0") *
+                  (1000000n - BigInt(slippage * 10000))) /
+                  1000000n
+              ).toSignificant(6)}{" "}
+              {tokenOut.symbol}
             </span>
           </div>
           <div className="flex items-start justify-between">
             <span className="text-[#7c7872] text-sm">Price Impact:</span>
             <span className="text-[#1f1d1a] text-sm font-semibold">
-              {trade.data?.priceImpact?.toPercentageString()}
+              {(trade.data?.priceImpact ?? 0) < 0.01
+                ? "<0.01%"
+                : `${(trade.data?.priceImpact ?? 0).toFixed(2)}%`}
             </span>
           </div>
           <div className="flex items-start justify-between">

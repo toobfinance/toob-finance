@@ -28,6 +28,7 @@ const TokenListItem: React.FC<TokenListItemProps> = ({
   const { data: price } = usePrice({
     address: token.wrapped.address,
     chainId: ChainId.ARBITRUM_ONE,
+    enabled: (balance?.value ?? 0n) > 0n,
   })
 
   return (
@@ -50,7 +51,9 @@ const TokenListItem: React.FC<TokenListItemProps> = ({
             <span className="text-[#1f1d1a] font-semibold">{token.name}</span>
             <span className="text-[#1f1d1a] text-sm ml-2">{token.symbol}</span>
           </div>
-          <div className="text-sm text-[#a0a0a0]">DeFi</div>
+          <div className="text-sm text-[#a0a0a0]">
+            {token.category ?? "DeFi"}
+          </div>
         </div>
       </div>
       {balance && balance.value > 0n ? (
@@ -62,10 +65,7 @@ const TokenListItem: React.FC<TokenListItemProps> = ({
           </span>
           {price ? (
             <span className="text-[#a0a0a0] text-sm">
-              $
-              {(Number(price.toFixed(6)) * Number(balance.formatted)).toFixed(
-                2
-              )}
+              ${(price * Number(balance.formatted)).toFixed(2)}
             </span>
           ) : undefined}
         </div>

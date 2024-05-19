@@ -12,6 +12,7 @@
     "@headlessui/react": "^2.0.3",
     "@tanstack/react-query": "^5.36.0",
     "@web3modal/wagmi": "^4.1.11",
+    "axios": "^1.6.8",
     "big.js": "^6.2.1",
     "decimal.js-light": "^2.5.1",
     "lodash.flatmap": "^4.5.0",

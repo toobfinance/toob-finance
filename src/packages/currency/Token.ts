@@ -26,6 +26,7 @@ export class Token extends Currency {
     symbol,
     name,
     icon,
+    category,
   }: {
     chainId: number | string
     address: string
@@ -33,6 +34,7 @@ export class Token extends Currency {
     symbol?: string | undefined
     name?: string | undefined
     icon?: string | undefined
+    category?: string | undefined
   }) {
     super({
       chainId,
@@ -40,6 +42,7 @@ export class Token extends Currency {
       symbol,
       name,
       icon,
+      category,
     })
     try {
       this.address = getAddress(address)
