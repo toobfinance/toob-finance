@@ -61,6 +61,17 @@ const SwapSide: React.FC<SwapSideProps> = ({
     }
   }
 
+  const onAmountInput = (e: string) => {
+    if (
+      e === "" ||
+      RegExp(`^\\d*(?:\\\\[.])?\\d*$`).test(
+        e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      )
+    ) {
+      setAmount(e)
+    }
+  }
+
   useEffect(() => {
     if (amountInputRef.current)
       amountInputRef.current.style.paddingRight = `${
@@ -73,7 +84,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
       <div className={className ?? ""}>
         <div className="flex items-start justify-between">
           <h2 className="text-[#afa392] font-semibold">{side}</h2>
-          {balance ? (
+          {balance && token ? (
             <button
               className="text-xs text-[#31291e] px-2 h-6 font-semibold rounded-full hover:bg-[#EDF2F7] transition-all"
               disabled={side === "To"}
@@ -88,11 +99,11 @@ const SwapSide: React.FC<SwapSideProps> = ({
         </div>
         <div className="relative mt-1">
           <input
-            type="number"
+            type="text"
+            inputMode="decimal"
             value={amount}
-            onChange={(e) =>
-              setAmount?.(e.target.value.replace(/[^0-9.]/g, ""))
-            }
+            pattern="^[0-9]*[.,]?[0-9]*$"
+            onChange={(e) => onAmountInput(e.target.value)}
             disabled={side === "To"}
             ref={amountInputRef}
             data-fast={fastTokens}

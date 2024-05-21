@@ -20,8 +20,8 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
       ? new Price(
           tokenIn,
           tokenOut,
-          trade.data?.inAmounts?.[0] ?? "0",
-          trade.data?.outAmounts?.[0] ?? "0"
+          trade.data?.[0]?.amountIn ?? "0",
+          trade.data?.[0]?.amountOut ?? "0"
         )
       : undefined
 
@@ -54,7 +54,7 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
             <span className="text-[#1f1d1a] text-sm font-semibold">
               {Amount.fromRawAmount(
                 tokenOut,
-                trade.data?.outAmounts?.[0] ?? "0"
+                trade.data?.[0]?.amountOut ?? "0"
               ).toSignificant(6)}{" "}
               {tokenOut.symbol}
             </span>
@@ -64,7 +64,7 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
             <span className="text-[#1f1d1a] text-sm font-semibold">
               {Amount.fromRawAmount(
                 tokenOut,
-                (BigInt(trade.data?.outAmounts?.[0] ?? "0") *
+                (BigInt(trade.data?.[0]?.amountOut ?? "0") *
                   (1000000n - BigInt(slippage * 10000))) /
                   1000000n
               ).toSignificant(6)}{" "}
@@ -74,9 +74,9 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
           <div className="flex items-start justify-between">
             <span className="text-[#7c7872] text-sm">Price Impact:</span>
             <span className="text-[#1f1d1a] text-sm font-semibold">
-              {(trade.data?.priceImpact ?? 0) < 0.01
+              {(trade.data?.[0]?.priceImpact ?? 0) < 0.01
                 ? "<0.01%"
-                : `${(trade.data?.priceImpact ?? 0).toFixed(2)}%`}
+                : `${(trade.data?.[0]?.priceImpact ?? 0).toFixed(2)}%`}
             </span>
           </div>
           <div className="flex items-start justify-between">

@@ -11,7 +11,7 @@ export const usePoolsCodeMap = ({
   return useQuery({
     queryKey: ["usePoolsCodeMap", { chainId, currencyA, currencyB, providers }],
     queryFn: async () => await getAllPoolsCodeMap(variables),
-    refetchInterval: 35000,
+    refetchInterval: 10000,
     enabled,
   })
 }

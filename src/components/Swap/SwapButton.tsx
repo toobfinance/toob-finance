@@ -13,16 +13,14 @@ import { Amount, Token, tryParseAmount } from "@/packages/currency"
 import Spinner from "../Spinner"
 import React, { useState } from "react"
 import { ApprovalState, useTokenApproval } from "@/hooks/useTokenApproval"
-import { ROUTE_PROCESSOR_3_ADDRESS } from "@/packages/config"
 import { ChainId } from "@/packages/chain"
 import { UseQueryResult } from "@tanstack/react-query"
-import { routeProcessor3Abi } from "@/packages/abi"
+import useSettings from "@/hooks/useSettings"
+import { AGGREGATOR_ADDR } from "@/contracts"
+import { getKyberTxData, getOdosTxData, getXFusionTxData } from "@/utils/trade"
+import AggregatorABI from "@/contracts/AggregatorABI"
 import toast from "react-hot-toast"
 import CustomToast from "../CustomToast"
-import axios from "axios"
-import toobFinanceRouter from "@/packages/abi/toobFinanceRouter"
-import useSettings from "@/hooks/useSettings"
-import { EXECUTOR_ADDR, ROUTER_ADDR } from "@/contracts"
 
 interface SwapButtonProps {
   trade: UseQueryResult<any, Error>
@@ -31,18 +29,17 @@ interface SwapButtonProps {
 const SwapButton: React.FC<SwapButtonProps> = ({ trade }) => {
   const { address, chainId } = useAccount()
   const { open } = useWeb3Modal()
-  const { amountIn, amountOut, tokenIn, tokenOut } = useSwapParams()
+  const { amountIn, tokenIn, tokenOut, setAmountIn } = useSwapParams()
   const publicClient = usePublicClient()
   const { data: walletClient } = useWalletClient()
   const { switchChainAsync } = useSwitchChain()
   const [loading, setLoading] = useState(false)
-  const { slippage } = useSettings()
 
   const parsedAmount = tryParseAmount(amountIn, tokenIn)
 
   const [approvalState, approve, approvalRequest] = useTokenApproval({
     amount: parsedAmount,
-    spender: ROUTER_ADDR,
+    spender: AGGREGATOR_ADDR,
     enabled: Boolean(parsedAmount),
   })
 
@@ -53,76 +50,32 @@ const SwapButton: React.FC<SwapButtonProps> = ({ trade }) => {
       switchChainAsync?.({ chainId: ChainId.ARBITRUM_ONE })
     } else {
       try {
-        if (!tokenIn || !tokenOut || !trade) return
-
+        if (!tokenIn || !tokenOut) return
         await trade.refetch()
-        const swapTrade = { ...trade }
+
+        if (!trade.data || !trade.data.length) return
+
+        const swapTrade = { ...trade.data[0] }
+
+        console.log(swapTrade)
 
         setLoading(true)
-        // const { request } = await publicClient.simulateContract({
-        //   account: address,
-        //   abi: routeProcessor3Abi,
-        //   address: ROUTE_PROCESSOR_3_ADDRESS[ChainId.ARBITRUM_ONE],
-        //   functionName: "toobExecute",
-        //   args: swapTrade.data?.writeArgs,
-        //   value: swapTrade.data?.value,
-        // })
 
-        // const hash = await walletClient.writeContract(request)
-        // toast.custom((t) => (
-        //   <CustomToast
-        //     t={t}
-        //     type="info"
-        //     text={`Swap ${swapTrade?.data?.amountIn?.toSignificant(6)} ${
-        //       swapTrade?.data?.amountIn?.currency?.symbol
-        //     } for ${swapTrade?.data?.amountOut?.toSignificant(6)} ${
-        //       swapTrade?.data?.amountOut?.currency?.symbol
-        //     }`}
-        //     hash={hash}
-        //   />
-        // ))
+        const txData = await (swapTrade.type === "Odos"
+          ? getOdosTxData(swapTrade)
+          : swapTrade.type === "KyberSwap"
+          ? getKyberTxData(swapTrade)
+          : getXFusionTxData(swapTrade))
 
-        // const res = await publicClient.waitForTransactionReceipt({ hash })
-
-        const { data } = await axios.post("https://api.odos.xyz/sor/assemble", {
-          pathId: swapTrade.data?.pathId,
-          simulate: false,
-          userAddr: address,
-        })
-
-        // const hash = await walletClient.sendTransaction({
-        //   ...data.transaction,
-        //   to: "0x63f4305c7e079f5a830bd8808fc035554059e287",
-        // })
-
-        const pathDefinition =
-          data?.transaction?.data
-            ?.toLowerCase()
-            ?.split(address.slice(2).toLowerCase())?.[1]
-            ?.slice(10) ?? ""
+        console.log(txData)
 
         const { request } = await publicClient.simulateContract({
+          abi: AggregatorABI,
+          address: AGGREGATOR_ADDR,
           account: address,
-          abi: toobFinanceRouter,
-          address: ROUTER_ADDR,
           functionName: "swap",
-          args: [
-            {
-              inputAmount: BigInt(data?.inputTokens?.[0]?.amount ?? "0"),
-              inputToken: data?.inputTokens?.[0]?.tokenAddress ?? "",
-              outputToken: data?.outputTokens?.[0]?.tokenAddress ?? "",
-              outputReceiver: address,
-              inputReceiver: EXECUTOR_ADDR,
-              outputQuote: BigInt(data?.outputTokens?.[0]?.amount ?? "0"),
-              outputMin:
-                (BigInt(data?.outputTokens?.[0]?.amount ?? "0") *
-                  (1000000n - BigInt(slippage * 10000))) /
-                1000000n,
-            },
-            `0x${pathDefinition}`,
-            EXECUTOR_ADDR,
-          ],
-          value: data?.transaction?.value,
+          args: [txData.args as any],
+          value: txData.value,
         })
 
         const hash = await walletClient.writeContract(request)
@@ -135,18 +88,34 @@ const SwapButton: React.FC<SwapButtonProps> = ({ trade }) => {
             type="success"
             text={`Swap ${Amount.fromRawAmount(
               tokenIn,
-              data?.inputTokens?.[0]?.amount
-            ).toSignificant(6)} ${tokenIn.symbol} for ${Amount.fromRawAmount(
+              txData.amountIn
+            ).toSignificant(6)} ${
+              swapTrade.tokenIn.symbol
+            } for ${Amount.fromRawAmount(
               tokenOut,
-              data?.outputTokens?.[0]?.amount
-            ).toSignificant(6)} ${tokenOut.symbol}`}
+              txData.amountOut
+            ).toSignificant(6)} ${swapTrade.tokenOut.symbol}`}
             hash={hash}
           />
         ))
 
-        // console.log(res)
-      } catch (err) {
+        setAmountIn("")
+
+        console.log(res)
+      } catch (err: any) {
         console.log(err)
+        if (!err?.message?.includes("User rejected the request.")) {
+          toast.custom((t) => (
+            <CustomToast
+              t={t}
+              type="error"
+              text={
+                err?.shortMessage ??
+                `Failed to send the transaction. Please check the slippage and try again later.`
+              }
+            />
+          ))
+        }
       } finally {
         setLoading(false)
       }

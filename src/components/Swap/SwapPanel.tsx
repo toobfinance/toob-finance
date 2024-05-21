@@ -9,6 +9,7 @@ import useSwapTrade from "@/hooks/useSwapTrade"
 import { Amount, tryParseAmount } from "@/packages/currency"
 import SettingPopup from "../SettingPopup"
 import SwapDetails from "./SwapDetails"
+import SwapTrades from "./SwapTrades"
 
 const SwapPanel = () => {
   const {
@@ -57,7 +58,7 @@ const SwapPanel = () => {
             setToken={setTokenIn}
             amount={amountIn}
             setAmount={setAmountIn}
-            price={trade.data?.inValues?.[0]}
+            price={trade.data?.[0]?.amountInValue}
           />
 
           <div className="flex items-center w-full justify-center">
@@ -76,16 +77,17 @@ const SwapPanel = () => {
             token={tokenOut}
             setToken={setTokenOut}
             amount={
-              trade.data?.outAmounts?.[0] && tokenOut
+              trade.data?.[0]?.amountOut && tokenOut && amountIn.length > 0
                 ? Amount.fromRawAmount(
                     tokenOut,
-                    trade.data?.outAmounts?.[0]
+                    trade.data?.[0]?.amountOut
                   ).toExact()
                 : undefined
             }
-            price={trade.data?.outValues?.[0]}
+            price={trade.data?.[0]?.amountOutValue}
           />
           <SwapDetails trade={trade} />
+          <SwapTrades trades={trade.data} />
           <SwapButton trade={trade} />
         </div>
       </div>
