@@ -1,3 +1,4 @@
+import { SWAP_FEE } from "@/constants";
 import { AGGREGATOR_ADDR, ODOS_EXECUTOR_ADDR } from "@/contracts";
 import AggregatorABI from "@/contracts/AggregatorABI";
 import toobFinanceRouter from "@/packages/abi/toobFinanceRouter";
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
       : "0x0bD52D57F18f63bcA6F69a6Dbcddc024B6C0DDCf";
 
     const amountIn = parseUnits(amount.toString(), 6);
-    const feeAmount = (amountIn * 400n) / 10000n;
+    const feeAmount = (amountIn * SWAP_FEE) / 10000n;
     const exactAmountIn = amountIn - feeAmount;
 
     if (

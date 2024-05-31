@@ -21,6 +21,7 @@ import JCB from "@/assets/jcb.svg";
 import Discover from "@/assets/Discover.png";
 import Link from "next/link";
 import Image from "next/image";
+import { SWAP_FEE } from "@/constants";
 
 const CCPanel = () => {
   const [fiatAmount, setFiatAmount] = useState("");
@@ -81,7 +82,7 @@ const CCPanel = () => {
             ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
             : tokenOut.address
         }&amountIn=${(
-          (parseUnits(convertedAmount.toString(), 6) * 9600n) /
+          (parseUnits(convertedAmount.toString(), 6) * (10000n - SWAP_FEE)) /
           10000n
         ).toString()}&gasInclude=true`
       );
