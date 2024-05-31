@@ -21,6 +21,7 @@ import { getKyberTxData, getOdosTxData, getXFusionTxData } from "@/utils/trade"
 import AggregatorABI from "@/contracts/AggregatorABI"
 import toast from "react-hot-toast"
 import CustomToast from "../CustomToast"
+import { erc20Abi } from "viem"
 
 interface SwapButtonProps {
   trade: UseQueryResult<any, Error>
@@ -69,6 +70,15 @@ const SwapButton: React.FC<SwapButtonProps> = ({ trade }) => {
 
         console.log(txData)
 
+        const balanceBefore = tokenOut.isNative
+          ? await publicClient.getBalance({ address })
+          : await publicClient.readContract({
+              abi: erc20Abi,
+              address: tokenOut.address,
+              functionName: "balanceOf",
+              args: [address],
+            })
+
         const { request } = await publicClient.simulateContract({
           abi: AggregatorABI,
           address: AGGREGATOR_ADDR,
@@ -82,6 +92,15 @@ const SwapButton: React.FC<SwapButtonProps> = ({ trade }) => {
 
         const res = await publicClient.waitForTransactionReceipt({ hash })
 
+        const balanceAfter = tokenOut.isNative
+          ? await publicClient.getBalance({ address })
+          : await publicClient.readContract({
+              abi: erc20Abi,
+              address: tokenOut.address,
+              functionName: "balanceOf",
+              args: [address],
+            })
+
         toast.custom((t) => (
           <CustomToast
             t={t}
@@ -93,7 +112,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ trade }) => {
               swapTrade.tokenIn.symbol
             } for ${Amount.fromRawAmount(
               tokenOut,
-              txData.amountOut
+              balanceAfter - balanceBefore
             ).toSignificant(6)} ${swapTrade.tokenOut.symbol}`}
             hash={hash}
           />
@@ -154,11 +173,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ trade }) => {
   const insufficientBalanceError =
     Number(amountIn) > Number(balance?.formatted ?? "0")
 
-  const isError =
-    wrongNetworkError ||
-    nonAmountError ||
-    nonAssetError ||
-    insufficientBalanceError
+  const isError = nonAmountError || nonAssetError || insufficientBalanceError
 
   return (
     <div className="mt-4">
@@ -168,7 +183,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ trade }) => {
       (approvalState === ApprovalState.NOT_APPROVED ||
         approvalState === ApprovalState.PENDING) ? (
         <button
-          className="flex items-center justify-center h-12 w-full bg-[#d8c7ad] text-white border-b-2 border-[#d1bc9c] enabled:hover:bg-[#d1bc9c] enabled:hover:border-[#c0ac8e] transition-all rounded-full mt-8 font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex items-center justify-center h-12 w-full bg-[#d8c7ad] text-[#1F1D1A] border-b-2 border-[#d1bc9c] enabled:hover:bg-[#d1bc9c] enabled:hover:border-[#c0ac8e] transition-all rounded-full mt-8 font-semibold disabled:opacity-70 disabled:cursor-not-allowed"
           onClick={onApprove}
           disabled={approvalState === ApprovalState.PENDING}
         >
@@ -181,11 +196,12 @@ const SwapButton: React.FC<SwapButtonProps> = ({ trade }) => {
         </button>
       ) : null}
       <button
-        className="flex items-center justify-center h-12 w-full bg-[#d8c7ad] text-white border-b-2 border-[#d1bc9c] enabled:hover:bg-[#d1bc9c] enabled:hover:border-[#c0ac8e] transition-all rounded-full font-semibold disabled:opacity-40 disabled:cursor-not-allowed mt-4"
+        className="flex items-center justify-center h-12 w-full bg-[#d8c7ad] text-[#1F1D1A] border-b-2 border-[#d1bc9c] enabled:hover:bg-[#d1bc9c] enabled:hover:border-[#c0ac8e] transition-all rounded-full font-semibold disabled:opacity-70 disabled:cursor-not-allowed mt-4"
         onClick={onSwap}
         disabled={
-          isError ||
-          !(approvalState === ApprovalState.APPROVED) ||
+          (address &&
+            !wrongNetworkError &&
+            (isError || !(approvalState === ApprovalState.APPROVED))) ||
           fetching ||
           loading
         }

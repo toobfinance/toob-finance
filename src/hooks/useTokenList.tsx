@@ -1,9 +1,11 @@
-import { ChainId } from "@/packages/chain"
-import { DEFAULT_TOKEN_LIST } from "@/packages/config"
-import { Native, Token } from "@/packages/currency"
+import { ChainId } from "@/packages/chain";
+import { DEFAULT_TOKEN_LIST, PRIMARY_TOKEN_LIST } from "@/packages/config";
+import { Native, Token } from "@/packages/currency";
 
-const useTokenList = () => {
-  const defaultTokens = DEFAULT_TOKEN_LIST.map((item) =>
+const useTokenList = (primaryTokens?: boolean) => {
+  const defaultTokens = (
+    primaryTokens ? PRIMARY_TOKEN_LIST : DEFAULT_TOKEN_LIST
+  ).map((item) =>
     item.native || !item.address
       ? Native.onChain(ChainId.ARBITRUM_ONE)
       : new Token({
@@ -15,9 +17,9 @@ const useTokenList = () => {
           icon: item.icon,
           category: item.category,
         })
-  )
+  );
 
-  return defaultTokens
-}
+  return defaultTokens;
+};
 
-export default useTokenList
+export default useTokenList;

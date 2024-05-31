@@ -1,21 +1,21 @@
-import invariant from "tiny-invariant"
-import { Address, getAddress } from "viem"
+import invariant from "tiny-invariant";
+import { Address, getAddress } from "viem";
 
-import { Currency } from "./Currency"
-import { type Type } from "./Type"
-import { type SerializedToken, tokenSchema } from "./zod"
+import { Currency } from "./Currency";
+import { type Type } from "./Type";
+import { type SerializedToken, tokenSchema } from "./zod";
 
 /**
  * Represents an ERC20 token with a unique address and some metadata.
  */
 export class Token extends Currency {
-  public readonly id: string
-  public readonly isNative = false as const
-  public readonly isToken = true as const
+  public readonly id: string;
+  public readonly isNative = false as const;
+  public readonly isToken = true as const;
   /**
    * The contract address on the chain on which this token lives
    */
-  public readonly address: Address
+  public readonly address: Address;
 
   public constructor({
     // TODO:
@@ -27,14 +27,16 @@ export class Token extends Currency {
     name,
     icon,
     category,
+    isCustom,
   }: {
-    chainId: number | string
-    address: string
-    decimals: number | string
-    symbol?: string | undefined
-    name?: string | undefined
-    icon?: string | undefined
-    category?: string | undefined
+    chainId: number | string;
+    address: string;
+    decimals: number | string;
+    symbol?: string | undefined;
+    name?: string | undefined;
+    icon?: string | undefined;
+    category?: string | undefined;
+    isCustom?: boolean | undefined;
   }) {
     super({
       chainId,
@@ -43,12 +45,13 @@ export class Token extends Currency {
       name,
       icon,
       category,
-    })
+      isCustom,
+    });
     try {
-      this.address = getAddress(address)
-      this.id = `${chainId}:${address}`
+      this.address = getAddress(address);
+      this.id = `${chainId}:${address}`;
     } catch {
-      throw `${address} is not a valid address`
+      throw `${address} is not a valid address`;
     }
   }
 
@@ -61,7 +64,7 @@ export class Token extends Currency {
       other.isToken &&
       this.chainId === other.chainId &&
       this.address === other.address
-    )
+    );
   }
 
   /**
@@ -71,16 +74,16 @@ export class Token extends Currency {
    * @throws if the tokens are on different chains
    */
   public sortsBefore(other: Token): boolean {
-    invariant(this.chainId === other.chainId, "CHAIN_IDS")
-    invariant(this.address !== other.address, "ADDRESSES")
-    return this.address.toLowerCase() < other.address.toLowerCase()
+    invariant(this.chainId === other.chainId, "CHAIN_IDS");
+    invariant(this.address !== other.address, "ADDRESSES");
+    return this.address.toLowerCase() < other.address.toLowerCase();
   }
 
   /**
    * Return this token, which does not need to be wrapped
    */
   public get wrapped(): Token {
-    return this
+    return this;
   }
 
   // public get tokenURI(): string {
@@ -98,7 +101,7 @@ export class Token extends Currency {
       decimals: this.decimals,
       chainId: this.chainId,
       address: this.address,
-    })
+    });
   }
 
   public static deserialize({
@@ -114,6 +117,6 @@ export class Token extends Currency {
       address,
       decimals,
       chainId,
-    })
+    });
   }
 }

@@ -1,22 +1,26 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import ChevronDown from "../svgs/ChevronDown"
-import TokenListModal from "../TokenListModal"
-import { ARB, Amount, Token, Type, USDC, USDT } from "@/packages/currency"
-import { DEFAULT_IMAGE_URL, NATIVE_GAS_FEE } from "@/constants"
-import Image from "next/image"
-import { useAccount, useBalance } from "wagmi"
-import { ChainId } from "@/packages/chain"
+import { useEffect, useRef, useState } from "react";
+import ChevronDown from "../svgs/ChevronDown";
+import TokenListModal from "../TokenListModal";
+import { ARB, Amount, Token, Type, USDC, USDT } from "@/packages/currency";
+import { DEFAULT_IMAGE_URL, NATIVE_GAS_FEE } from "@/constants";
+import Image from "next/image";
+import { useAccount, useBalance } from "wagmi";
+import { ChainId } from "@/packages/chain";
 
 interface SwapSideProps {
-  side: "From" | "To"
-  amount: string | undefined
-  setAmount?: any
-  token?: Type
-  setToken: any
-  className?: string
-  price?: string
+  side: "From" | "To";
+  amount: string | undefined;
+  setAmount?: any;
+  token?: Type;
+  setToken: any;
+  className?: string;
+  hideSide?: boolean;
+  hideBalance?: boolean;
+  disabled?: boolean;
+  price?: string;
+  primaryTokens?: boolean;
 }
 
 const SwapSide: React.FC<SwapSideProps> = ({
@@ -26,14 +30,18 @@ const SwapSide: React.FC<SwapSideProps> = ({
   token,
   price,
   setToken,
+  hideBalance,
+  hideSide,
   className,
+  primaryTokens,
+  disabled,
 }) => {
-  const { address } = useAccount()
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const tokenSelectorRef = useRef<HTMLDivElement>(null)
-  const amountInputRef = useRef<HTMLInputElement>(null)
+  const { address } = useAccount();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const tokenSelectorRef = useRef<HTMLDivElement>(null);
+  const amountInputRef = useRef<HTMLInputElement>(null);
 
-  const fastTokens = !token
+  const fastTokens = !token;
 
   const { data: balance } = useBalance({
     address,
@@ -42,7 +50,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
       enabled: Boolean(address) && Boolean(token),
       refetchInterval: 30000,
     },
-  })
+  });
 
   const onMax = () => {
     if (balance && token) {
@@ -54,12 +62,12 @@ const SwapSide: React.FC<SwapSideProps> = ({
               ? balance.value - NATIVE_GAS_FEE
               : 0n
           ).toExact()
-        )
-      } else setAmount?.(Amount.fromRawAmount(token, balance.value).toExact())
+        );
+      } else setAmount?.(Amount.fromRawAmount(token, balance.value).toExact());
     } else {
-      setAmount?.("0")
+      setAmount?.("0");
     }
-  }
+  };
 
   const onAmountInput = (e: string) => {
     if (
@@ -68,23 +76,25 @@ const SwapSide: React.FC<SwapSideProps> = ({
         e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
       )
     ) {
-      setAmount(e)
+      setAmount(e);
     }
-  }
+  };
 
   useEffect(() => {
     if (amountInputRef.current)
       amountInputRef.current.style.paddingRight = `${
         (tokenSelectorRef.current?.clientWidth ?? 0) + 10
-      }px`
-  }, [token, balance])
+      }px`;
+  }, [token, balance]);
 
   return (
     <>
       <div className={className ?? ""}>
         <div className="flex items-start justify-between">
-          <h2 className="text-[#afa392] font-semibold">{side}</h2>
-          {balance && token ? (
+          {!hideSide && (
+            <h2 className="text-[#afa392] font-semibold">{side}</h2>
+          )}
+          {!hideBalance && balance && token ? (
             <button
               className="text-xs text-[#31291e] px-2 h-6 font-semibold rounded-full hover:bg-[#EDF2F7] transition-all"
               disabled={side === "To"}
@@ -104,7 +114,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
             value={amount}
             pattern="^[0-9]*[.,]?[0-9]*$"
             onChange={(e) => onAmountInput(e.target.value)}
-            disabled={side === "To"}
+            disabled={disabled}
             ref={amountInputRef}
             data-fast={fastTokens}
             className="w-full h-12 max-sm:data-[fast=true]:h-[72px] outline-none text-[30px] bg-transparent text-[#31291e] font-semibold placeholder:text-[#afa392]"
@@ -180,13 +190,14 @@ const SwapSide: React.FC<SwapSideProps> = ({
         ) : null}
       </div>
       <TokenListModal
+        primaryTokens={primaryTokens}
         currentToken={token}
         setToken={setToken}
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
     </>
-  )
-}
+  );
+};
 
-export default SwapSide
+export default SwapSide;

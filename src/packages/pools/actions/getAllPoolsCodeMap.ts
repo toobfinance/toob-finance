@@ -15,7 +15,7 @@ export const getAllPoolsCodeMap = async ({
   const liquidityProviders = providers
     ? providers
     : [
-        // LiquidityProviders.SushiSwapV2,
+        LiquidityProviders.SushiSwapV2,
         LiquidityProviders.SushiSwapV3,
         LiquidityProviders.UniSwapV2,
         LiquidityProviders.UniSwapV3,

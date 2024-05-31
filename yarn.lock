@@ -962,6 +962,13 @@
   resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.5.0.tgz#108208d0f1d75271300bc5560cf9a85a1fa01e89"
   integrity sha512-KnPRCkQTyqhanNC0K63GBG3wA8I+D1fQuVnAvcBF8f13akOKeQp1gSbu6f77zCxhEk727iV5oQnbHLYzHrECLg==
 
+"@types/bn.js@*":
+  version "5.1.5"
+  resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-5.1.5.tgz#2e0dacdcce2c0f16b905d20ff87aedbc6f7b4bf0"
+  integrity sha512-V46N0zwKRF5Q00AZ6hWtN0T8gGmDUaUzLWQvHFo5yThtVwK/VCenFY3wXVbOvNfajEpsTfQM4IN9k/d6gUVX3A==
+  dependencies:
+    "@types/node" "*"
+
 "@types/debug@^4.1.7":
   version "4.1.12"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.12.tgz#a155f21690871953410df4b6b6f53187f0500917"
@@ -973,6 +980,13 @@
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@types/dom-screen-wake-lock/-/dom-screen-wake-lock-1.0.3.tgz#c3588a5f6f40fae957f9ce5be9bc4927a61bb9a0"
   integrity sha512-3Iten7X3Zgwvk6kh6/NRdwN7WbZ760YgFCsF5AxDifltUQzW1RaW+WRmcVtgwFzLjaNu64H+0MPJ13yRa8g3Dw==
+
+"@types/elliptic@^6.4.12":
+  version "6.4.18"
+  resolved "https://registry.yarnpkg.com/@types/elliptic/-/elliptic-6.4.18.tgz#bc96e26e1ccccbabe8b6f0e409c85898635482e1"
+  integrity sha512-UseG6H5vjRiNpQvrhy4VF/JXdA3V/Fp5amvveaL+fs28BZ6xIKJBPnUPRlEaZpysD9MbpfaLi8lbl7PGUAkpWw==
+  dependencies:
+    "@types/bn.js" "*"
 
 "@types/eslint-scope@^3.7.3":
   version "3.7.7"
@@ -1631,6 +1645,20 @@
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-2.0.5.tgz#325db42395cd49fe6c14057f9a900e427df8810e"
   integrity sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==
+
+"@wert-io/widget-initializer@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@wert-io/widget-initializer/-/widget-initializer-6.3.0.tgz#d4eb51e6bcd6deac5f004980f94595379a76948a"
+  integrity sha512-nXdYob9Qby0pOLIlSw2i+dU/Y21txI9frl4qrv4khbZrm3Aj29VtJlQRsurm0R0jDK5bwYDFEfqFID0d6VzejQ==
+
+"@wert-io/widget-sc-signer@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@wert-io/widget-sc-signer/-/widget-sc-signer-2.0.1.tgz#c60e06a816b42ebcaf008f445e5a832d2bdf7694"
+  integrity sha512-Oy8tAS1b0yuTpDvO/2WmNLPo4aWXcBGeX9NjQ5CWNRsVaV3HMkrZAeHnQihX2RhVemJNfUtmkHQCVzaYEoXxPw==
+  dependencies:
+    "@types/elliptic" "^6.4.12"
+    buffer "^6.0.3"
+    elliptic "^6.5.4"
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"

@@ -1,17 +1,17 @@
-import { ODOS_EXECUTOR_ADDR, ODOS_ROUTER_ADDR } from "@/contracts"
-import { routeProcessor3Abi } from "@/packages/abi"
-import kyberSwapAbi from "@/packages/abi/kyberSwapAbi"
-import toobFinanceRouter from "@/packages/abi/toobFinanceRouter"
-import { slippageAmount } from "@/packages/calculate"
-import { ChainId } from "@/packages/chain"
-import { ROUTE_PROCESSOR_3_ADDRESS } from "@/packages/config"
-import { Amount, Token, Type } from "@/packages/currency"
-import { Percent } from "@/packages/math"
-import { getAllPoolsCodeMap } from "@/packages/pools/actions/getAllPoolsCodeMap"
-import { PoolCode, Router } from "@/packages/router"
-import { RouteStatus } from "@/packages/tines"
-import axios from "axios"
-import { Address, Hex, encodeFunctionData } from "viem"
+import { ODOS_EXECUTOR_ADDR, ODOS_ROUTER_ADDR } from "@/contracts";
+import { routeProcessor3Abi } from "@/packages/abi";
+import kyberSwapAbi from "@/packages/abi/kyberSwapAbi";
+import toobFinanceRouter from "@/packages/abi/toobFinanceRouter";
+import { slippageAmount } from "@/packages/calculate";
+import { ChainId } from "@/packages/chain";
+import { ROUTE_PROCESSOR_3_ADDRESS } from "@/packages/config";
+import { Amount, Token, Type } from "@/packages/currency";
+import { Percent } from "@/packages/math";
+import { getAllPoolsCodeMap } from "@/packages/pools/actions/getAllPoolsCodeMap";
+import { PoolCode, Router } from "@/packages/router";
+import { RouteStatus } from "@/packages/tines";
+import axios from "axios";
+import { Address, Hex, encodeFunctionData } from "viem";
 
 export const getOdosTrade = async (
   tokenIn: Type,
@@ -48,7 +48,7 @@ export const getOdosTrade = async (
       compact: true,
       likeAsset: true,
       disableRFQs: false,
-    })
+    });
     return {
       tokenIn,
       tokenOut,
@@ -61,11 +61,11 @@ export const getOdosTrade = async (
       priceImpact: -(data?.percentDiff ?? 0),
       data,
       type: "Odos",
-    }
+    };
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const getKyberTrade = async (
   tokenIn: Type,
@@ -85,8 +85,8 @@ export const getKyberTrade = async (
           ? tokenOut.address
           : "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
       }&amountIn=${amountIn}&gasInclude=true`
-    )
-    if (data?.message !== "successfully") return undefined
+    );
+    if (data?.message !== "successfully") return undefined;
     return {
       tokenIn,
       tokenOut,
@@ -107,11 +107,11 @@ export const getKyberTrade = async (
           : 0,
       data: data?.data,
       type: "KyberSwap",
-    }
+    };
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const getXFusionTrade = async (
   tokenIn: Type,
@@ -121,7 +121,7 @@ export const getXFusionTrade = async (
   amountIn: string,
   poolsCodeMap?: Map<string, PoolCode>
 ) => {
-  if (!poolsCodeMap) return undefined
+  if (!poolsCodeMap) return undefined;
   const route = Router.findBestRoute(
     poolsCodeMap,
     ChainId.ARBITRUM_ONE,
@@ -130,7 +130,7 @@ export const getXFusionTrade = async (
     tokenOut,
     10000000,
     100
-  )
+  );
 
   let args = Router.routeProcessor3Params(
     poolsCodeMap,
@@ -141,14 +141,14 @@ export const getXFusionTrade = async (
     ROUTE_PROCESSOR_3_ADDRESS[ChainId.ARBITRUM_ONE],
     [],
     slippage / 100
-  )
+  );
 
   if (route && route.status === RouteStatus.Success) {
-    const amountIn = Amount.fromRawAmount(tokenIn, route.amountInBI.toString())
+    const amountIn = Amount.fromRawAmount(tokenIn, route.amountInBI.toString());
     const amountOut = Amount.fromRawAmount(
       tokenOut,
       route.amountOutBI.toString()
-    )
+    );
 
     const args = Router.routeProcessor3Params(
       poolsCodeMap,
@@ -159,7 +159,7 @@ export const getXFusionTrade = async (
       ROUTE_PROCESSOR_3_ADDRESS[ChainId.ARBITRUM_ONE],
       [],
       +slippage / 100
-    )
+    );
 
     return {
       tokenIn,
@@ -178,22 +178,22 @@ export const getXFusionTrade = async (
       ),
       data: args,
       type: "Toob Finance",
-    }
+    };
   }
-}
+};
 
 export const getOdosTxData = async (trade: any) => {
   const { data } = await axios.post("https://api.odos.xyz/sor/assemble", {
     pathId: trade.data?.pathId,
     simulate: false,
     userAddr: trade.recipient,
-  })
+  });
 
   const pathDefinition =
     data?.transaction?.data
       ?.toLowerCase()
       ?.split(trade.recipient.slice(2).toLowerCase())?.[1]
-      ?.slice(10) ?? ""
+      ?.slice(10) ?? "";
 
   const targetData = encodeFunctionData({
     abi: toobFinanceRouter,
@@ -214,7 +214,7 @@ export const getOdosTxData = async (trade: any) => {
       `0x${pathDefinition}`,
       ODOS_EXECUTOR_ADDR,
     ],
-  })
+  });
 
   return {
     amountIn: BigInt(data?.inputTokens?.[0]?.amount ?? "0"),
@@ -227,10 +227,11 @@ export const getOdosTxData = async (trade: any) => {
           ? trade.tokenIn.address
           : "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       amountIn: BigInt(data?.inputTokens?.[0]?.amount ?? "0"),
+      fee: false,
     },
     value: data?.transaction?.value,
-  }
-}
+  };
+};
 
 export const getKyberTxData = async (trade: any) => {
   const { data } = await axios.post(
@@ -242,7 +243,7 @@ export const getKyberTxData = async (trade: any) => {
       skipSimulateTx: false,
       slippageTolerance: trade.slippage * 100,
     }
-  )
+  );
 
   return {
     amountIn: BigInt(data?.data?.amountIn ?? "0"),
@@ -255,12 +256,13 @@ export const getKyberTxData = async (trade: any) => {
           ? trade.tokenIn.address
           : "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       amountIn: BigInt(data?.data?.amountIn ?? "0"),
+      fee: false,
     },
     value: trade.tokenIn?.isNative
       ? BigInt(data?.data?.amountIn ?? "0")
       : undefined,
-  }
-}
+  };
+};
 
 export const getXFusionTxData = async (trade: any) => {
   const targetData = encodeFunctionData({
@@ -275,7 +277,7 @@ export const getXFusionTxData = async (trade: any) => {
       trade.data?.to,
       trade.data?.routeCode,
     ],
-  })
+  });
   return {
     amountIn: BigInt(trade?.amountIn ?? "0"),
     amountOut: BigInt(trade?.amountOut ?? "0"),
@@ -287,7 +289,8 @@ export const getXFusionTxData = async (trade: any) => {
           : "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       targetData,
       amountIn: BigInt(trade.data?.amountIn ?? "0"),
+      fee: false,
     },
     value: trade?.data?.value,
-  }
-}
+  };
+};

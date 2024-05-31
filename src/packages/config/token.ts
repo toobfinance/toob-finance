@@ -1,4 +1,4 @@
-export const DEFAULT_TOKEN_LIST = [
+export const PRIMARY_TOKEN_LIST = [
   {
     symbol: "ETH",
     name: "Ether",
@@ -69,6 +69,10 @@ export const DEFAULT_TOKEN_LIST = [
     icon: "/media/wbtc.png",
     category: "Top",
   },
+];
+
+export const DEFAULT_TOKEN_LIST = [
+  ...PRIMARY_TOKEN_LIST,
   {
     symbol: "SIZE",
     name: "Size",
@@ -221,7 +225,7 @@ export const DEFAULT_TOKEN_LIST = [
     decimals: 18,
     category: "SoFi",
   },
-]
+];
 
 export const TOKEN_LIST = [
   {
@@ -1429,4 +1433,4 @@ export const TOKEN_LIST = [
     icon: "https://token-list.camelot.exchange/assets/gme.dw.svg",
     decimals: 18,
   },
-]
+];
