@@ -1,9 +1,9 @@
-import React from "react";
-import Help from "./svgs/Help";
+import React from "react"
+import Help from "./svgs/Help"
 
 interface HelpToolTipProps {
-  children: React.ReactNode;
-  className?: string;
+  children: React.ReactNode
+  className?: string
 }
 
 const HelpToolTip: React.FC<HelpToolTipProps> = ({ children, className }) => {
@@ -14,11 +14,11 @@ const HelpToolTip: React.FC<HelpToolTipProps> = ({ children, className }) => {
       <span className="bg-black/10 p-0.5 rounded-full">
         <Help />
       </span>
-      <div className="absolute hidden group-hover:block top-0 left-1/2 -translate-y-full -translate-x-1/2 -mt-1 bg-[#f3f3f3]/95 py-2 px-3 rounded-lg border border-[#b19f85]">
+      <div className="absolute hidden group-hover:block top-0 left-1/2 -translate-y-full -translate-x-1/2 -mt-1 bg-white py-2 px-3 rounded-lg border border-black/20">
         {children}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default HelpToolTip;
+export default HelpToolTip

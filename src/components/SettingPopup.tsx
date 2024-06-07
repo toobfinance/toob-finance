@@ -23,7 +23,7 @@ const SettingPopup = () => {
 
   return (
     <Menu>
-      <MenuButton className="flex items-center justify-center w-12 h-12 text-[#31291e] rounded-full border border-[#e2cdae] hover:bg-[#E3E6EB] transition-all">
+      <MenuButton className="flex items-center justify-center w-12 h-12 text-white rounded-full border border-white/20 hover:brightness-95 transition-all">
         <TwoLine />
       </MenuButton>
       <Transition

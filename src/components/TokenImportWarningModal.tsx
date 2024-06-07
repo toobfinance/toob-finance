@@ -1,20 +1,15 @@
-import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  Transition,
-} from "@headlessui/react";
-import ExternalLink from "./svgs/ExternalLink";
-import Clipboard from "./svgs/Clipboard";
-import Alert from "./svgs/Alert";
-import Link from "next/link";
+import { Dialog, DialogPanel, DialogTitle, Transition } from "@headlessui/react"
+import ExternalLink from "./svgs/ExternalLink"
+import Clipboard from "./svgs/Clipboard"
+import Alert from "./svgs/Alert"
+import Link from "next/link"
 
 interface TokenImportWarningModalProps {
-  token: string;
-  onConfirm: any;
-  open: boolean;
-  onClose: any;
-  className?: string;
+  token: string
+  onConfirm: any
+  open: boolean
+  onClose: any
+  className?: string
 }
 
 const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
@@ -25,8 +20,8 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
   className,
 }) => {
   const onCopy = () => {
-    window.navigator.clipboard.writeText(token);
-  };
+    window.navigator.clipboard.writeText(token)
+  }
 
   return (
     <Transition appear show={open}>
@@ -41,14 +36,14 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
         />
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
-            <DialogPanel className="w-full max-w-lg rounded-xl bg-[#F3F3F3] p-6 backdrop-blur-2xl px-10 py-8">
+            <DialogPanel className="w-full max-w-lg rounded-xl bg-[linear-gradient(180deg,#000000_52%,rgba(47,54,61,0.3)_100%)] border border-white/20 p-6 backdrop-blur-2xl px-10 py-8">
               <div className="flex justify-center">
-                <Alert className="w-8 h-8" />
+                <Alert className="w-8 h-8 text-white" />
               </div>
-              <h3 className="font-bold text-lg text-[#31291e] text-center mt-2">
+              <h3 className="font-bold text-lg text-white text-center mt-2">
                 Buy at your own risk!
               </h3>
-              <p className="mt-2 text-sm text-[#31291e] text-center">
+              <p className="mt-2 text-sm text-white/75 text-center">
                 Anyone can create a token, including creating fake versions of
                 existing tokens that claim to represent projects.
                 <br />
@@ -58,7 +53,7 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
                   back or it might be a scam.
                 </strong>
               </p>
-              <div className="flex overflow-hidden cursor-pointer bg-[#ebd8bb]/30 py-1 px-2 rounded-lg text-[#866f4d] mt-3">
+              <div className="flex overflow-hidden cursor-pointer bg-white/15 py-1 px-2 rounded-lg text-white mt-3">
                 <Link
                   href={`https://arbiscan.com/token/${token}`}
                   target="_blank"
@@ -80,15 +75,15 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
                 </button>
               </div>
               <button
-                className="w-full bg-[#ebd8bb]/50 py-3 rounded-xl mt-4 hover:brightness-75 transition-all"
+                className="w-full bg-white py-3 rounded-xl mt-4 hover:brightness-75 transition-all"
                 onClick={() => {
-                  onConfirm();
-                  onClose();
+                  onConfirm()
+                  onClose()
                 }}
               >
                 I understand
               </button>
-              <div className="flex justify-center">
+              <div className="flex justify-center text-white">
                 <button className="text-sm mt-2" onClick={onClose}>
                   Cancel
                 </button>
@@ -98,7 +93,7 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
         </div>
       </Dialog>
     </Transition>
-  );
-};
+  )
+}
 
-export default TokenImportWarningModal;
+export default TokenImportWarningModal

@@ -1,35 +1,35 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
+import React, { useState } from "react"
 
-import { Amount, TOOB, Type, USDC } from "@/packages/currency";
-import SwapSide from "../Swap/SwapSide";
-import CCFiatSide from "./CCFiatSide";
-import { ChainId } from "@/packages/chain";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { isAddress, parseUnits } from "viem";
-import toast from "react-hot-toast";
-import CustomToast from "../CustomToast";
-import WertWidget from "@wert-io/widget-initializer";
-import Spinner from "../Spinner";
-import { useDebounce } from "@/hooks/useDebounce";
-import MasterCard from "@/assets/master_card.svg";
-import Visa from "@/assets/visa.svg";
-import AmEx from "@/assets/amex.png";
-import JCB from "@/assets/jcb.svg";
-import Discover from "@/assets/Discover.png";
-import Link from "next/link";
-import Image from "next/image";
-import { SWAP_FEE } from "@/constants";
+import { Amount, TOOB, Type, USDC } from "@/packages/currency"
+import SwapSide from "../Swap/SwapSide"
+import CCFiatSide from "./CCFiatSide"
+import { ChainId } from "@/packages/chain"
+import { useQuery } from "@tanstack/react-query"
+import axios from "axios"
+import { isAddress, parseUnits } from "viem"
+import toast from "react-hot-toast"
+import CustomToast from "../CustomToast"
+import WertWidget from "@wert-io/widget-initializer"
+import Spinner from "../Spinner"
+import { useDebounce } from "@/hooks/useDebounce"
+import MasterCard from "@/assets/master_card.svg"
+import Visa from "@/assets/visa.svg"
+import AmEx from "@/assets/amex.png"
+import JCB from "@/assets/jcb.svg"
+import Discover from "@/assets/Discover.png"
+import Link from "next/link"
+import Image from "next/image"
+import { SWAP_FEE } from "@/constants"
 
 const CCPanel = () => {
-  const [fiatAmount, setFiatAmount] = useState("");
-  const [tokenOut, setTokenOut] = useState<Type>(TOOB[ChainId.ARBITRUM_ONE]);
-  const [recipient, setRecipient] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [fiatAmount, setFiatAmount] = useState("")
+  const [tokenOut, setTokenOut] = useState<Type>(TOOB[ChainId.ARBITRUM_ONE])
+  const [recipient, setRecipient] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const debouncedAmount = useDebounce(fiatAmount, 200);
+  const debouncedAmount = useDebounce(fiatAmount, 200)
 
   const { data: convertedAmount, refetch } = useQuery({
     queryKey: ["buy-converter", debouncedAmount],
@@ -40,7 +40,7 @@ const CCPanel = () => {
           Number(debouncedAmount) < 10 ||
           Number(debouncedAmount) > 1000
         )
-          return 0;
+          return 0
 
         const { data } = await axios.post(
           "https://widget.wert.io/api/v3/partners/convert",
@@ -56,25 +56,25 @@ const CCPanel = () => {
               "X-Partner-ID": "01HYJMVRGMMH6C99JJK70K0VMS",
             },
           }
-        );
+        )
         return data?.body?.commodity_amount
           ? data?.body?.commodity_amount - 0.1
-          : 0;
+          : 0
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
     },
     refetchInterval: 20000,
-  });
+  })
 
-  console.log(convertedAmount);
+  console.log(convertedAmount)
 
   const { data: amountOut } = useQuery({
     queryKey: ["buy-estimation", convertedAmount, tokenOut.wrapped.address],
     queryFn: async () => {
-      if (!convertedAmount) return "0";
+      if (!convertedAmount) return "0"
       if (tokenOut.equals(USDC[ChainId.ARBITRUM_ONE])) {
-        return convertedAmount.toString();
+        return convertedAmount.toString()
       }
       const { data } = await axios.get(
         `https://aggregator-api.kyberswap.com/arbitrum/api/v1/routes?tokenIn=0xaf88d065e77c8cc2239327c5edb3a432268e5831&tokenOut=${
@@ -85,34 +85,33 @@ const CCPanel = () => {
           (parseUnits(convertedAmount.toString(), 6) * (10000n - SWAP_FEE)) /
           10000n
         ).toString()}&gasInclude=true`
-      );
-      console.log(data);
+      )
+      console.log(data)
       return Amount.fromRawAmount(
         tokenOut,
         data?.data?.routeSummary?.amountOut ?? 0
-      ).toExact();
+      ).toExact()
     },
     refetchInterval: 20000,
-  });
+  })
 
   const onBuy = async () => {
     try {
-      setLoading(true);
-      await refetch();
+      setLoading(true)
+      await refetch()
       const { data } = await axios.post("api/purchase", {
         recipient,
         amount: convertedAmount,
         token: tokenOut.isNative
           ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
           : tokenOut.address,
-      });
+      })
       if (!data) {
-        return;
+        return
       }
       const wertWidget = new WertWidget({
         partner_id: "01HYJMVRGMMH6C99JJK70K0VMS",
         origin: "https://widget.wert.io",
-        // color_secondary_text: "#fff",
         ...data,
         extra: {
           item_info: {
@@ -121,27 +120,27 @@ const CCPanel = () => {
             name: "Toob Finance",
           },
         },
-      });
-      wertWidget.open();
+      })
+      wertWidget.open()
     } catch (err) {
-      console.log(err);
+      console.log(err)
       toast.custom((t) => (
         <CustomToast t={t} type="error" text={`Failed to buy the assets`} />
-      ));
+      ))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const invalidAddress = !isAddress(recipient);
+  const invalidAddress = !isAddress(recipient)
   const invalidAmount =
-    !fiatAmount || Number(fiatAmount) < 10 || Number(fiatAmount) > 1000;
+    !fiatAmount || Number(fiatAmount) < 10 || Number(fiatAmount) > 1000
 
   return (
     <>
-      <div className="bg-[#e4e4e4] relative p-4 md:p-8 mt-4 border border-[#e2cdae] rounded-lg md:rounded-[32px]">
+      <div className="bg-[linear-gradient(180deg,#000000_52%,rgba(47,54,61,0.3)_100%)] relative p-4 md:p-8 mt-4 border border-white/20 rounded-lg md:rounded-[32px]">
         <CCFiatSide amount={fiatAmount} setAmount={setFiatAmount} />
-        <div className="border border-[#e2cdae] w-full my-5"></div>
+        <div className="border border-white w-full my-5"></div>
         <SwapSide
           side="To"
           token={tokenOut}
@@ -152,18 +151,18 @@ const CCPanel = () => {
           primaryTokens
           disabled
         />
-        <div className="border border-[#e2cdae] w-full my-5"></div>
+        <div className="border border-white w-full my-5"></div>
         <div>
           <input
             type="text"
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
-            className="w-full h-12 max-sm:data-[fast=true]:h-[72px] outline-none text-[30px] bg-transparent text-[#31291e] font-semibold placeholder:text-[#afa392]"
+            className="w-full h-12 max-sm:data-[fast=true]:h-[72px] outline-none text-[30px] bg-transparent text-white font-semibold placeholder:white/70"
             placeholder="Recipient Address"
           />
         </div>
         <button
-          className="flex items-center justify-center h-12 w-full bg-[#d8c7ad] text-[#1F1D1A] border-b-2 border-[#d1bc9c] enabled:hover:bg-[#d1bc9c] enabled:hover:border-[#c0ac8e] transition-all rounded-full font-semibold disabled:opacity-70 disabled:cursor-not-allowed mt-8"
+          className="flex items-center justify-center h-12 w-full bg-white text-black border-b-2 border-[#aaa] enabled:hover:brightness-90 transition-all rounded-full font-semibold disabled:opacity-70 disabled:cursor-not-allowed mt-8"
           disabled={invalidAddress || invalidAmount || loading}
           onClick={onBuy}
         >
@@ -248,7 +247,7 @@ const CCPanel = () => {
         </Link>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default CCPanel;
+export default CCPanel

@@ -1,15 +1,15 @@
-"use client";
+"use client"
 
-import React, { useEffect } from "react";
-import Exchange from "../svgs/Exchange";
-import SwapSide from "./SwapSide";
-import useSwapParams from "../../hooks/useSwapParams";
-import SwapButton from "./SwapButton";
-import useSwapTrade from "@/hooks/useSwapTrade";
-import { Amount, tryParseAmount } from "@/packages/currency";
-import SettingPopup from "../SettingPopup";
-import SwapDetails from "./SwapDetails";
-import SwapTrades from "./SwapTrades";
+import React, { useEffect } from "react"
+import Exchange from "../svgs/Exchange"
+import SwapSide from "./SwapSide"
+import useSwapParams from "../../hooks/useSwapParams"
+import SwapButton from "./SwapButton"
+import useSwapTrade from "@/hooks/useSwapTrade"
+import { Amount, tryParseAmount } from "@/packages/currency"
+import SettingPopup from "../SettingPopup"
+import SwapDetails from "./SwapDetails"
+import SwapTrades from "./SwapTrades"
 
 const SwapPanel = () => {
   const {
@@ -20,12 +20,12 @@ const SwapPanel = () => {
     setTokenIn,
     setTokenOut,
     switchToken,
-  } = useSwapParams();
+  } = useSwapParams()
 
-  const trade = useSwapTrade();
+  const trade = useSwapTrade()
 
   return (
-    <div className="bg-[#e4e4e4] relative p-4 md:p-8 mt-4 border border-[#e2cdae] rounded-lg md:rounded-[32px]">
+    <div className="bg-[linear-gradient(180deg,#000000_52%,rgba(47,54,61,0.3)_100%)] relative p-4 md:p-8 mt-4 border border-white/20 rounded-lg md:rounded-[32px]">
       <SwapSide
         side="From"
         token={tokenIn}
@@ -36,14 +36,14 @@ const SwapPanel = () => {
       />
 
       <div className="flex items-center w-full justify-center">
-        <div className="border border-[#e2cdae] w-full"></div>
+        <div className="border border-white w-full"></div>
         <button
-          className="flex items-center justify-center rounded-full h-10 min-w-10 w-10 hover:bg-[#E2E8F0] transition-all mx-1"
+          className="flex items-center justify-center rounded-full h-10 min-w-10 w-10 hover:bg-white text-white hover:text-black transition-all mx-1 border border-white"
           onClick={switchToken}
         >
-          <Exchange className="h-4 w-4 text-[#1f1d1a]" />
+          <Exchange className="h-4 w-4" />
         </button>
-        <div className="border border-[#e2cdae] w-full"></div>
+        <div className="border border-white w-full"></div>
       </div>
 
       <SwapSide
@@ -65,7 +65,7 @@ const SwapPanel = () => {
       <SwapTrades trades={trade.data} />
       <SwapButton trade={trade} />
     </div>
-  );
-};
+  )
+}
 
-export default SwapPanel;
+export default SwapPanel

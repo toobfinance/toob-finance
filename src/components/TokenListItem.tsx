@@ -1,18 +1,18 @@
-"use client";
+"use client"
 
-import { DEFAULT_IMAGE_URL } from "@/constants";
-import { ChainId } from "@/packages/chain";
-import { Token, Type } from "@/packages/currency";
-import { usePrice } from "@/packages/prices";
-import Image from "next/image";
-import { useAccount, useBalance } from "wagmi";
-import TokenImportWarningModal from "./TokenImportWarningModal";
-import { useState } from "react";
+import { DEFAULT_IMAGE_URL } from "@/constants"
+import { ChainId } from "@/packages/chain"
+import { Token, Type } from "@/packages/currency"
+import { usePrice } from "@/packages/prices"
+import Image from "next/image"
+import { useAccount, useBalance } from "wagmi"
+import TokenImportWarningModal from "./TokenImportWarningModal"
+import { useState } from "react"
 
 interface TokenListItemProps {
-  token: Type;
-  onSelectItem: any;
-  className?: string;
+  token: Type
+  onSelectItem: any
+  className?: string
 }
 
 const TokenListItem: React.FC<TokenListItemProps> = ({
@@ -20,24 +20,24 @@ const TokenListItem: React.FC<TokenListItemProps> = ({
   onSelectItem,
   className,
 }) => {
-  const { address } = useAccount();
+  const { address } = useAccount()
   const { data: balance } = useBalance({
     address,
     token: token instanceof Token ? token.address : undefined,
     query: { enabled: Boolean(address), refetchInterval: 30000 },
-  });
-  const [warningOpen, setWarningOpen] = useState(false);
+  })
+  const [warningOpen, setWarningOpen] = useState(false)
 
   const { data: price } = usePrice({
     address: token.wrapped.address,
     chainId: ChainId.ARBITRUM_ONE,
     enabled: (balance?.value ?? 0n) > 0n,
-  });
+  })
 
   return (
     <>
       <div
-        className={`flex items-center justify-between w-full px-4 py-3 rounded-xl hover:bg-[#e9e1d4] transition-all cursor-pointer ${
+        className={`flex items-center justify-between w-full px-4 py-3 rounded-xl hover:bg-white/15 transition-all cursor-pointer ${
           className ?? ""
         }`}
         onClick={
@@ -54,23 +54,21 @@ const TokenListItem: React.FC<TokenListItemProps> = ({
           />
           <div className="ml-4">
             <div className="flex items-center">
-              <span className="text-[#1f1d1a] font-semibold">{token.name}</span>
-              <span className="text-[#1f1d1a] text-sm ml-2">
-                {token.symbol}
-              </span>
+              <span className="text-white font-semibold">{token.name}</span>
+              <span className="text-white text-sm ml-2">{token.symbol}</span>
             </div>
-            <div className="text-sm text-[#a0a0a0]">{token.category}</div>
+            <div className="text-sm text-white/60">{token.category}</div>
           </div>
         </div>
         {balance && balance.value > 0n ? (
           <div className="flex flex-col items-end">
-            <span className="text-[#1f1d1a] text-sm font-semibold">
+            <span className="text-white text-sm font-semibold">
               {Number(balance.formatted).toLocaleString("en-US", {
                 maximumFractionDigits: 9,
               })}
             </span>
             {price ? (
-              <span className="text-[#a0a0a0] text-sm">
+              <span className="text-white/60 text-sm">
                 ${(price * Number(balance.formatted)).toFixed(2)}
               </span>
             ) : undefined}
@@ -87,7 +85,7 @@ const TokenListItem: React.FC<TokenListItemProps> = ({
         />
       ) : null}
     </>
-  );
-};
+  )
+}
 
-export default TokenListItem;
+export default TokenListItem
