@@ -36,37 +36,35 @@ const SettingPopup = () => {
       >
         <MenuItems
           anchor="bottom"
-          className="relative mt-2 rounded-xl bg-[#E3E6EB] border border-[#e2cdae] shadow-[0px_8px_24px_-8px_rgba(175,178,237,0.24)] w-[375px]"
+          className="relative mt-2 rounded-xl bg-black/95 border border-white/20 w-[375px]"
         >
           <MenuItem>
             {({ close }) => (
               <>
-                <h4 className="px-3 py-2 text-[#31291e] border-b border-[#e2cdae]">
+                <h4 className="px-3 py-2 text-white border-b border-white/20">
                   Settings
                 </h4>
                 <button
-                  className="flex items-center justify-center absolute top-2 right-2 w-6 h-6 hover:bg-black/5 transition-all rounded-md text-[#31291e]"
+                  className="flex items-center justify-center absolute top-2 right-2 w-6 h-6 hover:bg-white/5 transition-all rounded-md text-white"
                   onClick={close}
                 >
                   <Close className="w-2.5 h-2.5" />
                 </button>
                 <div className="flex flex-col py-4 px-3 space-y-4">
                   <div className="flex flex-col space-y-2">
-                    <h4 className="text-[#afa69c] text-sm">
-                      Slippage Tolerance
-                    </h4>
+                    <h4 className="text-white text-sm">Slippage Tolerance</h4>
                     <div className="flex items-center justify-between space-x-2">
                       <div className="flex items-center space-x-1">
                         <button
                           data-active={slippage === 0.1}
-                          className="data-[active=true]:bg-[#e2d0b4] rounded-xl font-semibold h-10 w-[70px] border border-[#e2cdae] hover:bg-[#e2cdae] focus:bg-[#e2d0b4] transition-all"
+                          className="data-[active=true]:bg-white data-[active=true]:text-black text-white rounded-xl font-semibold h-10 w-[70px] border border-white hover:bg-white hover:text-black focus:bg-white focus:text-black transition-all"
                           onClick={() => setSlippage(0.1)}
                         >
                           0.1%
                         </button>
                         <button
                           data-active={slippage === 0.5}
-                          className="data-[active=true]:bg-[#e2d0b4] rounded-xl font-semibold h-10 w-[70px] border border-[#e2cdae] hover:bg-[#e2cdae] focus:bg-[#e2d0b4] transition-all"
+                          className="data-[active=true]:bg-white data-[active=true]:text-black text-white rounded-xl font-semibold h-10 w-[70px] border border-white hover:bg-white hover:text-black focus:bg-white focus:text-black transition-all"
                           onClick={() => setSlippage(0.5)}
                         >
                           0.5%
@@ -74,7 +72,7 @@ const SettingPopup = () => {
                         <button
                           data-active={slippage === 1}
                           onClick={() => setSlippage(1)}
-                          className="data-[active=true]:bg-[#e2d0b4] rounded-xl font-semibold h-10 w-[70px] border border-[#e2cdae] hover:bg-[#e2cdae] focus:bg-[#e2d0b4] transition-all"
+                          className="data-[active=true]:bg-white data-[active=true]:text-black text-white rounded-xl font-semibold h-10 w-[70px] border border-white hover:bg-white hover:text-black focus:bg-white focus:text-black transition-all"
                         >
                           1%
                         </button>
@@ -90,9 +88,9 @@ const SettingPopup = () => {
                             )
                           }
                           placeholder="0.5"
-                          className="w-full h-10 px-4 border font-semibold border-[#e2cdae] hover:border-[#b19f85] rounded-2xl transition-all bg-transparent focus:border-[#e9bd7a] focus:shadow-[0px_0px_0px_1px_#e9bd7a] outline-none placeholder:font-normal"
+                          className="w-full h-10 px-4 border font-semibold border-white rounded-2xl transition-all bg-transparent text-white focus:shadow-[0px_0px_0px_2px_#fff7] outline-none placeholder:font-normal placeholder:text-white/50"
                         />
-                        <span className="absolute top-0 right-0 w-10 h-10 flex justify-center items-center text-[#31291e]">
+                        <span className="absolute top-0 right-0 w-10 h-10 flex justify-center items-center text-white">
                           %
                         </span>
                       </div>
@@ -108,18 +106,16 @@ const SettingPopup = () => {
                     ) : null}
                   </div>
                   <div className="flex flex-col space-y-2">
-                    <h4 className="text-[#afa69c] text-sm">
-                      Transaction Deadline
-                    </h4>
+                    <h4 className="text-white text-sm">Transaction Deadline</h4>
                     <div className="relative w-[210px]">
                       <input
                         type="number"
                         placeholder="30"
                         value={deadline}
                         onChange={(e) => setDeadline(e.target.valueAsNumber)}
-                        className="w-full h-10 px-4 border font-semibold border-[#e2cdae] hover:border-[#b19f85] rounded-2xl transition-all bg-transparent focus:border-[#e9bd7a] focus:shadow-[0px_0px_0px_1px_#e9bd7a] outline-none placeholder:font-normal"
+                        className="w-full h-10 px-4 border font-semibold border-white text-white rounded-2xl transition-all bg-transparent focus:shadow-[0px_0px_0px_2px_#fff7] outline-none placeholder:font-normal placeholder:text-white/50"
                       />
-                      <span className="absolute top-0 right-4 h-10 flex justify-center items-center text-[#31291e]">
+                      <span className="absolute top-0 right-4 h-10 flex justify-center items-center text-white">
                         minutes
                       </span>
                     </div>
