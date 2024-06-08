@@ -22,7 +22,7 @@ const roobert = localFont({
 })
 
 export const metadata: Metadata = {
-  title: "Toob Finance",
+  title: "Toob Finance: Buy ANY ERC-20 Token",
   description: "Toob Finance",
 }
 
