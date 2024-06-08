@@ -14,7 +14,7 @@ const CCRecipient: React.FC<CCRecipientProps> = ({ value, setValue }) => {
   const handleScan = (data: any) => {
     console.log(data)
     if (data) {
-      const address = data?.[0]?.rawValue?.replaceAll("Ethereum:")
+      const address = data?.[0]?.rawValue?.replaceAll("Ethereum:", "")
       if (isAddress(address)) setValue(address)
     }
   }
