@@ -12,10 +12,8 @@ const CCRecipient: React.FC<CCRecipientProps> = ({ value, setValue }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   const handleScan = (data: any) => {
-    console.log(data)
-    alert(data)
     if (data) {
-      const address = data.text.split(":")[1]
+      const address = data?.[0]?.rawValue?.split(":")[1]
       if (isAddress(address)) setValue(address)
     }
   }
