@@ -12,6 +12,7 @@ const CCRecipient: React.FC<CCRecipientProps> = ({ value, setValue }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   const handleScan = (data: any) => {
+    alert(data)
     if (data) {
       const address = data.text.split(":")[1]
       if (isAddress(address)) setValue(address)
@@ -30,7 +31,10 @@ const CCRecipient: React.FC<CCRecipientProps> = ({ value, setValue }) => {
       <button className="absolute top-1/2 -translate-y-1/2 right-1.5 hover:scale-105 transition-all">
         <QR className="text-white" />
       </button>
-      <Scanner onScan={handleScan} />
+      <Scanner
+        onScan={handleScan}
+        formats={["qr_code", "rm_qr_code", "micro_qr_code"]}
+      />
     </div>
   )
 }
