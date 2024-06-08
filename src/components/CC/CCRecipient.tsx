@@ -1,6 +1,7 @@
 import { Scanner } from "@yudiel/react-qr-scanner"
 import QR from "../svgs/QR"
 import { useRef } from "react"
+import { isAddress } from "viem"
 
 interface CCRecipientProps {
   value: string
@@ -12,10 +13,8 @@ const CCRecipient: React.FC<CCRecipientProps> = ({ value, setValue }) => {
 
   const handleScan = (data: any) => {
     if (data) {
-      console.log(data)
-      const address = data.text.split("Ethereum:")[1]
-      //   setScannedAddress(address)
-      // Add success notification or toast
+      const address = data.text.split(":")[1]
+      if (isAddress(address)) setValue(address)
     }
   }
 
