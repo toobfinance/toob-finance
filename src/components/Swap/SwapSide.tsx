@@ -111,7 +111,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
         </div>
         <div className="relative mt-1">
           {side === "To" ? (
-            <div className="text-black/50 absolute top-0 bottom-0 left-0 text-[30px]">
+            <div className="text-black/50 dark:text-white/60 absolute top-0 bottom-0 left-0 text-[30px]">
               ~
             </div>
           ) : null}
