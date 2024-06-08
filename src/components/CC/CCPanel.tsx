@@ -16,16 +16,17 @@ import Spinner from "../Spinner"
 import { useDebounce } from "@/hooks/useDebounce"
 import MasterCard from "@/assets/master_card.svg"
 import Visa from "@/assets/visa.svg"
-import AmEx from "@/assets/amex.png"
+import AmEx from "@/assets/amex.svg"
 import JCB from "@/assets/jcb.svg"
-import Discover from "@/assets/Discover.png"
+import Discover from "@/assets/Discover.svg"
 import Link from "next/link"
 import Image from "next/image"
 import { SWAP_FEE } from "@/constants"
+import CCRecipient from "./CCRecipient"
 
 const CCPanel = () => {
   const [fiatAmount, setFiatAmount] = useState("")
-  const [tokenOut, setTokenOut] = useState<Type>(TOOB[ChainId.ARBITRUM_ONE])
+  const [tokenOut, setTokenOut] = useState<Type | undefined>()
   const [recipient, setRecipient] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -65,14 +66,15 @@ const CCPanel = () => {
       }
     },
     refetchInterval: 20000,
+    enabled: Boolean(tokenOut),
   })
 
   console.log(convertedAmount)
 
   const { data: amountOut } = useQuery({
-    queryKey: ["buy-estimation", convertedAmount, tokenOut.wrapped.address],
+    queryKey: ["buy-estimation", convertedAmount, tokenOut?.wrapped.address],
     queryFn: async () => {
-      if (!convertedAmount) return "0"
+      if (!convertedAmount || !tokenOut) return "0"
       if (tokenOut.equals(USDC[ChainId.ARBITRUM_ONE])) {
         return convertedAmount.toString()
       }
@@ -93,10 +95,12 @@ const CCPanel = () => {
       ).toExact()
     },
     refetchInterval: 20000,
+    enabled: Boolean(tokenOut),
   })
 
   const onBuy = async () => {
     try {
+      if (!tokenOut) return
       setLoading(true)
       await refetch()
       const { data } = await axios.post("api/purchase", {
@@ -146,24 +150,15 @@ const CCPanel = () => {
           token={tokenOut}
           amount={amountOut ?? ""}
           setToken={setTokenOut}
-          hideSide
           hideBalance
           primaryTokens
           disabled
         />
         <div className="border border-white w-full my-5"></div>
-        <div>
-          <input
-            type="text"
-            value={recipient}
-            onChange={(e) => setRecipient(e.target.value)}
-            className="w-full h-12 max-sm:data-[fast=true]:h-[72px] outline-none text-[30px] bg-transparent text-white font-semibold placeholder:white/70"
-            placeholder="Recipient Address"
-          />
-        </div>
+        <CCRecipient value={recipient} setValue={setRecipient} />
         <button
           className="flex items-center justify-center h-12 w-full bg-white text-black border-b-2 border-[#aaa] enabled:hover:brightness-90 transition-all rounded-full font-semibold disabled:opacity-70 disabled:cursor-not-allowed mt-8"
-          disabled={invalidAddress || invalidAmount || loading}
+          disabled={invalidAddress || invalidAmount || loading || !tokenOut}
           onClick={onBuy}
         >
           {loading ? (
