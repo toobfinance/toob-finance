@@ -12,6 +12,7 @@ const CCRecipient: React.FC<CCRecipientProps> = ({ value, setValue }) => {
   const [qrShow, setQRShow] = useState(false)
 
   const handleScan = (data: any) => {
+    console.log(data)
     if (data) {
       const address = data?.[0]?.rawValue?.split(":")[1]
       if (isAddress(address)) setValue(address)
