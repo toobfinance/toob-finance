@@ -12,6 +12,7 @@ const CCRecipient: React.FC<CCRecipientProps> = ({ value, setValue }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   const handleScan = (data: any) => {
+    console.log(data)
     alert(data)
     if (data) {
       const address = data.text.split(":")[1]
