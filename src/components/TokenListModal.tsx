@@ -109,7 +109,7 @@ const TokenListModal: React.FC<TokenListModalProps> = ({
           />
           <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div className="flex min-h-full items-center justify-center">
-              <DialogPanel className="relative w-full max-w-md border border-white/20 bg-[linear-gradient(180deg,#000000_52%,rgba(47,54,61,0.3)_100%)] rounded-2xl backdrop-blur-2xl overflow-hidden">
+              <DialogPanel className="relative w-full max-w-md border border-white/20 bg-[linear-gradient(180deg,#000000_52%,#1e1e1e_100%)] rounded-2xl backdrop-blur-2xl overflow-hidden">
                 <h3 className="px-6 py-4 text-xl font-semibold text-white">
                   Select a token
                 </h3>
@@ -126,7 +126,7 @@ const TokenListModal: React.FC<TokenListModalProps> = ({
                   <input
                     value={filter}
                     onChange={(e) => setFilter(e.target.value)}
-                    placeholder="Search by name, symbol or address"
+                    placeholder="Search tokens by contract address or name"
                     className="w-full h-12 text-lg outline-none bg-transparent text-black border border-white/20 rounded-xl transition-all bg-white focus:shadow-[#fff7_0px_0px_0px_2px] pl-10 pr-4 placeholder:text-black/50"
                   />
                 </div>
