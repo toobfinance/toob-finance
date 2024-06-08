@@ -7,7 +7,3 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
-body {
-  background-color: #000000;
-}

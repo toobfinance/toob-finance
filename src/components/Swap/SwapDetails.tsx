@@ -26,10 +26,10 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
       : undefined
 
   return trade.data && tokenIn && tokenOut ? (
-    <div className="mt-4 border rounded-2xl px-4 border-white/20">
+    <div className="mt-4 border rounded-2xl px-4 border-black/30 dark:border-white/20">
       <div className="relative min-h-10 flex items-center justify-between cursor-pointer">
         <button
-          className="text-white text-sm font-semibold z-[1]"
+          className="text-black dark:text-white text-sm font-semibold z-[1]"
           onClick={() => setReverted(!reverted)}
         >
           1 {!reverted ? tokenIn.symbol : tokenOut.symbol} ={" "}
@@ -42,7 +42,7 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
           className="absolute top-0 left-0 right-0 bottom-0 w-full h-full"
           onClick={() => setOpen(!open)}
         ></button>
-        <ChevronDown className="w-3.5 h-3.5 text-white" />
+        <ChevronDown className="w-3.5 h-3.5 text-black dark:text-white" />
       </div>
       <div
         data-open={open}
@@ -50,8 +50,8 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
       >
         <div className="gap-0.5 pt-4 pb-6">
           <div className="flex items-start justify-between">
-            <span className="text-white text-sm">Expected Output:</span>
-            <span className="text-white text-sm font-semibold">
+            <span className="text-black dark:text-white text-sm">Expected Output:</span>
+            <span className="text-black dark:text-white text-sm font-semibold">
               {Amount.fromRawAmount(
                 tokenOut,
                 trade.data?.[0]?.amountOut ?? "0"
@@ -60,8 +60,8 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
             </span>
           </div>
           <div className="flex items-start justify-between">
-            <span className="text-white text-sm">Minimum Received:</span>
-            <span className="text-white text-sm font-semibold">
+            <span className="text-black dark:text-white text-sm">Minimum Received:</span>
+            <span className="text-black dark:text-white text-sm font-semibold">
               {Amount.fromRawAmount(
                 tokenOut,
                 (BigInt(trade.data?.[0]?.amountOut ?? "0") *
@@ -72,16 +72,16 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
             </span>
           </div>
           <div className="flex items-start justify-between">
-            <span className="text-white text-sm">Price Impact:</span>
-            <span className="text-white text-sm font-semibold">
+            <span className="text-black dark:text-white text-sm">Price Impact:</span>
+            <span className="text-black dark:text-white text-sm font-semibold">
               {(trade.data?.[0]?.priceImpact ?? 0) < 0.01
                 ? "<0.01%"
                 : `${(trade.data?.[0]?.priceImpact ?? 0).toFixed(2)}%`}
             </span>
           </div>
           <div className="flex items-start justify-between">
-            <span className="text-white text-sm">Fees:</span>
-            <span className="text-white text-sm font-semibold">0 ETH</span>
+            <span className="text-black dark:text-white text-sm">Fees:</span>
+            <span className="text-black dark:text-white text-sm font-semibold">0 ETH</span>
           </div>
         </div>
       </div>

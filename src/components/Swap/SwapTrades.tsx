@@ -20,7 +20,7 @@ const SwapTrades: React.FC<SwapTradesProps> = ({ trades }) => {
   return sortTrades?.length > 0 ? (
     <div
       data-open={open}
-      className="flex flex-col border border-white/20 rounded-2xl px-4 data-[open=false]:border-transparent transition-all data-[open=false]:mt-2 mt-4 data-[open=true]:pt-3"
+      className="flex flex-col border border-black/30 dark:border-white/20 rounded-2xl px-4 data-[open=false]:border-transparent transition-all data-[open=false]:mt-2 mt-4 data-[open=true]:pt-3"
     >
       <div
         data-open={open}
@@ -30,7 +30,7 @@ const SwapTrades: React.FC<SwapTradesProps> = ({ trades }) => {
           {sortTrades.map((item: any) => (
             <div
               key={item.type}
-              className="flex items-center justify-between first:font-bold text-white first:text-white text-sm"
+              className="flex items-center justify-between first:font-bold text-black dark:text-white text-sm"
             >
               <span className="no-underline">
                 {Amount.fromRawAmount(
@@ -51,14 +51,14 @@ const SwapTrades: React.FC<SwapTradesProps> = ({ trades }) => {
       >
         <div
           data-open={open}
-          className="flex items-center justify-center w-fit border border-white/20 px-3 rounded-full data-[open=true]:border-transparent transition-all"
+          className="flex items-center justify-center w-fit border border-black/30 dark:border-white/20 px-3 rounded-full data-[open=true]:border-transparent transition-all"
         >
-          <span className="text-white font-bold text-sm">Route</span>
+          <span className="text-black dark:text-white font-bold text-sm">Route</span>
           <div
             data-open={open}
             className="w-fit data-[open=true]:rotate-180 transition-all"
           >
-            <ChevronDown className="w-3.5 h-3.5 text-white" />
+            <ChevronDown className="w-3.5 h-3.5 text-black dark:text-white" />
           </div>
         </div>
       </button>

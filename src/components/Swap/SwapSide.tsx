@@ -91,10 +91,14 @@ const SwapSide: React.FC<SwapSideProps> = ({
     <>
       <div className={className ?? ""}>
         <div className="flex items-start justify-between">
-          {!hideSide && <h2 className="text-white/70 font-semibold">{side}</h2>}
+          {!hideSide && (
+            <h2 className="text-black/60 dark:text-white/70 font-semibold">
+              {side}
+            </h2>
+          )}
           {!hideBalance && balance && token ? (
             <button
-              className="text-xs text-white px-2 h-6 font-semibold rounded-full hover:bg-white hover:text-black transition-all"
+              className="text-xs text-black dark:text-white px-2 h-6 font-semibold rounded-full hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-all"
               disabled={side === "To"}
               onClick={onMax}
             >
@@ -106,6 +110,11 @@ const SwapSide: React.FC<SwapSideProps> = ({
           ) : null}
         </div>
         <div className="relative mt-1">
+          {side === "To" ? (
+            <div className="text-black/50 absolute top-0 bottom-0 left-0 text-[30px]">
+              ~
+            </div>
+          ) : null}
           <input
             type="text"
             inputMode="decimal"
@@ -115,7 +124,8 @@ const SwapSide: React.FC<SwapSideProps> = ({
             disabled={disabled}
             ref={amountInputRef}
             data-fast={fastTokens}
-            className="w-full h-12 max-sm:data-[fast=true]:h-[72px] outline-none text-[30px] bg-transparent text-white font-semibold placeholder:text-white/70"
+            data-left={side === "To"}
+            className="w-full h-12 max-sm:data-[fast=true]:h-[72px] outline-none text-[30px] bg-transparent text-black dark:text-white font-semibold placeholder:text-black/60 dark:placeholder:text-white/70 data-[left=true]:pl-5"
             placeholder="0.0"
           />
           <div
@@ -125,7 +135,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
           >
             {balance && side === "From" ? (
               <button
-                className="text-white text-xs font-semibold border border-white rounded-full h-6 px-2 py-1 hover:brightness-90 transition-all"
+                className="text-black dark:text-white text-xs font-semibold border border-black dark:border-white rounded-full h-6 px-2 py-1 hover:brightness-90 transition-all"
                 onClick={onMax}
               >
                 MAX
@@ -138,7 +148,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
                   width={32}
                   height={32}
                   alt="arb"
-                  className="w-8 h-8 rounded-full bg-white/40 p-1 hover:bg-white/60 active:bg-white/70 transition-all cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
                   onClick={() => setToken(ARB[ChainId.ARBITRUM_ONE])}
                 />
                 <Image
@@ -146,7 +156,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
                   width={32}
                   height={32}
                   alt="usdc"
-                  className="w-8 h-8 rounded-full bg-white/40 p-1 hover:bg-white/60 active:bg-white/70 transition-all cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
                   onClick={() => setToken(USDC[ChainId.ARBITRUM_ONE])}
                 />
                 <Image
@@ -154,14 +164,14 @@ const SwapSide: React.FC<SwapSideProps> = ({
                   width={32}
                   height={32}
                   alt="usdt"
-                  className="w-8 h-8 rounded-full bg-white/40 p-1 hover:bg-white/60 active:bg-white/70 transition-all cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
                   onClick={() => setToken(USDT[ChainId.ARBITRUM_ONE])}
                 />
               </div>
             ) : null}
             <div
               onClick={() => setIsModalOpen(true)}
-              className="flex border border-white h-10 sm:h-12 px-4 rounded-2xl items-center font-semibold bg-white hover:brightness-90 transition-all text-black cursor-pointer"
+              className="flex border border-black dark:border-white h-10 sm:h-12 px-4 rounded-2xl items-center font-semibold bg-black dark:bg-white hover:brightness-90 transition-all text-white dark:text-black cursor-pointer"
             >
               {token ? (
                 <>
@@ -170,7 +180,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
                     width={20}
                     height={20}
                     className={`h-5 w-5 rounded-full mr-2 ${
-                      token.icon ? "" : "invert"
+                      token.icon ? "" : "invert-0 dark:invert"
                     }`}
                     alt=""
                   />
@@ -184,7 +194,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
           </div>
         </div>
         {amount && price ? (
-          <p className="text-[#afa392] text-sm mt-1">
+          <p className="text-black/60 dark:text-white/50 text-sm mt-1">
             ~${Number(price).toFixed(2)}
           </p>
         ) : null}

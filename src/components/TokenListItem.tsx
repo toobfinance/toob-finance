@@ -37,7 +37,7 @@ const TokenListItem: React.FC<TokenListItemProps> = ({
   return (
     <>
       <div
-        className={`flex items-center justify-between w-full px-4 py-3 rounded-xl hover:bg-white/15 transition-all cursor-pointer ${
+        className={`flex items-center justify-between w-full px-4 py-3 rounded-xl hover:bg-black/10 dark:hover:bg-white/15 transition-all cursor-pointer ${
           className ?? ""
         }`}
         onClick={
@@ -50,25 +50,31 @@ const TokenListItem: React.FC<TokenListItemProps> = ({
             width={32}
             height={32}
             alt="token"
-            className="h-8 w-8 rounded-full"
+            className={`h-8 w-8 rounded-full ${token.icon ? '' : 'invert dark:invert-0'}`}
           />
           <div className="ml-4">
             <div className="flex items-center">
-              <span className="text-white font-semibold">{token.name}</span>
-              <span className="text-white text-sm ml-2">{token.symbol}</span>
+              <span className="text-black dark:text-white font-semibold">
+                {token.name}
+              </span>
+              <span className="text-black dark:text-white text-sm ml-2">
+                {token.symbol}
+              </span>
             </div>
-            <div className="text-sm text-white/60">{token.category}</div>
+            <div className="text-sm text-black/50 dark:text-white/60">
+              {token.category}
+            </div>
           </div>
         </div>
         {balance && balance.value > 0n ? (
           <div className="flex flex-col items-end">
-            <span className="text-white text-sm font-semibold">
+            <span className="text-black dark:text-white text-sm font-semibold">
               {Number(balance.formatted).toLocaleString("en-US", {
                 maximumFractionDigits: 9,
               })}
             </span>
             {price ? (
-              <span className="text-white/60 text-sm">
+              <span className="text-black/50 dark:text-white/60 text-sm">
                 ${(price * Number(balance.formatted)).toFixed(2)}
               </span>
             ) : undefined}

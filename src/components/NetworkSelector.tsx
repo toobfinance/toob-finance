@@ -21,7 +21,7 @@ const NetworkSelector: React.FC<NetworkSelectorProps> = ({ className }) => {
   return (
     <button
       data-wrong={address && chainId !== 42161}
-      className={`flex items-center bg-transparent border rounded-xl border-white data-[wrong=true]:border-[#ff9b9b] px-4 py-3 outline-none hover:bg-white text-white hover:text-black transition-all ${
+      className={`flex items-center bg-transparent border rounded-xl border-black dark:border-white data-[wrong=true]:border-[#ff9b9b] px-4 py-3 outline-none  hover:bg-black dark:hover:bg-white text-black dark:text-white hover:text-white dark:hover:text-black transition-all ${
         className ?? ""
       }`}
       onClick={onSwitchChain}

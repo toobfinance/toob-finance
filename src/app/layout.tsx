@@ -32,8 +32,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={roobert.className}>
+    <html lang="en" className="dark">
+      <body className={`bg-white dark:bg-black ${roobert.className}`}>
         <Provider>
           <Header />
           <main className="relative min-h-[calc(100vh-96px)] pb-[290px]">

@@ -142,9 +142,9 @@ const CCPanel = () => {
 
   return (
     <>
-      <div className="bg-[linear-gradient(180deg,#000000_52%,rgba(47,54,61,0.3)_100%)] relative p-4 md:p-8 mt-4 border border-white/20 rounded-lg md:rounded-[32px]">
+      <div className="dark:bg-[linear-gradient(180deg,#000000_52%,rgba(47,54,61,0.3)_100%)] relative p-4 md:p-8 mt-4 border hover:border-black/30 dark:border-white/20 rounded-lg md:rounded-[32px]">
         <CCFiatSide amount={fiatAmount} setAmount={setFiatAmount} />
-        <div className="border border-white w-full my-5"></div>
+        <div className="border border-black/50 dark:border-white w-full my-5"></div>
         <SwapSide
           side="To"
           token={tokenOut}
@@ -154,10 +154,10 @@ const CCPanel = () => {
           primaryTokens
           disabled
         />
-        <div className="border border-white w-full my-5"></div>
+        <div className="border border-black/50 dark:border-white w-full my-5"></div>
         <CCRecipient value={recipient} setValue={setRecipient} />
         <button
-          className="flex items-center justify-center h-12 w-full bg-white text-black border-b-2 border-[#aaa] enabled:hover:brightness-90 transition-all rounded-full font-semibold disabled:opacity-70 disabled:cursor-not-allowed mt-8"
+          className="flex items-center justify-center h-12 w-full bg-black dark:bg-white text-white dark:text-black border-b-2 border-[#222] dark:border-[#aaa] enabled:hover:brightness-90 transition-all rounded-full font-semibold disabled:opacity-70 disabled:cursor-not-allowed mt-8"
           disabled={invalidAddress || invalidAmount || loading || !tokenOut}
           onClick={onBuy}
         >
@@ -189,7 +189,7 @@ const CCPanel = () => {
             width={MasterCard.width}
             height={MasterCard.height}
             alt="MasterCard"
-            className="w-10"
+            className="w-10 invert dark:invert-0"
           />
         </Link>
         <Link href={"https://usa.visa.com/"} target="_blank" rel="noreferrer">
@@ -198,7 +198,7 @@ const CCPanel = () => {
             width={Visa.width}
             height={Visa.height}
             alt="Visa"
-            className="w-10"
+            className="w-10 invert dark:invert-0"
           />
         </Link>
         <Link
@@ -211,7 +211,7 @@ const CCPanel = () => {
             width={AmEx.width}
             height={AmEx.height}
             alt="AmEx"
-            className="w-8"
+            className="w-8 invert dark:invert-0"
           />
         </Link>
         <Link
@@ -224,7 +224,7 @@ const CCPanel = () => {
             width={JCB.width}
             height={JCB.height}
             alt="JCB"
-            className="w-10"
+            className="w-10 invert dark:invert-0"
           />
         </Link>
         <Link
@@ -237,7 +237,7 @@ const CCPanel = () => {
             width={Discover.width}
             height={Discover.height}
             alt="Discover"
-            className="w-10"
+            className="w-10 invert dark:invert-0"
           />
         </Link>
       </div>

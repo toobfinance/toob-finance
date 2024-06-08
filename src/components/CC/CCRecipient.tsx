@@ -26,14 +26,14 @@ const CCRecipient: React.FC<CCRecipientProps> = ({ value, setValue }) => {
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className="w-full h-12 max-sm:data-[fast=true]:h-[72px] outline-none text-[20px] sm:text-[30px] bg-transparent text-white font-semibold placeholder:white/70 pr-8"
+          className="w-full h-12 max-sm:data-[fast=true]:h-[72px] outline-none text-[20px] sm:text-[30px] bg-transparent text-black dark:text-white font-semibold placeholder:text-black/60 dark:placeholder:text-white/70 pr-8"
           placeholder="Recipient Address"
         />
         <button
           className="absolute top-1/2 -translate-y-1/2 right-1.5 hover:scale-105 transition-all"
           onClick={() => setQRShow(!qrShow)}
         >
-          <QR className="text-white" />
+          <QR className="text-black dark:text-white" />
         </button>
       </div>
       {qrShow ? (

@@ -25,7 +25,7 @@ const SwapPanel = () => {
   const trade = useSwapTrade()
 
   return (
-    <div className="bg-[linear-gradient(180deg,#000000_52%,rgba(47,54,61,0.3)_100%)] relative p-4 md:p-8 mt-4 border border-white/20 rounded-lg md:rounded-[32px]">
+    <div className="dark:bg-[linear-gradient(180deg,#000000_52%,rgba(47,54,61,0.3)_100%)] relative p-4 md:p-8 mt-4 border border-black/30 dark:border-white/20 rounded-lg md:rounded-[32px]">
       <SwapSide
         side="From"
         token={tokenIn}
@@ -36,14 +36,14 @@ const SwapPanel = () => {
       />
 
       <div className="flex items-center w-full justify-center">
-        <div className="border border-white w-full"></div>
+        <div className="border border-black dark:border-white w-full"></div>
         <button
-          className="flex items-center justify-center rounded-full h-10 min-w-10 w-10 hover:bg-white text-white hover:text-black transition-all mx-1 border border-white"
+          className="flex items-center justify-center rounded-full h-10 min-w-10 w-10 hover:bg-black dark:hover:bg-white text-black dark:text-white hover:text-white dark:hover:text-black transition-all mx-1 border border-black dark:border-white"
           onClick={switchToken}
         >
           <Exchange className="h-4 w-4" />
         </button>
-        <div className="border border-white w-full"></div>
+        <div className="border border-black dark:border-white w-full"></div>
       </div>
 
       <SwapSide

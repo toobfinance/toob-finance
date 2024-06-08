@@ -15,21 +15,21 @@ export default function Home() {
           <div className="flex items-center space-x-2">
             <button
               data-active={selectedTab === 1}
-              className="bg-transparent border border-white/20 rounded-full text-white py-3 px-4 data-[active=true]:bg-white data-[active=true]:text-black font-semibold"
+              className="bg-transparent border border-black/30 dark:border-white/20 rounded-full text-black dark:text-white py-3 px-4 data-[active=true]:bg-black dark:data-[active=true]:bg-white data-[active=true]:text-white dark:data-[active=true]:text-black font-semibold"
               onClick={() => setSelectedTab(1)}
             >
               Buy
             </button>
             <button
               data-active={selectedTab === 0}
-              className="bg-transparent border border-white/20 rounded-full text-white py-3 px-4 data-[active=true]:bg-white data-[active=true]:text-black font-semibold"
+              className="bg-transparent border border-black/30 dark:border-white/20 rounded-full text-black dark:text-white py-3 px-4 data-[active=true]:bg-black dark:data-[active=true]:bg-white data-[active=true]:text-white dark:data-[active=true]:text-black font-semibold"
               onClick={() => setSelectedTab(0)}
             >
               Swap
             </button>
             <button
               data-active={selectedTab === 2}
-              className="bg-transparent border border-white/20 rounded-full text-white py-3 px-4 data-[active=true]:bg-white data-[active=true]:text-black font-semibold brightness-75"
+              className="bg-transparent border border-black/30 dark:border-white/20 rounded-full text-black dark:text-white py-3 px-4 data-[active=true]:bg-black dark:data-[active=true]:bg-white data-[active=true]:text-white dark:data-[active=true]:text-black font-semibold opacity-50"
               // onClick={() => setSelectedTab(2)}
             >
               Limit Order

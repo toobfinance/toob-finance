@@ -37,7 +37,7 @@ const CustomToast: React.FC<CustomToastProps> = ({ t, type, text, hash }) => {
       <div
         className={`mr-4 ${
           type === "info"
-            ? "text-[#1f1d1a]"
+            ? "text-black"
             : type === "success"
             ? "text-white"
             : "text-white"
@@ -56,7 +56,7 @@ const CustomToast: React.FC<CustomToastProps> = ({ t, type, text, hash }) => {
         ) : null}
       </div>
       {type === "info" ? (
-        <Spinner className="text-[#1f1d1a]" />
+        <Spinner className="text-black" />
       ) : (
         <button
           className="flex items-center justify-center rounded-full w-[30px] h-[30px] hover:bg-white/5 transition-all"

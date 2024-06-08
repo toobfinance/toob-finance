@@ -36,14 +36,14 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
         />
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
-            <DialogPanel className="w-full max-w-lg rounded-xl bg-[linear-gradient(180deg,#000000_52%,rgba(47,54,61,0.3)_100%)] border border-white/20 p-6 backdrop-blur-2xl px-10 py-8">
+            <DialogPanel className="w-full max-w-lg rounded-xl bg-white dark:bg-transparent dark:bg-[linear-gradient(180deg,#000000_52%,rgba(47,54,61,0.3)_100%)] border border-black/30 dark:border-white/20 p-6 backdrop-blur-2xl px-10 py-8">
               <div className="flex justify-center">
-                <Alert className="w-8 h-8 text-white" />
+                <Alert className="w-8 h-8 text-black dark:text-white" />
               </div>
-              <h3 className="font-bold text-lg text-white text-center mt-2">
+              <h3 className="font-bold text-lg text-black dark:text-white text-center mt-2">
                 Buy at your own risk!
               </h3>
-              <p className="mt-2 text-sm text-white/75 text-center">
+              <p className="mt-2 text-sm text-black/70 dark:text-white/75 text-center">
                 Anyone can create a token, including creating fake versions of
                 existing tokens that claim to represent projects.
                 <br />
@@ -53,7 +53,7 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
                   back or it might be a scam.
                 </strong>
               </p>
-              <div className="flex overflow-hidden cursor-pointer bg-white/15 py-1 px-2 rounded-lg text-white mt-3">
+              <div className="flex overflow-hidden cursor-pointer bg-black/50 dark:bg-white/15 py-1 px-2 rounded-lg text-white mt-3">
                 <Link
                   href={`https://arbiscan.com/token/${token}`}
                   target="_blank"
@@ -75,7 +75,7 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
                 </button>
               </div>
               <button
-                className="w-full bg-white py-3 rounded-xl mt-4 hover:brightness-75 transition-all"
+                className="w-full bg-black dark:bg-white text-white dark:text-black py-3 rounded-xl mt-4 hover:brightness-75 transition-all"
                 onClick={() => {
                   onConfirm()
                   onClose()
@@ -83,7 +83,7 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
               >
                 I understand
               </button>
-              <div className="flex justify-center text-white">
+              <div className="flex justify-center text-black dark:text-white">
                 <button className="text-sm mt-2" onClick={onClose}>
                   Cancel
                 </button>
