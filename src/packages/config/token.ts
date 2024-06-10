@@ -12,7 +12,15 @@ export const PRIMARY_TOKEN_LIST = [
     name: "Toob",
     decimals: 18,
     icon: "/media/toob.png",
-    category: "Meme",
+    category: "Toob Finance",
+  },
+   {
+    symbol: "DONUT",
+    name: "Donut",
+    address: "0xf42e2b8bc2af8b110b65be98db1321b1ab8d44f5",
+    icon: "/media/donut.png",
+    decimals: 18,
+    category: "SoFi",
   },
   {
     address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
