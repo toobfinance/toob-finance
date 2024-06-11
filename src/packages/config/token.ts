@@ -225,14 +225,6 @@ export const DEFAULT_TOKEN_LIST = [
     decimals: 18,
     category: "Meme",
   },
-  {
-    symbol: "DONUT",
-    name: "Donut",
-    address: "0xf42e2b8bc2af8b110b65be98db1321b1ab8d44f5",
-    icon: "/media/donut.png",
-    decimals: 18,
-    category: "SoFi",
-  },
 ];
 
 export const TOKEN_LIST = [
