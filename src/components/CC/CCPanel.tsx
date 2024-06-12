@@ -23,12 +23,14 @@ import Link from "next/link"
 import Image from "next/image"
 import { SWAP_FEE } from "@/constants"
 import CCRecipient from "./CCRecipient"
+import useSettings from "@/hooks/useSettings"
 
 const CCPanel = () => {
   const [fiatAmount, setFiatAmount] = useState("")
   const [tokenOut, setTokenOut] = useState<Type | undefined>()
   const [recipient, setRecipient] = useState("")
   const [loading, setLoading] = useState(false)
+  const { slippage } = useSettings()
 
   const debouncedAmount = useDebounce(fiatAmount, 200)
 
@@ -109,6 +111,7 @@ const CCPanel = () => {
         token: tokenOut.isNative
           ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
           : tokenOut.address,
+        slippage,
       })
       if (!data) {
         return

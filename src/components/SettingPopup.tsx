@@ -8,8 +8,13 @@ import {
 import TwoLine from "./svgs/TwoLine"
 import Close from "./svgs/Close"
 import useSettings from "@/hooks/useSettings"
+import React from "react"
 
-const SettingPopup = () => {
+interface SettingPopupProps {
+  hideDeadline?: boolean
+}
+
+const SettingPopup: React.FC<SettingPopupProps> = ({ hideDeadline }) => {
   const { deadline, slippage, setDeadline, setSlippage } = useSettings()
 
   const warning =
@@ -107,23 +112,25 @@ const SettingPopup = () => {
                       </p>
                     ) : null}
                   </div>
-                  <div className="flex flex-col space-y-2">
-                    <h4 className="text-black dark:text-white text-sm">
-                      Transaction Deadline
-                    </h4>
-                    <div className="relative w-[210px]">
-                      <input
-                        type="number"
-                        placeholder="30"
-                        value={deadline}
-                        onChange={(e) => setDeadline(e.target.valueAsNumber)}
-                        className="w-full h-10 px-4 border font-semibold border-black dark:border-white text-black dark:text-white rounded-2xl transition-all bg-transparent focus:shadow-[0px_0px_0px_2px_#fff7] outline-none placeholder:font-normal placeholder:text-black/60 dark:placeholder:text-white/50"
-                      />
-                      <span className="absolute top-0 right-4 h-10 flex justify-center items-center text-black dark:text-white">
-                        minutes
-                      </span>
+                  {!hideDeadline ? (
+                    <div className="flex flex-col space-y-2">
+                      <h4 className="text-black dark:text-white text-sm">
+                        Transaction Deadline
+                      </h4>
+                      <div className="relative w-[210px]">
+                        <input
+                          type="number"
+                          placeholder="30"
+                          value={deadline}
+                          onChange={(e) => setDeadline(e.target.valueAsNumber)}
+                          className="w-full h-10 px-4 border font-semibold border-black dark:border-white text-black dark:text-white rounded-2xl transition-all bg-transparent focus:shadow-[0px_0px_0px_2px_#fff7] outline-none placeholder:font-normal placeholder:text-black/60 dark:placeholder:text-white/50"
+                        />
+                        <span className="absolute top-0 right-4 h-10 flex justify-center items-center text-black dark:text-white">
+                          minutes
+                        </span>
+                      </div>
                     </div>
-                  </div>
+                  ) : null}
                 </div>
               </>
             )}

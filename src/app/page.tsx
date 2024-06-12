@@ -35,7 +35,7 @@ export default function Home() {
               Limit Order
             </button>
           </div>
-          {selectedTab === 0 ? <SettingPopup /> : null}
+          <SettingPopup hideDeadline={selectedTab === 1} />
         </div>
         {selectedTab === 0 ? (
           <SwapPanel />
