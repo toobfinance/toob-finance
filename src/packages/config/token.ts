@@ -15,6 +15,14 @@ export const PRIMARY_TOKEN_LIST = [
     category: "Toob Finance",
   },
   {
+    symbol: "DMT",
+    name: "DMT",
+    address: "0x8B0E6f19Ee57089F7649A455D89D7bC6314D04e8",
+    icon: "/media/dmt.png",
+    decimals: 18,
+    category: "GameFi",
+  },
+  {
     symbol: "DONUT",
     name: "Donut",
     address: "0xf42e2b8bc2af8b110b65be98db1321b1ab8d44f5",
@@ -136,14 +144,6 @@ export const DEFAULT_TOKEN_LIST = [
     icon: "/media/pepe.jpg",
     decimals: 18,
     category: "Meme",
-  },
-  {
-    symbol: "DMT",
-    name: "DMT",
-    address: "0x8B0E6f19Ee57089F7649A455D89D7bC6314D04e8",
-    icon: "/media/dmt.png",
-    decimals: 18,
-    category: "GameFi",
   },
   {
     symbol: "BONK",
@@ -638,13 +638,6 @@ export const TOKEN_LIST = [
     name: "iFARM",
     address: "0x9dCA587dc65AC0a043828B0acd946d71eb8D46c1",
     icon: "https://token-list.camelot.exchange/assets/ifarm.svg",
-    decimals: 18,
-  },
-  {
-    symbol: "DMT",
-    name: "DMT",
-    address: "0x8B0E6f19Ee57089F7649A455D89D7bC6314D04e8",
-    icon: "https://token-list.camelot.exchange/assets/dmt.png",
     decimals: 18,
   },
   {
