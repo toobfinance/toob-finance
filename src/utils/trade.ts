@@ -1,5 +1,9 @@
+import { sanko } from "@/app/providers";
 import { ODOS_EXECUTOR_ADDR, ODOS_ROUTER_ADDR } from "@/contracts";
 import { routeProcessor3Abi } from "@/packages/abi";
+import camelotV2FactoryAbi from "@/packages/abi/camelot/camelotV2FactoryAbi";
+import camelotV2PairAbi from "@/packages/abi/camelot/camelotV2PairAbi";
+import camelotV3QuoterAbi from "@/packages/abi/camelot/camelotV3QuoterAbi";
 import kyberSwapAbi from "@/packages/abi/kyberSwapAbi";
 import toobFinanceRouter from "@/packages/abi/toobFinanceRouter";
 import { slippageAmount } from "@/packages/calculate";
@@ -11,7 +15,7 @@ import { getAllPoolsCodeMap } from "@/packages/pools/actions/getAllPoolsCodeMap"
 import { PoolCode, Router } from "@/packages/router";
 import { RouteStatus } from "@/packages/tines";
 import axios from "axios";
-import { Address, Hex, encodeFunctionData } from "viem";
+import { Address, Hex, createPublicClient, defineChain, encodeFunctionData, formatUnits, http, parseUnits } from "viem";
 
 export const getOdosTrade = async (
   tokenIn: Type,
@@ -292,5 +296,85 @@ export const getXFusionTxData = async (trade: any) => {
       fee: false,
     },
     value: trade?.data?.value,
+  };
+};
+
+export const getCamelotV3Trade = async (
+  tokenIn: Type,
+  tokenOut: Type,
+  recipient: Address,
+  slippage: number,
+  amountIn: string
+) => {
+  const USDC = '0x13D675BC5e659b11CFA331594cF35A20815dCF02'
+  const WDMT = '0x754cDAd6f5821077d6915004Be2cE05f93d176f8'
+  // const Factory = '0xcF8d0723e69c6215523253a190eB9Bc3f68E0FFa'
+  const Quoter = '0x52CFD1d72A64f8D13711bb7Dc3899653dbd4191B'
+
+  const publicClient = createPublicClient({
+    chain: sanko,
+    transport: http()
+  })
+
+  const { result } = await publicClient.simulateContract({
+    address: Quoter,
+    abi: camelotV3QuoterAbi,
+    functionName: 'quoteExactInputSingle',
+    args: [USDC, WDMT, parseUnits('10', 6), BigInt(0)],
+  })
+
+  const amountOut = result[0] ?? '0'
+  
+  return {
+    tokenIn,
+    tokenOut,
+    recipient,
+    slippage,
+    amountIn,
+    amountOut,
+    amountOutValue: formatUnits(amountOut, 18),
+    type: 'Camelot V3',
+  };
+};
+
+export const getCamelotV2Trade = async (
+  tokenIn: Type,
+  tokenOut: Type,
+  recipient: Address,
+  slippage: number,
+  amountIn: string
+) => {
+  const USDC = '0x13D675BC5e659b11CFA331594cF35A20815dCF02'
+  const WDMT = '0x754cDAd6f5821077d6915004Be2cE05f93d176f8'
+  const Factory = '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4'
+
+  const publicClient = createPublicClient({
+    chain: sanko,
+    transport: http()
+  })
+
+  const pairAddr = await publicClient.readContract({
+    address: Factory,
+    abi: camelotV2FactoryAbi,
+    functionName: 'getPair',
+    args: [USDC, WDMT],
+  })
+
+  const amountOut = await publicClient.readContract({
+    address: pairAddr,
+    abi: camelotV2PairAbi,
+    functionName: 'getAmountOut',
+    args: [parseUnits('10', 6), USDC],
+  })
+
+  return {
+    tokenIn,
+    tokenOut,
+    recipient,
+    slippage,
+    amountIn,
+    amountOut,
+    amountOutValue: formatUnits(amountOut, 18),
+    type: 'Camelot V2',
   };
 };

@@ -5,7 +5,7 @@ import { tryParseAmount } from "@/packages/currency"
 import { ZERO } from "@/packages/math"
 import useSettings from "./useSettings"
 import { useQuery } from "@tanstack/react-query"
-import { getKyberTrade, getOdosTrade, getXFusionTrade } from "@/utils/trade"
+import { getCamelotV2Trade, getCamelotV3Trade, getKyberTrade, getOdosTrade, getXFusionTrade } from "@/utils/trade"
 import { usePoolsCodeMap } from "@/packages/pools"
 import { ChainId } from "@/packages/chain"
 
@@ -68,6 +68,32 @@ const useSwapTrade = () => {
           ),
         ])
 
+        // Get routes in Sanko chain
+        const sankoTrades = await Promise.all([
+          getCamelotV2Trade(
+            tokenIn,
+            tokenOut,
+            address ?? "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8",
+            slippage,
+            parsedAmount?.quotient.toString() ?? '0'
+          ),
+          getCamelotV3Trade(
+            tokenIn,
+            tokenOut,
+            address ?? "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8",
+            slippage,
+            parsedAmount?.quotient.toString() ?? '0'
+          ),
+        ])
+        console.log(sankoTrades)
+
+        const bestTrade = sankoTrades
+        ?.filter((item: any) => item && BigInt(item?.amountOut ?? "0") > 0n)
+        ?.sort((a: any, b: any) =>
+          BigInt(a?.amountOut ?? "0") > BigInt(b?.amountOut ?? "0") ? -1 : 1
+        )
+        console.log(bestTrade[0])
+
         return trades
           ?.filter((item: any) => item && BigInt(item?.amountOut ?? "0") > 0n)
           ?.sort((a: any, b: any) =>
@@ -84,6 +110,7 @@ const useSwapTrade = () => {
       Boolean(parsedAmount?.greaterThan(ZERO)),
     refetchOnWindowFocus: false,
   })
+
   return trade
 }
 
