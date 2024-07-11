@@ -203,7 +203,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({ trade }) => {
             !wrongNetworkError &&
             (isError || !(approvalState === ApprovalState.APPROVED))) ||
           fetching ||
-          loading
+          loading || true
         }
       >
         {fetching ? (
