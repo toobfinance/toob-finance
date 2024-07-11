@@ -22,7 +22,7 @@ export default function Home() {
             </button>
             <button
               data-active={selectedTab === 0}
-              className="bg-transparent border border-black/30 dark:border-white/20 rounded-full text-black dark:text-white py-3 px-4 data-[active=true]:bg-black dark:data-[active=true]:bg-white data-[active=true]:text-white dark:data-[active=true]:text-black font-semibold"
+              className="bg-transparent border border-black/30 dark:border-white/20 rounded-full text-black dark:text-white py-3 px-4 data-[active=true]:bg-black dark:data-[active=true]:bg-white data-[active=true]:text-white dark:data-[active=true]:text-black font-semibold opacity-50"
             >
               Swap
             </button>
