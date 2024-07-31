@@ -36,7 +36,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
   primaryTokens,
   disabled,
 }) => {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const tokenSelectorRef = useRef<HTMLDivElement>(null);
   const amountInputRef = useRef<HTMLInputElement>(null);
@@ -143,30 +143,45 @@ const SwapSide: React.FC<SwapSideProps> = ({
             ) : null}
             {fastTokens ? (
               <div className="flex items-center space-x-2 max-sm:mb-2">
-                <Image
-                  src="/media/arb.png"
-                  width={32}
-                  height={32}
-                  alt="arb"
-                  className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
-                  onClick={() => setToken(ARB[ChainId.ARBITRUM_ONE])}
-                />
-                <Image
-                  src="/media/usdc.png"
-                  width={32}
-                  height={32}
-                  alt="usdc"
-                  className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
-                  onClick={() => setToken(USDC[ChainId.ARBITRUM_ONE])}
-                />
-                <Image
-                  src="/media/usdt.png"
-                  width={32}
-                  height={32}
-                  alt="usdt"
-                  className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
-                  onClick={() => setToken(USDT[ChainId.ARBITRUM_ONE])}
-                />
+                {chainId === ChainId.ARBITRUM_ONE ? (
+                  <>
+                    <Image
+                      src="/media/arb.png"
+                      width={32}
+                      height={32}
+                      alt="arb"
+                      className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
+                      onClick={() => setToken(ARB[ChainId.ARBITRUM_ONE])}
+                    />
+                    <Image
+                      src="/media/usdc.png"
+                      width={32}
+                      height={32}
+                      alt="usdc"
+                      className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
+                      onClick={() => setToken(USDC[ChainId.ARBITRUM_ONE])}
+                    />
+                    <Image
+                      src="/media/usdt.png"
+                      width={32}
+                      height={32}
+                      alt="usdt"
+                      className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
+                      onClick={() => setToken(USDT[ChainId.ARBITRUM_ONE])}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Image
+                      src="/media/usdc.png"
+                      width={32}
+                      height={32}
+                      alt="usdc"
+                      className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
+                      onClick={() => setToken(USDC[ChainId.SANKO_MAINNET])}
+                    />
+                  </>
+                )}
               </div>
             ) : null}
             <div

@@ -1,38 +1,38 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
+import React, { useState } from "react";
 
-import { Amount, TOOB, Type, USDC } from "@/packages/currency"
-import SwapSide from "../Swap/SwapSide"
-import CCFiatSide from "./CCFiatSide"
-import { ChainId } from "@/packages/chain"
-import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
-import { isAddress, parseUnits } from "viem"
-import toast from "react-hot-toast"
-import CustomToast from "../CustomToast"
-import WertWidget from "@wert-io/widget-initializer"
-import Spinner from "../Spinner"
-import { useDebounce } from "@/hooks/useDebounce"
-import MasterCard from "@/assets/master_card.svg"
-import Visa from "@/assets/visa.svg"
-import AmEx from "@/assets/amex.svg"
-import JCB from "@/assets/jcb.svg"
-import Discover from "@/assets/discover.svg"
-import Link from "next/link"
-import Image from "next/image"
-import { SWAP_FEE } from "@/constants"
-import CCRecipient from "./CCRecipient"
-import useSettings from "@/hooks/useSettings"
+import { Amount, TOOB, Type, USDC } from "@/packages/currency";
+import SwapSide from "../Swap/SwapSide";
+import CCFiatSide from "./CCFiatSide";
+import { ChainId } from "@/packages/chain";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { isAddress, parseUnits } from "viem";
+import toast from "react-hot-toast";
+import CustomToast from "../CustomToast";
+import WertWidget from "@wert-io/widget-initializer";
+import Spinner from "../Spinner";
+import { useDebounce } from "@/hooks/useDebounce";
+import MasterCard from "@/assets/master_card.svg";
+import Visa from "@/assets/visa.svg";
+import AmEx from "@/assets/amex.svg";
+import JCB from "@/assets/jcb.svg";
+import Discover from "@/assets/discover.svg";
+import Link from "next/link";
+import Image from "next/image";
+import { SWAP_FEE } from "@/constants";
+import CCRecipient from "./CCRecipient";
+import useSettings from "@/hooks/useSettings";
 
 const CCPanel = () => {
-  const [fiatAmount, setFiatAmount] = useState("")
-  const [tokenOut, setTokenOut] = useState<Type | undefined>()
-  const [recipient, setRecipient] = useState("")
-  const [loading, setLoading] = useState(false)
-  const { slippage } = useSettings()
+  const [fiatAmount, setFiatAmount] = useState("");
+  const [tokenOut, setTokenOut] = useState<Type | undefined>();
+  const [recipient, setRecipient] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { slippage } = useSettings();
 
-  const debouncedAmount = useDebounce(fiatAmount, 200)
+  const debouncedAmount = useDebounce(fiatAmount, 200);
 
   const { data: convertedAmount, refetch } = useQuery({
     queryKey: ["buy-converter", debouncedAmount],
@@ -43,7 +43,7 @@ const CCPanel = () => {
           Number(debouncedAmount) < 10 ||
           Number(debouncedAmount) > 1000
         )
-          return 0
+          return 0;
 
         const { data } = await axios.post(
           "https://widget.wert.io/api/v3/partners/convert",
@@ -59,26 +59,24 @@ const CCPanel = () => {
               "X-Partner-ID": "01HYJMVRGMMH6C99JJK70K0VMS",
             },
           }
-        )
+        );
         return data?.body?.commodity_amount
           ? data?.body?.commodity_amount - 0.1
-          : 0
+          : 0;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
     refetchInterval: 20000,
     enabled: Boolean(tokenOut),
-  })
-
-  console.log(convertedAmount)
+  });
 
   const { data: amountOut } = useQuery({
     queryKey: ["buy-estimation", convertedAmount, tokenOut?.wrapped.address],
     queryFn: async () => {
-      if (!convertedAmount || !tokenOut) return "0"
+      if (!convertedAmount || !tokenOut) return "0";
       if (tokenOut.equals(USDC[ChainId.ARBITRUM_ONE])) {
-        return convertedAmount.toString()
+        return convertedAmount.toString();
       }
       const { data } = await axios.get(
         `https://aggregator-api.kyberswap.com/arbitrum/api/v1/routes?tokenIn=0xaf88d065e77c8cc2239327c5edb3a432268e5831&tokenOut=${
@@ -89,22 +87,22 @@ const CCPanel = () => {
           (parseUnits(convertedAmount.toString(), 6) * (10000n - SWAP_FEE)) /
           10000n
         ).toString()}&gasInclude=true`
-      )
-      console.log(data)
+      );
+      console.log(data);
       return Amount.fromRawAmount(
         tokenOut,
         data?.data?.routeSummary?.amountOut ?? 0
-      ).toExact()
+      ).toExact();
     },
     refetchInterval: 20000,
     enabled: Boolean(tokenOut),
-  })
+  });
 
   const onBuy = async () => {
     try {
-      if (!tokenOut) return
-      setLoading(true)
-      await refetch()
+      if (!tokenOut) return;
+      setLoading(true);
+      await refetch();
       const { data } = await axios.post("api/purchase", {
         recipient,
         amount: convertedAmount,
@@ -112,9 +110,9 @@ const CCPanel = () => {
           ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
           : tokenOut.address,
         slippage,
-      })
+      });
       if (!data) {
-        return
+        return;
       }
       const wertWidget = new WertWidget({
         partner_id: "01HYJMVRGMMH6C99JJK70K0VMS",
@@ -127,21 +125,21 @@ const CCPanel = () => {
             name: "Toob Finance",
           },
         },
-      })
-      wertWidget.open()
+      });
+      wertWidget.open();
     } catch (err) {
-      console.log(err)
+      console.log(err);
       toast.custom((t) => (
         <CustomToast t={t} type="error" text={`Failed to buy the assets`} />
-      ))
+      ));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const invalidAddress = !isAddress(recipient)
+  const invalidAddress = !isAddress(recipient);
   const invalidAmount =
-    !fiatAmount || Number(fiatAmount) < 10 || Number(fiatAmount) > 1000
+    !fiatAmount || Number(fiatAmount) < 10 || Number(fiatAmount) > 1000;
 
   return (
     <>
@@ -245,7 +243,7 @@ const CCPanel = () => {
         </Link>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default CCPanel
+export default CCPanel;

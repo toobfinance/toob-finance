@@ -12,13 +12,24 @@ import Spinner from "../Spinner";
 import React, { useState } from "react";
 import { ApprovalState, useTokenApproval } from "@/hooks/useTokenApproval";
 import { ChainId } from "@/packages/chain";
-import { getKyberTxData, getOdosTxData, getToobFinanceTxData } from "@/utils/trade";
+import {
+  getCamelotV2TxData,
+  getCamelotV3TxData,
+  getKyberTxData,
+  getOdosTxData,
+  getSankoToobFinanceTxData,
+  getToobFinanceTxData,
+} from "@/utils/trade";
 import toast from "react-hot-toast";
 import CustomToast from "../CustomToast";
 import { erc20Abi } from "viem";
 import { UseQueryResult } from "@tanstack/react-query";
 import { ROUTE_PROCESSOR_3_ADDRESS } from "@/packages/config/trade";
-import { ODOS_ROUTER_V2_ADDR } from "@/contracts";
+import {
+  CAMELOT_V2_ROUTER_ADDR_SANKO,
+  CAMELOT_V3_ROUTER_ADDR_SANKO,
+  ODOS_ROUTER_V2_ADDR,
+} from "@/contracts";
 
 interface SwapButtonProps {
   trade: UseQueryResult<any, Error>;
@@ -46,11 +57,19 @@ const SwapButton: React.FC<SwapButtonProps> = ({
       ? ROUTE_PROCESSOR_3_ADDRESS[ChainId.ARBITRUM_ONE]
       : lockedRouter.type === "Odos"
       ? ODOS_ROUTER_V2_ADDR
+      : lockedRouter.type === "Camelot V2"
+      ? CAMELOT_V2_ROUTER_ADDR_SANKO
+      : lockedRouter.type === "Camelot V3"
+      ? CAMELOT_V3_ROUTER_ADDR_SANKO
       : lockedRouter.data?.routerAddress ?? ADDRESS_ZERO
     : trade.data?.[0]?.type === "Toob Finance"
     ? ROUTE_PROCESSOR_3_ADDRESS[ChainId.ARBITRUM_ONE]
     : trade.data?.[0]?.type === "Odos"
     ? ODOS_ROUTER_V2_ADDR
+    : trade.data?.[0]?.type === "Camelot V2"
+    ? CAMELOT_V2_ROUTER_ADDR_SANKO
+    : trade.data?.[0]?.type === "Camelot V3"
+    ? CAMELOT_V3_ROUTER_ADDR_SANKO
     : trade.data?.[0]?.data?.routerAddress ?? ADDRESS_ZERO;
 
   const parsedAmount = tryParseAmount(amountIn, tokenIn);
@@ -64,8 +83,11 @@ const SwapButton: React.FC<SwapButtonProps> = ({
   const onSwap = async () => {
     if (!address || !publicClient || !walletClient) {
       open?.();
-    } else if (chainId !== ChainId.ARBITRUM_ONE) {
-      switchChainAsync?.({ chainId: ChainId.ARBITRUM_ONE });
+    } else if (
+      chainId !== ChainId.ARBITRUM_ONE &&
+      chainId !== ChainId.SANKO_MAINNET
+    ) {
+      switchChainAsync?.({ chainId: ChainId.SANKO_MAINNET });
     } else {
       try {
         if (!tokenIn || !tokenOut) return;
@@ -85,7 +107,23 @@ const SwapButton: React.FC<SwapButtonProps> = ({
             ? await getOdosTxData(currentRouter)
             : currentRouter.type === "KyberSwap"
             ? await getKyberTxData(currentRouter)
-            : await getToobFinanceTxData(currentRouter);
+            : currentRouter.type === "Toob Finance"
+            ? chainId === ChainId.SANKO_MAINNET
+              ? await getSankoToobFinanceTxData(currentRouter)
+              : await getToobFinanceTxData(currentRouter)
+            : currentRouter.type === "Camelot V2"
+            ? await getCamelotV2TxData(currentRouter)
+            : currentRouter.type === "Camelot V3"
+            ? await getCamelotV3TxData(currentRouter)
+            : null;
+
+        if (!txData) {
+          throw new Error(
+            "Unsupported router type or failed to generate transaction data"
+          );
+        }
+
+        console.log(currentRouter);
 
         const balanceBefore = tokenOut.isNative
           ? await publicClient.getBalance({ address })
@@ -176,7 +214,8 @@ const SwapButton: React.FC<SwapButtonProps> = ({
     Boolean(tokenOut) &&
     Boolean(parsedAmount?.greaterThan(0n)) &&
     (trade.isFetching || trade.isLoading || trade.isPending);
-  const wrongNetworkError = chainId !== ChainId.ARBITRUM_ONE;
+  const wrongNetworkError =
+    chainId !== ChainId.ARBITRUM_ONE && chainId !== ChainId.SANKO_MAINNET;
   const nonAssetError = !tokenIn || !tokenOut;
   const nonAmountError = !(
     tokenIn &&
