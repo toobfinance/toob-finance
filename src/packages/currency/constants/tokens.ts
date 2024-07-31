@@ -1,7 +1,7 @@
-import { ChainId } from "../../chain"
+import { ChainId } from "../../chain";
 
-import { Token } from "../Token"
-import { addressMapToTokenMap } from "../functions/address-map-to-token-map"
+import { Token } from "../Token";
+import { addressMapToTokenMap } from "../functions/address-map-to-token-map";
 
 import {
   ARB_ADDRESS,
@@ -11,9 +11,9 @@ import {
   USDT_ADDRESS,
   WBTC_ADDRESS,
   WETH9_ADDRESS,
-  WNATIVE_ADDRESS,
+  WDMT_ADDRESS,
   TOOB_ADDRESS,
-} from "./token-addresses"
+} from "./token-addresses";
 
 export const ARB = addressMapToTokenMap(
   {
@@ -23,7 +23,7 @@ export const ARB = addressMapToTokenMap(
     icon: "/media/arb.png",
   },
   ARB_ADDRESS
-) as Record<keyof typeof ARB_ADDRESS, Token>
+) as Record<keyof typeof ARB_ADDRESS, Token>;
 
 export const WBTC = addressMapToTokenMap(
   {
@@ -33,7 +33,7 @@ export const WBTC = addressMapToTokenMap(
     icon: "/media/wbtc.png",
   },
   WBTC_ADDRESS
-) as Record<keyof typeof WBTC_ADDRESS, Token>
+) as Record<keyof typeof WBTC_ADDRESS, Token>;
 
 export const WETH9 = addressMapToTokenMap(
   {
@@ -43,11 +43,22 @@ export const WETH9 = addressMapToTokenMap(
     icon: "/media/weth.png",
   },
   WETH9_ADDRESS
-) as Record<keyof typeof WETH9_ADDRESS, Token>
+) as Record<keyof typeof WETH9_ADDRESS, Token>;
+
+export const WDMT = addressMapToTokenMap(
+  {
+    decimals: 18,
+    symbol: "wDMT",
+    name: "Wrapped DMT",
+    icon: "/media/dmt.png",
+  },
+  WDMT_ADDRESS
+) as Record<keyof typeof WDMT_ADDRESS, Token>;
 
 export const WNATIVE = {
   [ChainId.ARBITRUM_ONE]: WETH9[ChainId.ARBITRUM_ONE],
-} as const
+  [ChainId.SANKO_MAINNET]: WDMT[ChainId.SANKO_MAINNET],
+} as const;
 
 export const USDC: Record<keyof typeof USDC_ADDRESS, Token> = {
   ...(addressMapToTokenMap(
@@ -59,7 +70,7 @@ export const USDC: Record<keyof typeof USDC_ADDRESS, Token> = {
     },
     USDC_ADDRESS
   ) as Record<keyof typeof USDC_ADDRESS, Token>),
-} as const
+} as const;
 
 export const USDCe: Record<keyof typeof USDCe_ADDRESS, Token> = {
   ...(addressMapToTokenMap(
@@ -71,7 +82,7 @@ export const USDCe: Record<keyof typeof USDCe_ADDRESS, Token> = {
     },
     USDCe_ADDRESS
   ) as Record<keyof typeof USDCe_ADDRESS, Token>),
-} as const
+} as const;
 
 export const USDT: Record<keyof typeof USDT_ADDRESS, Token> = {
   ...(addressMapToTokenMap(
@@ -83,7 +94,7 @@ export const USDT: Record<keyof typeof USDT_ADDRESS, Token> = {
     },
     USDT_ADDRESS
   ) as Record<keyof typeof USDT_ADDRESS, Token>),
-}
+};
 
 export const DAI = addressMapToTokenMap(
   {
@@ -93,7 +104,7 @@ export const DAI = addressMapToTokenMap(
     icon: "/media/dai.png",
   },
   DAI_ADDRESS
-) as Record<keyof typeof DAI_ADDRESS, Token>
+) as Record<keyof typeof DAI_ADDRESS, Token>;
 
 export const TOOB = addressMapToTokenMap(
   {
@@ -103,4 +114,4 @@ export const TOOB = addressMapToTokenMap(
     icon: "/media/toob.png",
   },
   TOOB_ADDRESS
-) as Record<keyof typeof TOOB_ADDRESS, Token>
+) as Record<keyof typeof TOOB_ADDRESS, Token>;

@@ -1,32 +1,25 @@
-"use client"
+"use client";
 
-import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  Transition,
-  TransitionChild,
-} from "@headlessui/react"
-import Close from "./svgs/Close"
-import Magnifier from "./svgs/Magnifier"
-import TokenListItem from "./TokenListItem"
-import useTokenList from "../hooks/useTokenList"
-import { Token, Type } from "@/packages/currency"
-import { useState } from "react"
-import { useReadContracts } from "wagmi"
-import { Address, erc20Abi, getAddress, isAddress } from "viem"
-import { ChainId } from "@/packages/chain"
-import { TOKEN_LIST } from "@/packages/config"
-import TokenImportWarningModal from "./TokenImportWarningModal"
-import HelpToolTip from "./HelpToolTip"
-import Link from "next/link"
+import { Dialog, DialogPanel, Transition } from "@headlessui/react";
+import Close from "./svgs/Close";
+import Magnifier from "./svgs/Magnifier";
+import TokenListItem from "./TokenListItem";
+import { useTokenList, useSankoTokenList } from "../hooks/useTokenList";
+import { Token, Type } from "@/packages/currency";
+import { useState } from "react";
+import { useAccount, useReadContracts } from "wagmi";
+import { Address, erc20Abi, getAddress, isAddress } from "viem";
+import { ChainId } from "@/packages/chain";
+import { SANKO_TOKEN_LIST, TOKEN_LIST } from "@/packages/config";
+import HelpToolTip from "./HelpToolTip";
+import Link from "next/link";
 
 interface TokenListModalProps {
-  currentToken?: Type
-  setToken: any
-  open: boolean
-  onClose: any
-  primaryTokens?: boolean
+  currentToken?: Type;
+  setToken: any;
+  open: boolean;
+  onClose: any;
+  primaryTokens?: boolean;
 }
 
 const TokenListModal: React.FC<TokenListModalProps> = ({
@@ -36,8 +29,15 @@ const TokenListModal: React.FC<TokenListModalProps> = ({
   onClose,
   primaryTokens,
 }) => {
-  const tokenList = useTokenList(primaryTokens)
-  const [filter, setFilter] = useState("")
+  const { chainId } = useAccount();
+  const [filter, setFilter] = useState("");
+
+  const tokenList = useTokenList(primaryTokens);
+  const sankoTokenList = useSankoTokenList(primaryTokens);
+
+  const isSanko: boolean = chainId === ChainId.SANKO_MAINNET;
+  const activeTokenList =
+    chainId === ChainId.SANKO_MAINNET ? sankoTokenList : tokenList;
 
   const { data: tokenInfo } = useReadContracts({
     contracts: [
@@ -48,17 +48,17 @@ const TokenListModal: React.FC<TokenListModalProps> = ({
     query: {
       enabled: isAddress(filter),
     },
-  })
+  });
 
   const onSelectItem = (token: Type) => {
     return () => {
-      setToken(token)
-      onClose()
-    }
-  }
+      setToken(token);
+      onClose();
+    };
+  };
 
   const tokens = [
-    ...tokenList.filter((item) =>
+    ...activeTokenList.filter((item) =>
       item.name?.match(
         new RegExp(filter, "i") || item.symbol?.match(new RegExp(filter, "i"))
       )
@@ -67,7 +67,7 @@ const TokenListModal: React.FC<TokenListModalProps> = ({
       ? [
           new Token({
             address: getAddress(filter),
-            chainId: ChainId.ARBITRUM_ONE,
+            chainId: isSanko ? ChainId.SANKO_MAINNET : ChainId.ARBITRUM_ONE,
             name: tokenInfo[0]?.result,
             symbol: tokenInfo[1]?.result,
             decimals: tokenInfo[2]?.result ?? 18,
@@ -76,24 +76,41 @@ const TokenListModal: React.FC<TokenListModalProps> = ({
         ]
       : []),
     ...(filter.length >= 3
-      ? TOKEN_LIST.filter((item) =>
-          item.name?.match(
-            new RegExp(filter, "i") ||
-              item.symbol?.match(new RegExp(filter, "i"))
+      ? isSanko
+        ? SANKO_TOKEN_LIST.filter((item) =>
+            item.name?.match(
+              new RegExp(filter, "i") ||
+                item.symbol?.match(new RegExp(filter, "i"))
+            )
+          ).map(
+            (item) =>
+              new Token({
+                address: item.address,
+                name: item.name,
+                symbol: item.symbol,
+                chainId: isSanko ? ChainId.SANKO_MAINNET : ChainId.ARBITRUM_ONE,
+                decimals: item.decimals,
+                icon: item.icon,
+              })
           )
-        ).map(
-          (item) =>
-            new Token({
-              address: item.address,
-              name: item.name,
-              symbol: item.symbol,
-              chainId: ChainId.ARBITRUM_ONE,
-              decimals: item.decimals,
-              icon: item.icon,
-            })
-        )
+        : TOKEN_LIST.filter((item) =>
+            item.name?.match(
+              new RegExp(filter, "i") ||
+                item.symbol?.match(new RegExp(filter, "i"))
+            )
+          ).map(
+            (item) =>
+              new Token({
+                address: item.address,
+                name: item.name,
+                symbol: item.symbol,
+                chainId: isSanko ? ChainId.SANKO_MAINNET : ChainId.ARBITRUM_ONE,
+                decimals: item.decimals,
+                icon: item.icon,
+              })
+          )
       : []),
-  ]
+  ];
 
   return (
     <>
@@ -163,7 +180,7 @@ const TokenListModal: React.FC<TokenListModalProps> = ({
         </Dialog>
       </Transition>
     </>
-  )
-}
+  );
+};
 
-export default TokenListModal
+export default TokenListModal;

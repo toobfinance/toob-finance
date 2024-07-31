@@ -1,10 +1,9 @@
-import { ChainId } from "../chain"
-import { http, type PublicClientConfig } from "viem"
-import { arbitrum, arbitrumNova, polygon, bsc, avalanche } from "viem/chains"
+import { sanko } from "@/app/providers";
+import { ChainId } from "../chain";
+import { http, type PublicClientConfig } from "viem";
+import { arbitrum, arbitrumNova, polygon, bsc, avalanche } from "viem/chains";
 
-export { arbitrumNova, polygon, arbitrum, bsc, avalanche }
-
-const drpcId = process.env["DRPC_ID"] || process.env["NEXT_PUBLIC_DRPC_ID"]
+export { arbitrumNova, polygon, arbitrum, bsc, avalanche };
 
 export const config: Record<ChainId, PublicClientConfig[]> = {
   [ChainId.ARBITRUM_ONE]: [
@@ -23,4 +22,10 @@ export const config: Record<ChainId, PublicClientConfig[]> = {
       transport: http(`https://rpc.ankr.com/arbitrum`),
     },
   ],
-} as const
+  [ChainId.SANKO_MAINNET]: [
+    {
+      chain: sanko,
+      transport: http("https://mainnet.sanko.xyz"),
+    },
+  ],
+} as const;

@@ -1,18 +1,33 @@
+import { sanko } from "@/app/providers";
 import {
+  CAMELOT_V2_ROUTER_ADDR_SANKO,
+  CAMELOT_V3_ROUTER_ADDR_SANKO,
   ODOS_EXECUTOR_V2_ADDR,
   ODOS_ROUTER_V2_ADDR,
 } from "@/contracts";
 import { routeProcessor3Abi } from "@/packages/abi";
+import camelotV2FactoryAbi from "@/packages/abi/camelotV2FactoryAbi";
+import camelotV2PairAbi from "@/packages/abi/camelotV2PairAbi";
+import camelotV2RouterAbi from "@/packages/abi/camelotV2RouterAbi";
+import camelotV3QuoterAbi from "@/packages/abi/camelotV3QuoterAbi";
+import camelotV3RouterAbi from "@/packages/abi/camelotV3RouterAbi";
 import odosRouterV2Abi from "@/packages/abi/odosRouterV2Abi";
 import { ChainId } from "@/packages/chain";
 import { ROUTE_PROCESSOR_3_ADDRESS } from "@/packages/config";
-import { Amount, Token, Type } from "@/packages/currency";
+import { Amount, Token, Type, WDMT_ADDRESS } from "@/packages/currency";
 import { Percent } from "@/packages/math";
-import { PoolCode, Router } from "@/packages/router";
+import { CamelotSwapV2Provider, PoolCode, Router } from "@/packages/router";
 import { RouteStatus } from "@/packages/tines";
 import axios from "axios";
-import { Address, encodeFunctionData } from "viem";
+import {
+  Address,
+  createPublicClient,
+  encodeFunctionData,
+  formatUnits,
+  http,
+} from "viem";
 
+// Arbitrum One
 export const getOdosTrade = async (
   tokenIn: Type,
   tokenOut: Type,
@@ -182,6 +197,175 @@ export const getToobFinanceTrade = async (
   }
 };
 
+// Sanko Mainnet
+export const getCamelotV2Trade = async (
+  tokenIn: Type,
+  tokenOut: Type,
+  recipient: Address,
+  slippage: number,
+  amountIn: string
+) => {
+  const Factory = "0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4";
+
+  const publicClient = createPublicClient({
+    chain: sanko,
+    transport: http(),
+  });
+
+  const pairAddr = await publicClient.readContract({
+    address: Factory,
+    abi: camelotV2FactoryAbi,
+    functionName: "getPair",
+    args: [
+      tokenIn instanceof Token
+        ? tokenIn.address
+        : WDMT_ADDRESS[ChainId.SANKO_MAINNET],
+      tokenOut instanceof Token
+        ? tokenOut.address
+        : WDMT_ADDRESS[ChainId.SANKO_MAINNET],
+    ],
+  });
+
+  const amountOut = await publicClient.readContract({
+    address: pairAddr,
+    abi: camelotV2PairAbi,
+    functionName: "getAmountOut",
+    args: [
+      BigInt(amountIn),
+      tokenIn instanceof Token
+        ? tokenIn.address
+        : WDMT_ADDRESS[ChainId.SANKO_MAINNET],
+    ],
+  });
+
+  return {
+    tokenIn,
+    tokenOut,
+    recipient,
+    slippage,
+    amountIn,
+    amountInValue: formatUnits(BigInt(amountIn), 18),
+    amountOut,
+    amountOutValue: formatUnits(amountOut, 18),
+    type: "Camelot V2",
+  };
+};
+
+export const getCamelotV3Trade = async (
+  tokenIn: Type,
+  tokenOut: Type,
+  recipient: Address,
+  slippage: number,
+  amountIn: string
+) => {
+  const Quoter = "0x52CFD1d72A64f8D13711bb7Dc3899653dbd4191B";
+
+  const publicClient = createPublicClient({
+    chain: sanko,
+    transport: http(),
+  });
+
+  const { result } = await publicClient.simulateContract({
+    address: Quoter,
+    abi: camelotV3QuoterAbi,
+    functionName: "quoteExactInputSingle",
+    args: [
+      tokenIn instanceof Token
+        ? tokenIn.address
+        : WDMT_ADDRESS[ChainId.SANKO_MAINNET],
+      tokenOut instanceof Token
+        ? tokenOut.address
+        : WDMT_ADDRESS[ChainId.SANKO_MAINNET],
+      BigInt(amountIn),
+      BigInt(0),
+    ],
+  });
+
+  const amountOut = result[0] ?? "0";
+
+  return {
+    tokenIn,
+    tokenOut,
+    recipient,
+    slippage,
+    amountIn,
+    amountInValue: formatUnits(BigInt(amountIn), 18),
+    amountOut,
+    amountOutValue: formatUnits(amountOut, 18),
+    type: "Camelot V3",
+  };
+};
+
+export const getSankoToobFinanceTrade = async (
+  tokenIn: Type,
+  tokenOut: Type,
+  recipient: Address,
+  slippage: number,
+  amountIn: string,
+  poolsCodeMap?: Map<string, PoolCode>
+) => {
+  if (!poolsCodeMap) return undefined;
+  const route = Router.findBestRoute(
+    poolsCodeMap,
+    ChainId.SANKO_MAINNET,
+    tokenIn,
+    BigInt(amountIn),
+    tokenOut,
+    10000000,
+    100
+  );
+
+  let args = Router.routeProcessor3Params(
+    poolsCodeMap,
+    route,
+    tokenIn,
+    tokenOut,
+    recipient,
+    ROUTE_PROCESSOR_3_ADDRESS[ChainId.SANKO_MAINNET],
+    [],
+    slippage / 100
+  );
+
+  if (route && route.status === RouteStatus.Success) {
+    const amountIn = Amount.fromRawAmount(tokenIn, route.amountInBI.toString());
+    const amountOut = Amount.fromRawAmount(
+      tokenOut,
+      route.amountOutBI.toString()
+    );
+
+    args = Router.routeProcessor3Params(
+      poolsCodeMap,
+      route,
+      tokenIn,
+      tokenOut,
+      recipient,
+      ROUTE_PROCESSOR_3_ADDRESS[ChainId.SANKO_MAINNET],
+      [],
+      +slippage / 100
+    );
+
+    return {
+      tokenIn,
+      tokenOut,
+      recipient,
+      slippage,
+      amountIn: amountIn.quotient.toString(),
+      amountInValue: 0,
+      amountOut: amountOut.quotient.toString(),
+      amountOutValue: 0,
+      priceImpact: Number(
+        (route.priceImpact
+          ? new Percent(BigInt(Math.round(route.priceImpact * 10000)), 10000n)
+          : new Percent(0)
+        ).toFixed(6)
+      ),
+      data: args,
+      type: "Toob Finance",
+    };
+  }
+};
+
+// Arbitrum One
 export const getOdosTxData = async (trade: any) => {
   const { data } = await axios.post("https://api.odos.xyz/sor/assemble", {
     pathId: trade.data?.pathId,
@@ -285,6 +469,143 @@ export const getToobFinanceTxData = async (trade: any) => {
     amountOut: BigInt(trade?.amountOut ?? "0"),
     args: {
       target: ROUTE_PROCESSOR_3_ADDRESS[ChainId.ARBITRUM_ONE],
+      tokenIn:
+        trade.tokenIn instanceof Token
+          ? trade.tokenIn.address
+          : "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      targetData,
+      amountIn: BigInt(trade.data?.amountIn ?? "0"),
+      fee: false,
+    },
+    value: trade?.data?.value,
+  };
+};
+
+// Sanko Mainnet
+export const getCamelotV2TxData = async (trade: any) => {
+  const isTokenInNative = trade.tokenIn.isNative;
+  const isTokenOutNative = trade.tokenOut.isNative;
+
+  const targetData = encodeFunctionData({
+    abi: camelotV2RouterAbi,
+    functionName: isTokenInNative
+      ? "swapExactETHForTokens"
+      : isTokenOutNative
+      ? "swapExactTokensForETH"
+      : "swapExactTokensForTokens",
+    args: [
+      BigInt(trade.amountIn),
+      BigInt(trade.amountOutMin),
+      isTokenInNative
+        ? [WDMT_ADDRESS[ChainId.SANKO_MAINNET], trade.tokenOut.address]
+        : isTokenOutNative
+        ? [trade.tokenIn.address, WDMT_ADDRESS[ChainId.SANKO_MAINNET]]
+        : [trade.tokenIn.address, trade.tokenOut.address],
+      trade.recipient,
+      BigInt(Math.floor(Date.now() / 1000) + 60 * 20),
+    ],
+  });
+
+  return {
+    amountIn: BigInt(trade.amountIn),
+    amountOut: BigInt(trade.amountOut),
+    args: {
+      target: CAMELOT_V2_ROUTER_ADDR_SANKO,
+      tokenIn: isTokenInNative
+        ? WDMT_ADDRESS[ChainId.SANKO_MAINNET]
+        : trade.tokenIn.address,
+      targetData,
+      amountIn: BigInt(trade.amountIn),
+      fee: false,
+    },
+    value: isTokenInNative ? BigInt(trade.amountIn) : 0n,
+  };
+};
+
+export const getCamelotV3TxData = async (trade: any) => {
+  console.log(trade);
+  const isTokenInNative = trade.tokenIn.isNative;
+  const isTokenOutNative = trade.tokenOut.isNative;
+
+  const tokenInAddress = isTokenInNative
+    ? WDMT_ADDRESS[ChainId.SANKO_MAINNET]
+    : trade.tokenIn.address;
+  const tokenOutAddress = isTokenOutNative
+    ? WDMT_ADDRESS[ChainId.SANKO_MAINNET]
+    : trade.tokenOut.address;
+
+  console.log(tokenInAddress, tokenOutAddress);
+
+  let targetData;
+
+  // if (!isTokenInNative && !isTokenOutNative) {
+  //   targetData = encodeFunctionData({
+  //     abi: camelotYakRouterAbi,
+  //     functionName: "exactInputSingle",
+  //     args: [
+  //       {
+  //         tokenIn: tokenInAddress,
+  //         tokenOut: tokenOutAddress,
+  //         recipient: trade.recipient,
+  //         deadline: BigInt(Math.floor(Date.now() / 1000) + 60 * 20),
+  //         amountIn: BigInt(trade.amountIn),
+  //         amountOutMinimum: BigInt(0),
+  //         limitSqrtPrice: BigInt(0),
+  //       },
+  //     ],
+  //   });
+  // } else {
+  targetData = encodeFunctionData({
+    abi: camelotV3RouterAbi,
+    functionName: "exactInputSingle",
+    args: [
+      {
+        tokenIn: tokenInAddress,
+        tokenOut: tokenOutAddress,
+        recipient: trade.recipient,
+        deadline: BigInt(Math.floor(Date.now() / 1000) + 60 * 20),
+        amountIn: BigInt(trade.amountIn),
+        amountOutMinimum: BigInt(0),
+        limitSqrtPrice: BigInt(0),
+      },
+    ],
+  });
+  // }
+
+  return {
+    amountIn: BigInt(trade.amountIn),
+    amountOut: BigInt(trade.amountOut),
+    args: {
+      target: CAMELOT_V3_ROUTER_ADDR_SANKO,
+      tokenIn: tokenInAddress,
+      targetData,
+      amountIn: BigInt(trade.amountIn),
+      fee: false,
+    },
+    value: isTokenInNative ? BigInt(trade.amountIn) : 0n,
+  };
+};
+
+export const getSankoToobFinanceTxData = async (trade: any) => {
+  const targetData = encodeFunctionData({
+    abi: routeProcessor3Abi,
+    functionName: "toobExecute",
+    args: [
+      trade.data?.tokenIn,
+      trade.data?.amountIn,
+      trade.data?.tokenOut,
+      trade.data?.amountOutMin,
+      0n,
+      trade.data?.to,
+      trade.data?.routeCode,
+    ],
+  });
+
+  return {
+    amountIn: BigInt(trade?.amountIn ?? "0"),
+    amountOut: BigInt(trade?.amountOut ?? "0"),
+    args: {
+      target: ROUTE_PROCESSOR_3_ADDRESS[ChainId.SANKO_MAINNET],
       tokenIn:
         trade.tokenIn instanceof Token
           ? trade.tokenIn.address
