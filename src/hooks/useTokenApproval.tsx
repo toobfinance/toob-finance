@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react";
 // import * as Sentry from '@sentry/nextjs'
-import { Amount, Type } from "../packages/currency"
-import { UserRejectedRequestError, maxUint256 } from "viem"
+import { Amount, Type } from "../packages/currency";
+import { UserRejectedRequestError, maxUint256 } from "viem";
 import {
   useAccount,
   useWriteContract,
   useSimulateContract,
   usePublicClient,
-} from "wagmi"
-import { Address } from "viem"
-import { SendTransactionReturnType } from "wagmi/actions"
+} from "wagmi";
+import { Address } from "viem";
+import { SendTransactionReturnType } from "wagmi/actions";
 
-import { useTokenAllowance } from "./useTokenAllowance"
-import toast from "react-hot-toast"
-import CustomToast from "@/components/CustomToast"
+import { useTokenAllowance } from "./useTokenAllowance";
+import toast from "react-hot-toast";
+import CustomToast from "@/components/CustomToast";
 
 export enum ApprovalState {
   LOADING = "LOADING",
@@ -26,10 +26,10 @@ export enum ApprovalState {
 }
 
 interface UseTokenApprovalParams {
-  spender: Address | undefined
-  amount: Amount<Type> | undefined
-  approveMax?: boolean
-  enabled?: boolean
+  spender: Address | undefined;
+  amount: Amount<Type> | undefined;
+  approveMax?: boolean;
+  enabled?: boolean;
 }
 
 export const useTokenApproval = ({
@@ -38,9 +38,9 @@ export const useTokenApproval = ({
   enabled = true,
   approveMax,
 }: UseTokenApprovalParams): [ApprovalState, any, any] => {
-  const { address } = useAccount()
-  const publicClient = usePublicClient()
-  const [pending, setPending] = useState(false)
+  const { address } = useAccount();
+  const publicClient = usePublicClient();
+  const [pending, setPending] = useState(false);
   const {
     data: allowance,
     isLoading: isAllowanceLoading,
@@ -51,7 +51,7 @@ export const useTokenApproval = ({
     spender,
     chainId: amount?.currency.chainId,
     enabled: Boolean(amount?.currency?.isToken && enabled),
-  })
+  });
 
   const { data } = useSimulateContract({
     chainId: amount?.currency.chainId,
@@ -86,16 +86,16 @@ export const useTokenApproval = ({
       ),
     },
     // onError: (error) => Sentry.captureException(`approve prepare error: ${error.message}`),
-  })
+  });
 
   const onSettled = useCallback(
     (data: SendTransactionReturnType | undefined, e: Error | null) => {
       if (data && amount) {
-        setPending(true)
+        setPending(true);
       }
     },
-    [address, amount]
-  )
+    [amount]
+  );
 
   const { writeContractAsync: execute } = useWriteContract({
     mutation: {
@@ -108,7 +108,7 @@ export const useTokenApproval = ({
             text={`Approve ${amount?.currency?.symbol}`}
             hash={data}
           />
-        ))
+        ));
         publicClient
           ?.waitForTransactionReceipt({ hash: data })
           .then(() => {
@@ -120,27 +120,27 @@ export const useTokenApproval = ({
                   text={`Approve ${amount?.currency?.symbol}`}
                   hash={data}
                 />
-              ))
-              setPending(() => false)
-            })
+              ));
+              setPending(() => false);
+            });
           })
-          .catch(() => setPending(() => false))
+          .catch(() => setPending(() => false));
       },
     },
-  })
+  });
 
   return useMemo(() => {
-    let state = ApprovalState.UNKNOWN
-    if (amount?.currency.isNative) state = ApprovalState.APPROVED
+    let state = ApprovalState.UNKNOWN;
+    if (amount?.currency.isNative) state = ApprovalState.APPROVED;
     else if (allowance && amount && allowance.greaterThan(amount))
-      state = ApprovalState.APPROVED
+      state = ApprovalState.APPROVED;
     else if (allowance && amount && allowance.equalTo(amount))
-      state = ApprovalState.APPROVED
-    else if (pending) state = ApprovalState.PENDING
-    else if (isAllowanceLoading) state = ApprovalState.LOADING
+      state = ApprovalState.APPROVED;
+    else if (pending) state = ApprovalState.PENDING;
+    else if (isAllowanceLoading) state = ApprovalState.LOADING;
     else if (allowance && amount && allowance.lessThan(amount))
-      state = ApprovalState.NOT_APPROVED
+      state = ApprovalState.NOT_APPROVED;
 
-    return [state, execute, data?.request]
-  }, [allowance, amount, execute, isAllowanceLoading, pending])
-}
+    return [state, execute, data?.request];
+  }, [allowance, amount, data?.request, execute, isAllowanceLoading, pending]);
+};
