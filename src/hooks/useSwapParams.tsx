@@ -1,19 +1,19 @@
-"use client"
+"use client";
 
-import { ChainId } from "@/packages/chain"
-import { Native, TOOB, Type } from "@/packages/currency"
-import React, { useState } from "react"
+import { ChainId } from "@/packages/chain";
+import { Native, TOOB, Type } from "@/packages/currency";
+import React, { useState } from "react";
 
 interface SwapParamsType {
-  amountIn: string
-  amountOut: string
-  tokenIn?: Type
-  tokenOut?: Type
-  setTokenIn: any
-  setTokenOut: any
-  setAmountIn: any
-  setAmountOut: any
-  switchToken: any
+  amountIn: string;
+  amountOut: string;
+  tokenIn?: Type;
+  tokenOut?: Type;
+  setTokenIn: any;
+  setTokenOut: any;
+  setAmountIn: any;
+  setAmountOut: any;
+  switchToken: any;
 }
 
 const defaultVal: SwapParamsType = {
@@ -26,46 +26,47 @@ const defaultVal: SwapParamsType = {
   setAmountIn: () => {},
   setAmountOut: () => {},
   switchToken: () => {},
-}
+};
 
-export const SwapParamsContext = React.createContext<SwapParamsType>(defaultVal)
+export const SwapParamsContext =
+  React.createContext<SwapParamsType>(defaultVal);
 
 export default function useSwapParams() {
-  return React.useContext(SwapParamsContext)
+  return React.useContext(SwapParamsContext);
 }
 
 export const SwapParamsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [amountIn, setAmountIn] = useState("")
-  const [amountOut, setAmountOut] = useState("")
+  const [amountIn, setAmountIn] = useState("");
+  const [amountOut, setAmountOut] = useState("");
   const [tokenIn, setTokenIn] = useState<Type | undefined>(
     Native.onChain(ChainId.ARBITRUM_ONE)
-  )
-  const [tokenOut, setTokenOut] = useState<Type | undefined>()
+  );
+  const [tokenOut, setTokenOut] = useState<Type | undefined>();
 
   const switchToken = () => {
-    const newTokenIn = tokenOut
-    const newTokenOut = tokenIn
+    const newTokenIn = tokenOut;
+    const newTokenOut = tokenIn;
 
-    setAmountIn("0")
-    setTokenIn(newTokenIn)
-    setTokenOut(newTokenOut)
-  }
+    setAmountIn("0");
+    setTokenIn(newTokenIn);
+    setTokenOut(newTokenOut);
+  };
 
   const _setTokenIn = (token: Type) => {
     if (tokenOut?.equals(token)) {
-      setTokenOut(tokenIn)
+      setTokenOut(tokenIn);
     }
-    setTokenIn(token)
-  }
+    setTokenIn(token);
+  };
 
   const _setTokenOut = (token: Type) => {
     if (tokenIn?.equals(token)) {
-      setTokenIn(tokenOut)
+      setTokenIn(tokenOut);
     }
-    setTokenOut(token)
-  }
+    setTokenOut(token);
+  };
 
   return (
     <SwapParamsContext.Provider
@@ -83,5 +84,5 @@ export const SwapParamsProvider: React.FC<{ children: React.ReactNode }> = ({
     >
       {children}
     </SwapParamsContext.Provider>
-  )
-}
+  );
+};

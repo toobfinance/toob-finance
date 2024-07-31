@@ -1,17 +1,17 @@
-import { ODOS_EXECUTOR_ADDR, ODOS_ROUTER_ADDR } from "@/contracts";
+import {
+  ODOS_EXECUTOR_V2_ADDR,
+  ODOS_ROUTER_V2_ADDR,
+} from "@/contracts";
 import { routeProcessor3Abi } from "@/packages/abi";
-import kyberSwapAbi from "@/packages/abi/kyberSwapAbi";
-import toobFinanceRouter from "@/packages/abi/toobFinanceRouter";
-import { slippageAmount } from "@/packages/calculate";
+import odosRouterV2Abi from "@/packages/abi/odosRouterV2Abi";
 import { ChainId } from "@/packages/chain";
 import { ROUTE_PROCESSOR_3_ADDRESS } from "@/packages/config";
 import { Amount, Token, Type } from "@/packages/currency";
 import { Percent } from "@/packages/math";
-import { getAllPoolsCodeMap } from "@/packages/pools/actions/getAllPoolsCodeMap";
 import { PoolCode, Router } from "@/packages/router";
 import { RouteStatus } from "@/packages/tines";
 import axios from "axios";
-import { Address, Hex, encodeFunctionData } from "viem";
+import { Address, encodeFunctionData } from "viem";
 
 export const getOdosTrade = async (
   tokenIn: Type,
@@ -113,7 +113,7 @@ export const getKyberTrade = async (
   }
 };
 
-export const getXFusionTrade = async (
+export const getToobFinanceTrade = async (
   tokenIn: Type,
   tokenOut: Type,
   recipient: Address,
@@ -150,7 +150,7 @@ export const getXFusionTrade = async (
       route.amountOutBI.toString()
     );
 
-    const args = Router.routeProcessor3Params(
+    args = Router.routeProcessor3Params(
       poolsCodeMap,
       route,
       tokenIn,
@@ -196,23 +196,24 @@ export const getOdosTxData = async (trade: any) => {
       ?.slice(10) ?? "";
 
   const targetData = encodeFunctionData({
-    abi: toobFinanceRouter,
+    abi: odosRouterV2Abi,
     functionName: "swap",
     args: [
       {
-        inputAmount: BigInt(data?.inputTokens?.[0]?.amount ?? "0"),
         inputToken: data?.inputTokens?.[0]?.tokenAddress ?? "",
+        inputAmount: BigInt(data?.inputTokens?.[0]?.amount ?? "0"),
+        inputReceiver: ODOS_EXECUTOR_V2_ADDR,
         outputToken: data?.outputTokens?.[0]?.tokenAddress ?? "",
-        outputReceiver: trade.recipient,
-        inputReceiver: ODOS_EXECUTOR_ADDR,
         outputQuote: BigInt(data?.outputTokens?.[0]?.amount ?? "0"),
         outputMin:
           (BigInt(data?.outputTokens?.[0]?.amount ?? "0") *
             (1000000n - BigInt(trade.slippage * 10000))) /
           1000000n,
+        outputReceiver: trade.recipient,
       },
       `0x${pathDefinition}`,
-      ODOS_EXECUTOR_ADDR,
+      ODOS_EXECUTOR_V2_ADDR,
+      0,
     ],
   });
 
@@ -221,7 +222,7 @@ export const getOdosTxData = async (trade: any) => {
     amountOut: BigInt(data?.outputTokens?.[0]?.amount ?? "0"),
     args: {
       targetData,
-      target: ODOS_ROUTER_ADDR,
+      target: ODOS_ROUTER_V2_ADDR,
       tokenIn:
         trade.tokenIn instanceof Token
           ? trade.tokenIn.address
@@ -264,7 +265,7 @@ export const getKyberTxData = async (trade: any) => {
   };
 };
 
-export const getXFusionTxData = async (trade: any) => {
+export const getToobFinanceTxData = async (trade: any) => {
   const targetData = encodeFunctionData({
     abi: routeProcessor3Abi,
     functionName: "toobExecute",
@@ -278,6 +279,7 @@ export const getXFusionTxData = async (trade: any) => {
       trade.data?.routeCode,
     ],
   });
+
   return {
     amountIn: BigInt(trade?.amountIn ?? "0"),
     amountOut: BigInt(trade?.amountOut ?? "0"),

@@ -1,15 +1,14 @@
-"use client"
+"use client";
 
-import React, { useEffect } from "react"
-import Exchange from "../svgs/Exchange"
-import SwapSide from "./SwapSide"
-import useSwapParams from "../../hooks/useSwapParams"
-import SwapButton from "./SwapButton"
-import useSwapTrade from "@/hooks/useSwapTrade"
-import { Amount, tryParseAmount } from "@/packages/currency"
-import SettingPopup from "../SettingPopup"
-import SwapDetails from "./SwapDetails"
-import SwapTrades from "./SwapTrades"
+import React, { useState } from "react";
+import Exchange from "../svgs/Exchange";
+import SwapSide from "./SwapSide";
+import useSwapParams from "../../hooks/useSwapParams";
+import SwapButton from "./SwapButton";
+import useSwapTrade from "@/hooks/useSwapTrade";
+import { Amount } from "@/packages/currency";
+import SwapDetails from "./SwapDetails";
+import SwapTrades from "./SwapTrades";
 
 const SwapPanel = () => {
   const {
@@ -20,9 +19,9 @@ const SwapPanel = () => {
     setTokenIn,
     setTokenOut,
     switchToken,
-  } = useSwapParams()
-
-  const trade = useSwapTrade()
+  } = useSwapParams();
+  const trade = useSwapTrade();
+  const [lockedRouter, setLockedRouter] = useState(null);
 
   return (
     <div className="dark:bg-[linear-gradient(180deg,#000000_52%,rgba(47,54,61,0.3)_100%)] relative p-4 md:p-8 mt-4 border border-black/30 dark:border-white/20 rounded-lg md:rounded-[32px]">
@@ -32,7 +31,7 @@ const SwapPanel = () => {
         setToken={setTokenIn}
         amount={amountIn}
         setAmount={setAmountIn}
-        price={trade.data?.[0]?.amountInValue}
+        price={trade.data?.[0]?.amountInValue.toString()}
       />
 
       <div className="flex items-center w-full justify-center">
@@ -59,13 +58,17 @@ const SwapPanel = () => {
               ).toExact()
             : undefined
         }
-        price={trade.data?.[0]?.amountOutValue}
+        price={trade.data?.[0]?.amountOutValue.toString()}
       />
       <SwapDetails trade={trade} />
-      <SwapTrades trades={trade.data} />
-      <SwapButton trade={trade} />
+      <SwapTrades trades={trade.data} lockedRouter={lockedRouter} />
+      <SwapButton
+        trade={trade}
+        setLockedRouter={setLockedRouter}
+        lockedRouter={lockedRouter}
+      />
     </div>
-  )
-}
+  );
+};
 
-export default SwapPanel
+export default SwapPanel;

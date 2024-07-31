@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { ChainId } from "../packages/chain"
-import { Amount, Token } from "../packages/currency"
-import { useReadContract } from "wagmi"
-import { erc20Abi, Address } from "viem"
+import { ChainId } from "../packages/chain";
+import { Amount, Token } from "../packages/currency";
+import { useReadContract } from "wagmi";
+import { erc20Abi, Address } from "viem";
 
 interface UseTokenAllowance {
-  token?: Token
-  chainId: ChainId | undefined
-  owner: Address | undefined
-  spender: Address | undefined
-  enabled?: boolean
+  token?: Token;
+  chainId: ChainId | undefined;
+  owner: Address | undefined;
+  spender: Address | undefined;
+  enabled?: boolean;
 }
 
 export const useTokenAllowance = ({
@@ -30,9 +30,9 @@ export const useTokenAllowance = ({
       enabled: Boolean(token && owner && spender && enabled && chainId),
       select: (data) => {
         if (token) {
-          return Amount.fromRawAmount(token, data.toString())
+          return Amount.fromRawAmount(token, data.toString());
         }
       },
     },
-  })
-}
+  });
+};

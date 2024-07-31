@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
-import localFont from "next/font/local"
-import "./globals.css"
-import Provider from "./providers"
-import Header from "@/components/layout/Header"
-import Footer from "@/components/layout/Footer"
-import { Toaster } from "react-hot-toast"
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+import Provider from "./providers";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import { Toaster } from "react-hot-toast";
 
 const roobert = localFont({
   src: [
@@ -19,17 +19,17 @@ const roobert = localFont({
       style: "normal",
     },
   ],
-})
+});
 
 export const metadata: Metadata = {
   title: "Toob Finance: Buy ANY ERC-20 Token",
   description: "Toob Finance",
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -44,5 +44,5 @@ export default function RootLayout({
         </Provider>
       </body>
     </html>
-  )
+  );
 }

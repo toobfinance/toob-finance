@@ -1,19 +1,19 @@
-import { UseQueryResult } from "@tanstack/react-query"
-import ChevronDown from "../svgs/ChevronDown"
-import { useState } from "react"
-import { Amount, Price } from "@/packages/currency"
-import useSwapParams from "@/hooks/useSwapParams"
-import useSettings from "@/hooks/useSettings"
+import { UseQueryResult } from "@tanstack/react-query";
+import ChevronDown from "../svgs/ChevronDown";
+import { useState } from "react";
+import { Amount, Price } from "@/packages/currency";
+import useSwapParams from "@/hooks/useSwapParams";
+import useSettings from "@/hooks/useSettings";
 
 interface SwapDetailsProps {
-  trade: UseQueryResult<any, Error>
+  trade: UseQueryResult<any, Error>;
 }
 
 const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
-  const [open, setOpen] = useState(false)
-  const [reverted, setReverted] = useState(false)
-  const { tokenIn, tokenOut } = useSwapParams()
-  const { slippage } = useSettings()
+  const [open, setOpen] = useState(false);
+  const [reverted, setReverted] = useState(false);
+  const { tokenIn, tokenOut } = useSwapParams();
+  const { slippage } = useSettings();
 
   const swapPrice =
     trade.data && tokenIn && tokenOut
@@ -23,7 +23,7 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
           trade.data?.[0]?.amountIn ?? "0",
           trade.data?.[0]?.amountOut ?? "0"
         )
-      : undefined
+      : undefined;
 
   return trade.data && tokenIn && tokenOut ? (
     <div className="mt-4 border rounded-2xl px-4 border-black/30 dark:border-white/20">
@@ -50,7 +50,9 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
       >
         <div className="gap-0.5 pt-4 pb-6">
           <div className="flex items-start justify-between">
-            <span className="text-black dark:text-white text-sm">Expected Output:</span>
+            <span className="text-black dark:text-white text-sm">
+              Expected Output:
+            </span>
             <span className="text-black dark:text-white text-sm font-semibold">
               {Amount.fromRawAmount(
                 tokenOut,
@@ -60,7 +62,9 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
             </span>
           </div>
           <div className="flex items-start justify-between">
-            <span className="text-black dark:text-white text-sm">Minimum Received:</span>
+            <span className="text-black dark:text-white text-sm">
+              Minimum Received:
+            </span>
             <span className="text-black dark:text-white text-sm font-semibold">
               {Amount.fromRawAmount(
                 tokenOut,
@@ -72,7 +76,9 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
             </span>
           </div>
           <div className="flex items-start justify-between">
-            <span className="text-black dark:text-white text-sm">Price Impact:</span>
+            <span className="text-black dark:text-white text-sm">
+              Price Impact:
+            </span>
             <span className="text-black dark:text-white text-sm font-semibold">
               {(trade.data?.[0]?.priceImpact ?? 0) < 0.01
                 ? "<0.01%"
@@ -81,12 +87,14 @@ const SwapDetails: React.FC<SwapDetailsProps> = ({ trade }) => {
           </div>
           <div className="flex items-start justify-between">
             <span className="text-black dark:text-white text-sm">Fees:</span>
-            <span className="text-black dark:text-white text-sm font-semibold">0 ETH</span>
+            <span className="text-black dark:text-white text-sm font-semibold">
+              0 ETH
+            </span>
           </div>
         </div>
       </div>
     </div>
-  ) : null
-}
+  ) : null;
+};
 
-export default SwapDetails
+export default SwapDetails;
