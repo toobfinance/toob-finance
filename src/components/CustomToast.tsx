@@ -1,26 +1,35 @@
-import Link from "next/link"
-import React, { useEffect } from "react"
-import { Toast, toast, useToaster } from "react-hot-toast"
-import ExternalLink from "./svgs/ExternalLink"
-import Spinner from "./Spinner"
-import Close from "./svgs/Close"
+import Link from "next/link";
+import React, { useEffect } from "react";
+import { Toast, toast, useToaster } from "react-hot-toast";
+import ExternalLink from "./svgs/ExternalLink";
+import Spinner from "./Spinner";
+import Close from "./svgs/Close";
+import { useAccount } from "wagmi";
+import { ChainId } from "@/packages/chain";
 
 interface CustomToastProps {
-  t: Toast
-  type: "success" | "info" | "error"
-  text: string
-  hash?: string
+  t: Toast;
+  type: "success" | "info" | "error";
+  text: string;
+  hash?: string;
 }
 
 const CustomToast: React.FC<CustomToastProps> = ({ t, type, text, hash }) => {
-  const { toasts } = useToaster()
+  const { toasts } = useToaster();
+  const { chainId } = useAccount();
+
+  const scan = chainId === ChainId.ARBITRUM_ONE ? "Arbiscan" : "Sanko Explorer";
+  const scanUrl =
+    chainId === ChainId.ARBITRUM_ONE
+      ? "https://arbiscan.io/tx/"
+      : "https://explorer.sanko.xyz/tx/";
 
   useEffect(() => {
     toasts
       .filter((t) => t.visible)
       .slice(1)
-      .forEach((t) => toast.dismiss(t.id))
-  }, [toasts])
+      .forEach((t) => toast.dismiss(t.id));
+  }, [toasts]);
 
   return (
     <div
@@ -46,12 +55,12 @@ const CustomToast: React.FC<CustomToastProps> = ({ t, type, text, hash }) => {
         <div className="font-semibold">{text}</div>
         {hash ? (
           <Link
-            href={`https://arbiscan.io/tx/${hash}`}
+            href={`${scanUrl}${hash}`}
             target="_blank"
             rel="noreferrer"
             className="flex items-center opacity-75 hover:opacity-50 hover:underline transition-all mt-1"
           >
-            View on Arbiscan <ExternalLink className="w-4 h-4 ml-2" />
+            View on {scan} <ExternalLink className="w-4 h-4 ml-2" />
           </Link>
         ) : null}
       </div>
@@ -66,7 +75,7 @@ const CustomToast: React.FC<CustomToastProps> = ({ t, type, text, hash }) => {
         </button>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default CustomToast
+export default CustomToast;

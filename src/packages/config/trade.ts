@@ -53,7 +53,7 @@ export const ROUTE_PROCESSOR_3_ADDRESS: Record<
   RouteProcessor3ChainId,
   `0x${string}`
 > = {
-  [ChainId.ARBITRUM_ONE]: "0xac80590497f35417A71B7D0873F33874Ee1266A8",
+  [ChainId.ARBITRUM_ONE]: "0x9fC90524c767Fa9709Acf301BAE1dB4FAA604fc3",
   [ChainId.SANKO_MAINNET]: "0x336eC15830dd3891FfAB3f9a15660f8FeC00A611",
 } as const;
 export const isRouteProcessor3ChainId = (

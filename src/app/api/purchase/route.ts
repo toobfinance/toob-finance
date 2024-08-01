@@ -69,6 +69,18 @@ export async function POST(request: Request) {
       process.env.NEXT_PUBLIC_WERT_KEY ?? ""
     );
 
+    // const signedData = signSmartContractData(
+    //   {
+    //     address: userAddr,
+    //     commodity: "USDC",
+    //     network: "sanko",
+    //     commodity_amount: amount,
+    //     sc_address: AGGREGATOR_ADDR_SANKO,
+    //     sc_input_data: inputData,
+    //   },
+    //   process.env.NEXT_PUBLIC_WERT_KEY ?? ""
+    // );
+
     return Response.json(signedData);
   } catch (err: any) {
     console.log(err);
