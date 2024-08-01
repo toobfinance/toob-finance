@@ -2,7 +2,7 @@
 
 import { ChainId } from "@/packages/chain";
 import { Native, Type } from "@/packages/currency";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
 interface SwapParamsType {
@@ -18,7 +18,7 @@ interface SwapParamsType {
 }
 
 const defaultVal: SwapParamsType = {
-  tokenIn: Native.onChain(ChainId.SANKO_MAINNET),
+  tokenIn: Native.onChain(ChainId.ARBITRUM_ONE),
   tokenOut: undefined,
   amountIn: "",
   amountOut: "",
@@ -43,10 +43,16 @@ export const SwapParamsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [amountOut, setAmountOut] = useState("");
   const { chainId } = useAccount();
 
+  useEffect(() => {
+    if (chainId) {
+      setTokenIn(Native.onChain(chainId));
+    }
+  }, [chainId]);
+
   const currentChainId =
-    chainId === ChainId.ARBITRUM_ONE
-      ? ChainId.ARBITRUM_ONE
-      : ChainId.SANKO_MAINNET;
+    chainId === ChainId.SANKO_MAINNET
+      ? ChainId.SANKO_MAINNET
+      : ChainId.ARBITRUM_ONE;
 
   const [tokenIn, setTokenIn] = useState<Type | undefined>(
     Native.onChain(currentChainId)
