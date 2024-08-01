@@ -1,8 +1,8 @@
-import type { ConstantProductRPool, MultiRoute, RouteLeg } from "../../tines"
+import type { ConstantProductRPool, MultiRoute, RouteLeg } from "../../tines";
 
-import { HEXer } from "../HEXer"
-import { LiquidityProviders } from "../liquidity-providers"
-import { PoolCode } from "./PoolCode"
+import { HEXer } from "../HEXer";
+import { LiquidityProviders } from "../liquidity-providers";
+import { PoolCode } from "./PoolCode";
 
 export class ConstantProductPoolCode extends PoolCode {
   constructor(
@@ -10,7 +10,11 @@ export class ConstantProductPoolCode extends PoolCode {
     liquidityProvider: LiquidityProviders,
     providerName: string
   ) {
-    super(pool, liquidityProvider, `${providerName} ${(pool?.fee || 0) * 100}%`)
+    super(
+      pool,
+      liquidityProvider,
+      `${providerName} ${(pool?.fee || 0) * 100}%`
+    );
   }
 
   getSwapCodeForRouteProcessor(
@@ -25,12 +29,12 @@ export class ConstantProductPoolCode extends PoolCode {
       .address(leg.tokenFrom.address)
       .bool(leg.tokenFrom.address === this.pool.token0.address)
       .address(to)
-      .toString()
+      .toString();
     console.assert(
       code.length === 62 * 2,
       "getSwapCodeForRouteProcessor unexpected code length"
-    )
-    return code
+    );
+    return code;
   }
 
   override getSwapCodeForRouteProcessor2(
@@ -44,8 +48,8 @@ export class ConstantProductPoolCode extends PoolCode {
       .bool(leg.tokenFrom.address === this.pool.token0.address)
       .address(to)
       //.bool(presended)
-      .toString()
-    return code
+      .toString();
+    return code;
   }
 
   override getSwapCodeForRouteProcessor4(
@@ -59,7 +63,7 @@ export class ConstantProductPoolCode extends PoolCode {
       .bool(leg.tokenFrom.address === this.pool.token0.address)
       .address(to)
       .uint24(Math.round(leg.poolFee * 1_000_000)) // new part - before fee was always 0.3%
-      .toString()
-    return code
+      .toString();
+    return code;
   }
 }

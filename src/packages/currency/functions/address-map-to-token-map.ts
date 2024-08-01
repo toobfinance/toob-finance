@@ -1,4 +1,4 @@
-import { Token } from "../Token"
+import { Token } from "../Token";
 
 export function addressMapToTokenMap(
   {
@@ -7,10 +7,10 @@ export function addressMapToTokenMap(
     name,
     icon,
   }: {
-    decimals: number | string
-    symbol?: string | undefined
-    name?: string | undefined
-    icon?: string | undefined
+    decimals: number | string;
+    symbol?: string | undefined;
+    name?: string | undefined;
+    icon?: string | undefined;
   },
   map: Record<number | string, string>
 ) {
@@ -26,5 +26,5 @@ export function addressMapToTokenMap(
         icon,
       }),
     ])
-  )
+  );
 }

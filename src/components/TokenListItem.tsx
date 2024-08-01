@@ -20,7 +20,7 @@ const TokenListItem: React.FC<TokenListItemProps> = ({
   onSelectItem,
   className,
 }) => {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const { data: balance } = useBalance({
     address,
     token: token instanceof Token ? token.address : undefined,
@@ -28,10 +28,17 @@ const TokenListItem: React.FC<TokenListItemProps> = ({
   });
   const [warningOpen, setWarningOpen] = useState(false);
 
+  const connectedChainId =
+    chainId === ChainId.ARBITRUM_ONE
+      ? ChainId.ARBITRUM_ONE
+      : chainId === ChainId.SANKO_MAINNET
+      ? ChainId.SANKO_MAINNET
+      : undefined;
+
   const { data: price } = usePrice({
     address: token.wrapped.address,
-    chainId: ChainId.ARBITRUM_ONE,
-    enabled: (balance?.value ?? 0n) > 0n,
+    chainId: connectedChainId,
+    enabled: (balance?.value ?? 0n) > 0n && connectedChainId != undefined,
   });
 
   return (

@@ -1,4 +1,4 @@
-import z from "zod"
+import z from "zod";
 
 export const nativeSchema = z.object({
   isNative: z.literal(true),
@@ -6,7 +6,7 @@ export const nativeSchema = z.object({
   symbol: z.string().optional(),
   decimals: z.number(),
   chainId: z.number(),
-})
+});
 
 export const tokenSchema = z.object({
   isNative: z.literal(false),
@@ -15,13 +15,13 @@ export const tokenSchema = z.object({
   decimals: z.number(),
   chainId: z.number(),
   address: z.string(),
-})
+});
 
 export const amountSchema = z.object({
   amount: z.string(),
   currency: z.discriminatedUnion("isNative", [nativeSchema, tokenSchema]),
-})
+});
 
-export type SerializedNative = z.infer<typeof nativeSchema>
-export type SerializedToken = z.infer<typeof tokenSchema>
-export type SerializedAmount = z.infer<typeof amountSchema>
+export type SerializedNative = z.infer<typeof nativeSchema>;
+export type SerializedToken = z.infer<typeof tokenSchema>;
+export type SerializedAmount = z.infer<typeof amountSchema>;

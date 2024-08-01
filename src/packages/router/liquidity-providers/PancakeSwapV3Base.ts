@@ -1,14 +1,14 @@
-import { RToken, UniV3Pool } from "../../tines"
-import { computePoolAddress } from "../../v3-sdk"
-import { erc20Abi, tickLensAbi } from "../../abi"
-import { ChainId } from "../../chain"
-import { Currency, Token, Type } from "../../currency"
-import { Address, PublicClient } from "viem"
+import { RToken, UniV3Pool } from "../../tines";
+import { computePoolAddress } from "../../v3-sdk";
+import { erc20Abi, tickLensAbi } from "../../abi";
+import { ChainId } from "../../chain";
+import { Currency, Token, Type } from "../../currency";
+import { Address, PublicClient } from "viem";
 
-import { getCurrencyCombinations } from "../getCurrencyCombinations"
-import type { PoolCode } from "../pools/PoolCode"
-import { UniV3PoolCode } from "../pools/UniV3Pool"
-import { LiquidityProvider } from "./LiquidityProvider"
+import { getCurrencyCombinations } from "../getCurrencyCombinations";
+import type { PoolCode } from "../pools/PoolCode";
+import { UniV3PoolCode } from "../pools/UniV3Pool";
+import { LiquidityProvider } from "./LiquidityProvider";
 
 enum FeeAmount {
   /** 0.01% */
@@ -29,50 +29,50 @@ const TICK_SPACINGS: { [_amount in FeeAmount]: number } = {
   [FeeAmount.LOW]: 10,
   [FeeAmount.MEDIUM]: 50,
   [FeeAmount.HIGH]: 200,
-}
+};
 
 interface StaticPool {
-  address: Address
-  token0: Token
-  token1: Token
-  fee: FeeAmount
+  address: Address;
+  token0: Token;
+  token1: Token;
+  fee: FeeAmount;
 }
 
 interface V3Pool {
-  address: Address
-  token0: Token
-  token1: Token
-  fee: FeeAmount
-  sqrtPriceX96: bigint
-  activeTick: number
+  address: Address;
+  token0: Token;
+  token1: Token;
+  fee: FeeAmount;
+  sqrtPriceX96: bigint;
+  activeTick: number;
 }
 
-export const NUMBER_OF_SURROUNDING_TICKS = 1000 // 10% price impact
+export const NUMBER_OF_SURROUNDING_TICKS = 1000; // 10% price impact
 
 const getActiveTick = (tickCurrent: number, feeAmount: FeeAmount) =>
   typeof tickCurrent === "number" && feeAmount
     ? Math.floor(tickCurrent / TICK_SPACINGS[feeAmount]) *
       TICK_SPACINGS[feeAmount]
-    : undefined
+    : undefined;
 
 const bitmapIndex = (tick: number, tickSpacing: number) => {
-  return Math.floor(tick / tickSpacing / 256)
-}
+  return Math.floor(tick / tickSpacing / 256);
+};
 
-type PoolFilter = { has: (arg: string) => boolean }
+type PoolFilter = { has: (arg: string) => boolean };
 
 export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
-  poolsByTrade: Map<string, string[]> = new Map()
-  pools: Map<string, PoolCode> = new Map()
+  poolsByTrade: Map<string, string[]> = new Map();
+  pools: Map<string, PoolCode> = new Map();
 
-  blockListener?: () => void
-  unwatchBlockNumber?: () => void
+  blockListener?: () => void;
+  unwatchBlockNumber?: () => void;
 
-  isInitialized = false
-  deployer: Record<number, Address> | undefined
-  factory: Record<number, Address> = {}
-  initCodeHash: Record<number, string> = {}
-  tickLens: Record<number, string> = {}
+  isInitialized = false;
+  deployer: Record<number, Address> | undefined;
+  factory: Record<number, Address> = {};
+  initCodeHash: Record<number, string> = {};
+  tickLens: Record<number, string> = {};
 
   constructor(
     chainId: ChainId,
@@ -82,11 +82,11 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
     tickLens: Record<number, string>,
     deployer?: Record<number, Address>
   ) {
-    super(chainId, web3Client)
-    this.factory = factory
-    this.initCodeHash = initCodeHash
-    this.deployer = deployer
-    this.tickLens = tickLens
+    super(chainId, web3Client);
+    this.factory = factory;
+    this.initCodeHash = initCodeHash;
+    this.deployer = deployer;
+    this.tickLens = tickLens;
     if (
       !(chainId in this.factory) ||
       !(chainId in this.initCodeHash) ||
@@ -94,7 +94,7 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
     ) {
       throw new Error(
         `${this.getType()} cannot be instantiated for chainid ${chainId}, no factory or initCodeHash`
-      )
+      );
     }
   }
 
@@ -103,11 +103,11 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
     t1: Token,
     excludePools?: Set<string> | PoolFilter
   ): Promise<void> {
-    let staticPools = this.getStaticPools(t0, t1)
+    let staticPools = this.getStaticPools(t0, t1);
     if (excludePools)
-      staticPools = staticPools.filter((p) => !excludePools.has(p.address))
+      staticPools = staticPools.filter((p) => !excludePools.has(p.address));
 
-    console.debug("staticPools v3 base", staticPools.length)
+    console.debug("staticPools v3 base", staticPools.length);
 
     const slot0 = await this.client
       .multicall({
@@ -165,28 +165,28 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
           `${this.getLogPrefix()} - INIT: multicall failed, message: ${
             e.message
           }`
-        )
-        return undefined
-      })
+        );
+        return undefined;
+      });
 
-    const existingPools: V3Pool[] = []
+    const existingPools: V3Pool[] = [];
 
     staticPools.forEach((pool, i) => {
-      if (slot0 === undefined || !slot0[i]) return
-      const sqrtPriceX96 = slot0[i].result?.[0]
-      const tick = slot0[i].result?.[1]
+      if (slot0 === undefined || !slot0[i]) return;
+      const sqrtPriceX96 = slot0[i].result?.[0];
+      const tick = slot0[i].result?.[1];
       if (!sqrtPriceX96 || sqrtPriceX96 === 0n || typeof tick !== "number")
-        return
-      const activeTick = getActiveTick(tick, pool.fee)
-      if (typeof activeTick !== "number") return
+        return;
+      const activeTick = getActiveTick(tick, pool.fee);
+      if (typeof activeTick !== "number") return;
       existingPools.push({
         ...pool,
         sqrtPriceX96,
         activeTick,
-      })
-    })
+      });
+    });
 
-    if (existingPools.length === 0) return
+    if (existingPools.length === 0) return;
 
     const liquidityContracts = this.client.multicall({
       multicallAddress: this.client.chain?.contracts?.multicall3
@@ -211,7 +211,7 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
             functionName: "liquidity",
           } as const)
       ),
-    })
+    });
 
     const token0Contracts = this.client.multicall({
       multicallAddress: this.client.chain?.contracts?.multicall3
@@ -227,7 +227,7 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
             functionName: "balanceOf",
           } as const)
       ),
-    })
+    });
 
     const token1Contracts = this.client.multicall({
       multicallAddress: this.client.chain?.contracts?.multicall3
@@ -243,24 +243,24 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
             functionName: "balanceOf",
           } as const)
       ),
-    })
+    });
 
     const minIndexes = existingPools.map((pool) =>
       bitmapIndex(
         pool.activeTick - NUMBER_OF_SURROUNDING_TICKS,
         TICK_SPACINGS[pool.fee]
       )
-    )
+    );
     const maxIndexes = existingPools.map((pool) =>
       bitmapIndex(
         pool.activeTick + NUMBER_OF_SURROUNDING_TICKS,
         TICK_SPACINGS[pool.fee]
       )
-    )
+    );
 
     const wordList = existingPools.flatMap((pool, i) => {
-      const minIndex = minIndexes[i]
-      const maxIndex = maxIndexes[i]
+      const minIndex = minIndexes[i];
+      const maxIndex = maxIndexes[i];
 
       return Array.from(
         { length: maxIndex - minIndex + 1 },
@@ -274,15 +274,15 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
         abi: tickLensAbi,
         functionName: "getPopulatedTicksInWord" as const,
         index: i,
-      }))
-    })
+      }));
+    });
 
     const ticksContracts = this.client.multicall({
       multicallAddress: this.client.chain?.contracts?.multicall3
         ?.address as Address,
       allowFailure: true,
       contracts: wordList,
-    })
+    });
 
     const [liquidityResults, token0Balances, token1Balances, tickResults] =
       await Promise.all([
@@ -290,59 +290,59 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
         token0Contracts,
         token1Contracts,
         ticksContracts,
-      ])
+      ]);
 
-    const ticks: NonNullable<(typeof tickResults)[number]["result"]>[] = []
+    const ticks: NonNullable<(typeof tickResults)[number]["result"]>[] = [];
     tickResults.forEach((t, i) => {
-      const index = wordList[i].index
-      ticks[index] = (ticks[index] || []).concat(t.result || [])
-    })
+      const index = wordList[i].index;
+      ticks[index] = (ticks[index] || []).concat(t.result || []);
+    });
 
-    const transformedV3Pools: PoolCode[] = []
+    const transformedV3Pools: PoolCode[] = [];
     existingPools.forEach((pool, i) => {
       if (
         !liquidityResults?.[i] ||
         !token0Balances?.[i].result ||
         !token1Balances?.[i].result
       )
-        return
-      const balance0 = token0Balances[i].result
-      const balance1 = token1Balances[i].result
-      const liquidity = liquidityResults[i].result
+        return;
+      const balance0 = token0Balances[i].result;
+      const balance1 = token1Balances[i].result;
+      const liquidity = liquidityResults[i].result;
       if (
         balance0 === undefined ||
         balance1 === undefined ||
         liquidity === undefined
       )
-        return
+        return;
 
       const poolTicks = ticks[i]
         .map((tick) => ({
           index: tick.tick,
           DLiquidity: tick.liquidityNet,
         }))
-        .sort((a, b) => a.index - b.index)
+        .sort((a, b) => a.index - b.index);
 
       const lowerUnknownTick =
-        minIndexes[i] * TICK_SPACINGS[pool.fee] * 256 - TICK_SPACINGS[pool.fee]
+        minIndexes[i] * TICK_SPACINGS[pool.fee] * 256 - TICK_SPACINGS[pool.fee];
       console.assert(
         poolTicks.length === 0 || lowerUnknownTick < poolTicks[0].index,
         "Error 236: unexpected min tick index"
-      )
+      );
       poolTicks.unshift({
         index: lowerUnknownTick,
         DLiquidity: 0n,
-      })
+      });
       const upperUnknownTick =
-        (maxIndexes[i] + 1) * TICK_SPACINGS[pool.fee] * 256
+        (maxIndexes[i] + 1) * TICK_SPACINGS[pool.fee] * 256;
       console.assert(
         poolTicks[poolTicks.length - 1].index < upperUnknownTick,
         "Error 244: unexpected max tick index"
-      )
+      );
       poolTicks.push({
         index: upperUnknownTick,
         DLiquidity: 0n,
-      })
+      });
       //console.log(pool.fee, TICK_SPACINGS[pool.fee], pool.activeTick, minIndexes[i], maxIndexes[i], poolTicks)
 
       const v3Pool = new UniV3Pool(
@@ -356,25 +356,25 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
         liquidity,
         pool.sqrtPriceX96,
         poolTicks
-      )
+      );
 
       const pc = new UniV3PoolCode(
         v3Pool,
         this.getType(),
         this.getPoolProviderName()
-      )
-      transformedV3Pools.push(pc)
-      this.pools.set(pool.address.toLowerCase(), pc)
-    })
+      );
+      transformedV3Pools.push(pc);
+      this.pools.set(pool.address.toLowerCase(), pc);
+    });
 
     this.poolsByTrade.set(
       this.getTradeId(t0, t1),
       transformedV3Pools.map((pc) => pc.pool.address.toLowerCase())
-    )
+    );
   }
 
   getStaticPools(t1: Token, t2: Token): StaticPool[] {
-    const currencyCombinations = getCurrencyCombinations(this.chainId, t1, t2)
+    const currencyCombinations = getCurrencyCombinations(this.chainId, t1, t2);
 
     const allCurrencyCombinationsWithAllFees: [Type, Type, FeeAmount][] =
       currencyCombinations.reduce<[Currency, Currency, FeeAmount][]>(
@@ -385,28 +385,28 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
               [tokenA, tokenB, FeeAmount.LOW],
               [tokenA, tokenB, FeeAmount.MEDIUM],
               [tokenA, tokenB, FeeAmount.HIGH],
-            ])
+            ]);
           }
-          return []
+          return [];
         },
         []
-      )
+      );
 
-    const filtered: [Token, Token, FeeAmount][] = []
+    const filtered: [Token, Token, FeeAmount][] = [];
     allCurrencyCombinationsWithAllFees.forEach(
       ([currencyA, currencyB, feeAmount]) => {
         if (currencyA && currencyB && feeAmount) {
-          const tokenA = currencyA.wrapped
-          const tokenB = currencyB.wrapped
-          if (tokenA.equals(tokenB)) return
+          const tokenA = currencyA.wrapped;
+          const tokenB = currencyB.wrapped;
+          if (tokenA.equals(tokenB)) return;
           filtered.push(
             tokenA.sortsBefore(tokenB)
               ? [tokenA, tokenB, feeAmount]
               : [tokenB, tokenA, feeAmount]
-          )
+          );
         }
       }
-    )
+    );
     return filtered.map(([currencyA, currencyB, fee]) => ({
       address: computePoolAddress({
         factoryAddress:
@@ -421,15 +421,15 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
       token0: currencyA,
       token1: currencyB,
       fee,
-    }))
+    }));
   }
 
   startFetchPoolsData() {
-    this.stopFetchPoolsData()
+    this.stopFetchPoolsData();
     // this.topPools = new Map()
     this.unwatchBlockNumber = this.client.watchBlockNumber({
       onBlockNumber: (blockNumber) => {
-        this.lastUpdateBlock = Number(blockNumber)
+        this.lastUpdateBlock = Number(blockNumber);
         // if (!this.isInitialized) {
         //   this.initialize()
         // } else {
@@ -441,9 +441,9 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
           `${this.getLogPrefix()} - Error watching block number: ${
             error.message
           }`
-        )
+        );
       },
-    })
+    });
   }
 
   getCurrentPoolList(): PoolCode[] {
@@ -454,11 +454,11 @@ export abstract class PancakeSwapV3BaseProvider extends LiquidityProvider {
     //       .filter(([poolAddress]) => poolsByTrade.includes(poolAddress))
     //       .map(([, p]) => p)
     //   : []
-    return Array.from(this.pools.values())
+    return Array.from(this.pools.values());
   }
 
   stopFetchPoolsData() {
-    if (this.unwatchBlockNumber) this.unwatchBlockNumber()
-    this.blockListener = undefined
+    if (this.unwatchBlockNumber) this.unwatchBlockNumber();
+    this.blockListener = undefined;
   }
 }

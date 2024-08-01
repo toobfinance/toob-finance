@@ -1,8 +1,8 @@
-import type { MultiRoute, RouteLeg, UniV3Pool } from "../../tines"
+import type { MultiRoute, RouteLeg, UniV3Pool } from "../../tines";
 
-import { HEXer } from "../HEXer"
-import { LiquidityProviders } from "../liquidity-providers"
-import { PoolCode } from "./PoolCode"
+import { HEXer } from "../HEXer";
+import { LiquidityProviders } from "../liquidity-providers";
+import { PoolCode } from "./PoolCode";
 
 export class UniV3PoolCode extends PoolCode {
   constructor(
@@ -10,15 +10,19 @@ export class UniV3PoolCode extends PoolCode {
     liquidityProvider: LiquidityProviders,
     providerName: string
   ) {
-    super(pool, liquidityProvider, `${providerName} ${(pool?.fee || 0) * 100}%`)
+    super(
+      pool,
+      liquidityProvider,
+      `${providerName} ${(pool?.fee || 0) * 100}%`
+    );
   }
 
   override getStartPoint(): string {
-    return PoolCode.RouteProcessorAddress
+    return PoolCode.RouteProcessorAddress;
   }
 
   getSwapCodeForRouteProcessor(): string {
-    return "unsupported"
+    return "unsupported";
   }
 
   override getSwapCodeForRouteProcessor2(
@@ -31,7 +35,7 @@ export class UniV3PoolCode extends PoolCode {
       .address(this.pool.address)
       .bool(leg.tokenFrom.address === this.pool.token0.address)
       .address(to)
-      .toString()
-    return code
+      .toString();
+    return code;
   }
 }

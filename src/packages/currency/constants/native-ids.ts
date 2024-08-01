@@ -1,5 +1,6 @@
-import { ChainId } from "../../chain"
+import { ChainId } from "../../chain";
 
 export const nativeCurrencyIds = {
   [ChainId.ARBITRUM_ONE]: "ETH",
-} as const
+  [ChainId.SANKO_MAINNET]: "DMT",
+} as const;

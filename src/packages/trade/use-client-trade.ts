@@ -1,30 +1,14 @@
-import { PoolCode, UseTradeParams, UseTradeReturn } from "../router"
-import { usePrice } from "../prices"
-import { LiquidityProviders, Router } from "../router"
-import { useQuery } from "@tanstack/react-query"
-import { slippageAmount } from "../calculate"
-import {
-  ROUTE_PROCESSOR_3_ADDRESS,
-  ROUTE_PROCESSOR_ADDRESS,
-  isRouteProcessor3ChainId,
-  isRouteProcessorChainId,
-} from "../config"
-import {
-  Amount,
-  DAI,
-  Native,
-  Price,
-  Type,
-  USDC,
-  USDT,
-  WBTC,
-  WNATIVE,
-  WNATIVE_ADDRESS,
-} from "../currency"
-import { Percent } from "../math"
-import { Address, Hex } from "viem"
-import { useFeeData, useGasPrice } from "wagmi"
-import { usePoolsCodeMap } from "../pools"
+import { UseTradeParams } from "../router";
+import { usePrice } from "../prices";
+import { Router } from "../router";
+import { useQuery } from "@tanstack/react-query";
+import { slippageAmount } from "../calculate";
+import { ROUTE_PROCESSOR_3_ADDRESS, isRouteProcessor3ChainId } from "../config";
+import { Amount, Native, WNATIVE_ADDRESS } from "../currency";
+import { Percent } from "../math";
+import { Address, Hex } from "viem";
+import { useGasPrice } from "wagmi";
+import { usePoolsCodeMap } from "../pools";
 
 export const useClientTrade = (variables: UseTradeParams) => {
   const {
@@ -37,21 +21,21 @@ export const useClientTrade = (variables: UseTradeParams) => {
     recipient,
     maxFlowNumber,
     providers,
-  } = variables
+  } = variables;
 
-  const { data: feeData } = useGasPrice({ chainId })
+  const { data: feeData } = useGasPrice({ chainId });
 
   const { data: price } = usePrice({
     chainId,
     address: WNATIVE_ADDRESS[chainId],
-  })
+  });
   const { data: poolsCodeMap } = usePoolsCodeMap({
     chainId,
     currencyA: fromToken,
     currencyB: toToken,
     providers,
     enabled,
-  })
+  });
 
   return useQuery({
     queryKey: [
@@ -69,7 +53,6 @@ export const useClientTrade = (variables: UseTradeParams) => {
       },
     ],
     queryFn: async function () {
-      console.log(poolsCodeMap)
       if (
         !poolsCodeMap ||
         !isRouteProcessor3ChainId(chainId) ||
@@ -91,7 +74,7 @@ export const useClientTrade = (variables: UseTradeParams) => {
           route: undefined,
           functionName: "processRoute",
           value: undefined,
-        }
+        };
 
       const route = Router.findBestRoute(
         poolsCodeMap,
@@ -102,11 +85,9 @@ export const useClientTrade = (variables: UseTradeParams) => {
         Number(feeData),
         maxFlowNumber,
         providers
-      )
+      );
 
-      console.log(route)
-
-      let args = undefined
+      let args = undefined;
 
       if (recipient) {
         args = Router.routeProcessor3Params(
@@ -118,18 +99,18 @@ export const useClientTrade = (variables: UseTradeParams) => {
           ROUTE_PROCESSOR_3_ADDRESS[chainId],
           [],
           +slippagePercentage / 100
-        )
+        );
       }
 
       if (route) {
         const amountIn = Amount.fromRawAmount(
           fromToken,
           route.amountInBI.toString()
-        )
+        );
         const amountOut = Amount.fromRawAmount(
           toToken,
           route.amountOutBI.toString()
-        )
+        );
 
         // let writeArgs: UseTradeReturnWriteArgs = args
         let writeArgs = args
@@ -142,11 +123,11 @@ export const useClientTrade = (variables: UseTradeParams) => {
               args.to as Address,
               args.routeCode as Hex,
             ]
-          : undefined
+          : undefined;
 
         // const overrides = fromToken.isNative && writeArgs?.[1] ? { value: BigNumber.from(writeArgs?.[1]) } : undefined
         let value =
-          fromToken.isNative && writeArgs?.[1] ? writeArgs[1] : undefined
+          fromToken.isNative && writeArgs?.[1] ? writeArgs[1] : undefined;
 
         return new Promise((res) =>
           setTimeout(
@@ -185,7 +166,7 @@ export const useClientTrade = (variables: UseTradeParams) => {
               }),
             250
           )
-        )
+        );
       }
     },
     refetchInterval: 35000,
@@ -193,5 +174,5 @@ export const useClientTrade = (variables: UseTradeParams) => {
       enabled && poolsCodeMap && feeData && fromToken && toToken && chainId
     ),
     refetchOnWindowFocus: false,
-  })
-}
+  });
+};
