@@ -94,7 +94,7 @@ const NetworkSelector: React.FC<NetworkSelectorProps> = ({ className }) => {
         </span>
       )}
       <Image
-        src={sankoLogoSrc}
+        src={chainId === 1996 ? sankoLogoSrc : Arb.src}
         width={chainId === 1996 ? Sanko.width : Arb.width}
         height={chainId === 1996 ? Sanko.blurHeight : Arb.blurHeight}
         alt={chainId === 1996 ? "sanko" : "arbitrum"}
