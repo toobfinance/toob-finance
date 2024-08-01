@@ -77,23 +77,24 @@ const TokenListModal: React.FC<TokenListModalProps> = ({
       : []),
     ...(filter.length >= 3
       ? isSanko
-        ? SANKO_TOKEN_LIST.filter((item) =>
-            item.name?.match(
-              new RegExp(filter, "i") ||
-                item.symbol?.match(new RegExp(filter, "i"))
-            )
-          ).map(
-            (item) =>
-              new Token({
-                address: item.address,
-                name: item.name,
-                symbol: item.symbol,
-                chainId: isSanko ? ChainId.SANKO_MAINNET : ChainId.ARBITRUM_ONE,
-                decimals: item.decimals,
-                icon: item.icon,
-              })
-          )
-        : TOKEN_LIST.filter((item) =>
+        ? [] // For Sanko, no tokens yet, so empty array for now
+        : // SANKO_TOKEN_LIST.filter((item) =>
+          //   item.name?.match(
+          //     new RegExp(filter, "i") ||
+          //       item.symbol?.match(new RegExp(filter, "i"))
+          //   )
+          // ).map(
+          //   (item) =>
+          //     new Token({
+          //       address: item.address,
+          //       name: item.name,
+          //       symbol: item.symbol,
+          //       chainId: isSanko ? ChainId.SANKO_MAINNET : ChainId.ARBITRUM_ONE,
+          //       decimals: item.decimals,
+          //       icon: item.icon,
+          //     })
+          // )
+          TOKEN_LIST.filter((item) =>
             item.name?.match(
               new RegExp(filter, "i") ||
                 item.symbol?.match(new RegExp(filter, "i"))
