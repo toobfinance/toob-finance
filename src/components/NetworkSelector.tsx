@@ -93,6 +93,13 @@ const NetworkSelector: React.FC<NetworkSelectorProps> = ({ className }) => {
           Wrong Network
         </span>
       )}
+      <Image
+        src={sankoLogoSrc}
+        width={chainId === 1996 ? Sanko.width : Arb.width}
+        height={chainId === 1996 ? Sanko.blurHeight : Arb.blurHeight}
+        alt={chainId === 1996 ? "sanko" : "arbitrum"}
+        className="w-5 h-5 sm:hidden"
+      />
     </button>
   );
 };
