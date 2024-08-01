@@ -304,7 +304,6 @@ export const getSankoToobFinanceTrade = async (
   amountIn: string,
   poolsCodeMap?: Map<string, PoolCode>
 ) => {
-  console.log("poolsCodeMap", poolsCodeMap);
   if (!poolsCodeMap) return undefined;
   const route = Router.findBestRoute(
     poolsCodeMap,

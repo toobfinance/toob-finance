@@ -1,8 +1,9 @@
 "use client";
 
 import { ChainId } from "@/packages/chain";
-import { Native, TOOB, Type } from "@/packages/currency";
+import { Native, Type } from "@/packages/currency";
 import React, { useState } from "react";
+import { useAccount } from "wagmi";
 
 interface SwapParamsType {
   amountIn: string;
@@ -17,7 +18,7 @@ interface SwapParamsType {
 }
 
 const defaultVal: SwapParamsType = {
-  tokenIn: Native.onChain(ChainId.ARBITRUM_ONE),
+  tokenIn: Native.onChain(ChainId.SANKO_MAINNET),
   tokenOut: undefined,
   amountIn: "",
   amountOut: "",
@@ -40,8 +41,15 @@ export const SwapParamsProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [amountIn, setAmountIn] = useState("");
   const [amountOut, setAmountOut] = useState("");
+  const { chainId } = useAccount();
+
+  const currentChainId =
+    chainId === ChainId.ARBITRUM_ONE
+      ? ChainId.ARBITRUM_ONE
+      : ChainId.SANKO_MAINNET;
+
   const [tokenIn, setTokenIn] = useState<Type | undefined>(
-    Native.onChain(ChainId.ARBITRUM_ONE)
+    Native.onChain(currentChainId)
   );
   const [tokenOut, setTokenOut] = useState<Type | undefined>();
 
