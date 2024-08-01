@@ -9,7 +9,7 @@ import {
 import useSwapParams from "../../hooks/useSwapParams";
 import { Amount, Token, tryParseAmount } from "@/packages/currency";
 import Spinner from "../Spinner";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ApprovalState, useTokenApproval } from "@/hooks/useTokenApproval";
 import { ChainId } from "@/packages/chain";
 import {
@@ -127,8 +127,6 @@ const SwapButton: React.FC<SwapButtonProps> = ({
             "Unsupported router type or failed to generate transaction data"
           );
         }
-
-        console.log(currentRouter);
 
         const balanceBefore = tokenOut.isNative
           ? await publicClient.getBalance({ address })

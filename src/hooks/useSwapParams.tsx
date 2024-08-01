@@ -46,6 +46,9 @@ export const SwapParamsProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (chainId) {
       setTokenIn(Native.onChain(chainId));
+      setAmountIn("");
+      setAmountOut("");
+      setTokenOut(undefined);
     }
   }, [chainId]);
 
