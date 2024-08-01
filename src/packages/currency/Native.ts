@@ -1,5 +1,5 @@
 import invariant from "tiny-invariant";
-import { natives } from "../chain";
+import { ChainId, natives } from "../chain";
 
 import { Currency } from "./Currency";
 import { Token } from "./Token";
@@ -29,8 +29,16 @@ export class Native extends Currency {
     this.name = native.name;
   }
   public get wrapped(): Token {
-    const wnative = WNATIVE[this.chainId];
+    let wnative;
+
+    if (this.chainId != 1996 && this.chainId != 42161) {
+      wnative = WNATIVE[ChainId.ARBITRUM_ONE];
+    } else {
+      wnative = WNATIVE[this.chainId];
+    }
+
     invariant(!!wnative, "WRAPPED");
+
     return wnative;
   }
 

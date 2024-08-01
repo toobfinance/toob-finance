@@ -92,7 +92,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({
       chainId !== ChainId.ARBITRUM_ONE &&
       chainId !== ChainId.SANKO_MAINNET
     ) {
-      switchChainAsync?.({ chainId: ChainId.SANKO_MAINNET });
+      switchChainAsync?.({ chainId: ChainId.ARBITRUM_ONE });
     } else {
       try {
         if (!tokenIn || !tokenOut) return;
