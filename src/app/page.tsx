@@ -3,10 +3,23 @@
 import CCPanel from "@/components/CC/CCPanel";
 import SettingPopup from "@/components/SettingPopup";
 import SwapPanel from "@/components/Swap/SwapPanel";
-import { useState } from "react";
+import { ChainId } from "@/packages/chain";
+import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 
 export default function Home() {
+  const { chainId } = useAccount();
   const [selectedTab, setSelectedTab] = useState(1);
+
+  const buyDisabled = chainId === ChainId.ARBITRUM_ONE ? false : true;
+
+  useEffect(() => {
+    if (buyDisabled) {
+      setSelectedTab(0);
+    } else {
+      setSelectedTab(1);
+    }
+  }, [buyDisabled]);
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -14,8 +27,11 @@ export default function Home() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <button
-              data-active={selectedTab === 1}
-              className="bg-transparent border border-black/30 dark:border-white/20 rounded-full text-black dark:text-white py-3 px-4 data-[active=true]:bg-black dark:data-[active=true]:bg-white data-[active=true]:text-white dark:data-[active=true]:text-black font-semibold"
+              data-active={selectedTab === 1 && !buyDisabled}
+              className={`bg-transparent border border-black/30 dark:border-white/20 rounded-full text-black dark:text-white py-3 px-4 data-[active=true]:bg-black dark:data-[active=true]:bg-white data-[active=true]:text-white dark:data-[active=true]:text-black font-semibold ${
+                buyDisabled ? "opacity-50" : ""
+              }`}
+              disabled={buyDisabled}
               onClick={() => setSelectedTab(1)}
             >
               Buy
@@ -30,7 +46,8 @@ export default function Home() {
             <button
               data-active={selectedTab === 2}
               className="bg-transparent border border-black/30 dark:border-white/20 rounded-full text-black dark:text-white py-3 px-4 data-[active=true]:bg-black dark:data-[active=true]:bg-white data-[active=true]:text-white dark:data-[active=true]:text-black font-semibold opacity-50"
-              // onClick={() => setSelectedTab(2)}
+              onClick={() => setSelectedTab(2)}
+              disabled={true}
             >
               Limit Order
             </button>
