@@ -1,7 +1,34 @@
 import { ChainId } from "./constants";
 import raw from "./generated";
 
-const additional = [] as const;
+const additional = [
+  {
+    chainId: 1996,
+    explorers: [
+      {
+        name: "Sanko Explorer",
+        url: "https://explorer.sanko.xyz",
+        standard: "EIP3091",
+      },
+    ],
+    nativeCurrency: {
+      name: "DMT",
+      symbol: "DMT",
+      decimals: 18,
+    },
+    name: "Sanko Mainnet",
+    shortName: "sanko",
+    parent: {
+      type: "L2",
+      chain: "eip155-1",
+      bridges: [
+        {
+          url: "https://sanko.xyz/bridge",
+        },
+      ],
+    },
+  },
+] as const;
 
 const RAW = [...raw, ...additional] as const;
 

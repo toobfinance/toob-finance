@@ -2,8 +2,11 @@
 
 import Image from "next/image";
 import Arb from "@/assets/arb.png";
-import Sanko from "@/assets/sanko.png"; // Import the Sanko Mainnet logo
+import Sanko from "@/assets/sanko.png";
+import Sanko_Dark from "@/assets/sanko_dark.png";
 import { useAccount, useSwitchChain } from "wagmi";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useEffect, useState } from "react";
 
 interface NetworkSelectorProps {
   className?: string;
@@ -12,12 +15,46 @@ interface NetworkSelectorProps {
 const NetworkSelector: React.FC<NetworkSelectorProps> = ({ className }) => {
   const { address, chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const { open } = useWeb3Modal();
+
+  useEffect(() => {
+    const handleThemeChange = () => {
+      setIsDarkMode(document.documentElement.classList.contains("dark"));
+    };
+
+    handleThemeChange();
+
+    const observer = new MutationObserver(() => {
+      handleThemeChange();
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   const onSwitchChain = () => {
     if (chainId !== 42161 && chainId !== 1996) {
       switchChainAsync?.({ chainId: 1996 }); // Default to Sanko Mainnet for switching
+    } else {
+      open?.({
+        view: "Networks",
+      });
     }
   };
+
+  const sankoLogoSrc = isHovered
+    ? isDarkMode
+      ? Sanko_Dark.src
+      : Sanko.src
+    : isDarkMode
+    ? Sanko.src
+    : Sanko_Dark.src;
 
   return (
     <button
@@ -26,6 +63,8 @@ const NetworkSelector: React.FC<NetworkSelectorProps> = ({ className }) => {
         className ?? ""
       }`}
       onClick={onSwitchChain}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {!address || chainId === 42161 ? (
         <div className="flex items-center max-sm:hidden">
@@ -41,7 +80,7 @@ const NetworkSelector: React.FC<NetworkSelectorProps> = ({ className }) => {
       ) : chainId === 1996 ? (
         <div className="flex items-center max-sm:hidden">
           <Image
-            src={Sanko.src}
+            src={sankoLogoSrc}
             width={Sanko.width}
             height={Sanko.blurHeight}
             alt="sanko"
@@ -54,13 +93,6 @@ const NetworkSelector: React.FC<NetworkSelectorProps> = ({ className }) => {
           Wrong Network
         </span>
       )}
-      <Image
-        src={chainId === 1996 ? Sanko.src : Arb.src}
-        width={chainId === 1996 ? Sanko.width : Arb.width}
-        height={chainId === 1996 ? Sanko.blurHeight : Arb.blurHeight}
-        alt={chainId === 1996 ? "sanko" : "arbitrum"}
-        className="w-5 h-5 sm:hidden"
-      />
     </button>
   );
 };

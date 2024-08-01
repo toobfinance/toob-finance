@@ -8,4 +8,7 @@ export const STABLES = {
     USDT[ChainId.ARBITRUM_ONE],
     DAI[ChainId.ARBITRUM_ONE],
   ],
+  [ChainId.SANKO_MAINNET]: [
+    USDC[ChainId.SANKO_MAINNET],
+  ],
 } as const

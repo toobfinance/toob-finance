@@ -14,7 +14,7 @@ import camelotV3RouterAbi from "@/packages/abi/camelotV3RouterAbi";
 import odosRouterV2Abi from "@/packages/abi/odosRouterV2Abi";
 import { ChainId } from "@/packages/chain";
 import { ROUTE_PROCESSOR_3_ADDRESS } from "@/packages/config";
-import { Amount, Token, Type, WDMT_ADDRESS } from "@/packages/currency";
+import { Amount, Token, Type, WETH9_ADDRESS } from "@/packages/currency";
 import { Percent } from "@/packages/math";
 import { CamelotSwapV2Provider, PoolCode, Router } from "@/packages/router";
 import { RouteStatus } from "@/packages/tines";
@@ -219,10 +219,10 @@ export const getCamelotV2Trade = async (
     args: [
       tokenIn instanceof Token
         ? tokenIn.address
-        : WDMT_ADDRESS[ChainId.SANKO_MAINNET],
+        : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
       tokenOut instanceof Token
         ? tokenOut.address
-        : WDMT_ADDRESS[ChainId.SANKO_MAINNET],
+        : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
     ],
   });
 
@@ -234,7 +234,7 @@ export const getCamelotV2Trade = async (
       BigInt(amountIn),
       tokenIn instanceof Token
         ? tokenIn.address
-        : WDMT_ADDRESS[ChainId.SANKO_MAINNET],
+        : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
     ],
   });
 
@@ -272,10 +272,10 @@ export const getCamelotV3Trade = async (
     args: [
       tokenIn instanceof Token
         ? tokenIn.address
-        : WDMT_ADDRESS[ChainId.SANKO_MAINNET],
+        : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
       tokenOut instanceof Token
         ? tokenOut.address
-        : WDMT_ADDRESS[ChainId.SANKO_MAINNET],
+        : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
       BigInt(amountIn),
       BigInt(0),
     ],
@@ -304,6 +304,7 @@ export const getSankoToobFinanceTrade = async (
   amountIn: string,
   poolsCodeMap?: Map<string, PoolCode>
 ) => {
+  console.log("poolsCodeMap", poolsCodeMap);
   if (!poolsCodeMap) return undefined;
   const route = Router.findBestRoute(
     poolsCodeMap,
@@ -314,6 +315,8 @@ export const getSankoToobFinanceTrade = async (
     10000000,
     100
   );
+
+  console.log("route", route);
 
   let args = Router.routeProcessor3Params(
     poolsCodeMap,
@@ -497,9 +500,9 @@ export const getCamelotV2TxData = async (trade: any) => {
       BigInt(trade.amountIn),
       BigInt(trade.amountOutMin),
       isTokenInNative
-        ? [WDMT_ADDRESS[ChainId.SANKO_MAINNET], trade.tokenOut.address]
+        ? [WETH9_ADDRESS[ChainId.SANKO_MAINNET], trade.tokenOut.address]
         : isTokenOutNative
-        ? [trade.tokenIn.address, WDMT_ADDRESS[ChainId.SANKO_MAINNET]]
+        ? [trade.tokenIn.address, WETH9_ADDRESS[ChainId.SANKO_MAINNET]]
         : [trade.tokenIn.address, trade.tokenOut.address],
       trade.recipient,
       BigInt(Math.floor(Date.now() / 1000) + 60 * 20),
@@ -512,7 +515,7 @@ export const getCamelotV2TxData = async (trade: any) => {
     args: {
       target: CAMELOT_V2_ROUTER_ADDR_SANKO,
       tokenIn: isTokenInNative
-        ? WDMT_ADDRESS[ChainId.SANKO_MAINNET]
+        ? WETH9_ADDRESS[ChainId.SANKO_MAINNET]
         : trade.tokenIn.address,
       targetData,
       amountIn: BigInt(trade.amountIn),
@@ -528,10 +531,10 @@ export const getCamelotV3TxData = async (trade: any) => {
   const isTokenOutNative = trade.tokenOut.isNative;
 
   const tokenInAddress = isTokenInNative
-    ? WDMT_ADDRESS[ChainId.SANKO_MAINNET]
+    ? WETH9_ADDRESS[ChainId.SANKO_MAINNET]
     : trade.tokenIn.address;
   const tokenOutAddress = isTokenOutNative
-    ? WDMT_ADDRESS[ChainId.SANKO_MAINNET]
+    ? WETH9_ADDRESS[ChainId.SANKO_MAINNET]
     : trade.tokenOut.address;
 
   console.log(tokenInAddress, tokenOutAddress);

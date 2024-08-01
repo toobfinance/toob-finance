@@ -26,8 +26,8 @@ export const sanko = defineChain({
   name: "Sanko Mainnet",
   nativeCurrency: {
     decimals: 18,
-    name: "Ether",
-    symbol: "ETH",
+    name: "DMT",
+    symbol: "DMT",
   },
   rpcUrls: {
     default: {

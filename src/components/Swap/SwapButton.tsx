@@ -52,9 +52,14 @@ const SwapButton: React.FC<SwapButtonProps> = ({
   const { switchChainAsync } = useSwitchChain();
   const [loading, setLoading] = useState(false);
 
+  const connectedChainId =
+    chainId === ChainId.ARBITRUM_ONE
+      ? ChainId.ARBITRUM_ONE
+      : ChainId.SANKO_MAINNET;
+
   const routerAddress = lockedRouter
     ? lockedRouter.type === "Toob Finance"
-      ? ROUTE_PROCESSOR_3_ADDRESS[ChainId.ARBITRUM_ONE]
+      ? ROUTE_PROCESSOR_3_ADDRESS[connectedChainId]
       : lockedRouter.type === "Odos"
       ? ODOS_ROUTER_V2_ADDR
       : lockedRouter.type === "Camelot V2"
@@ -63,7 +68,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({
       ? CAMELOT_V3_ROUTER_ADDR_SANKO
       : lockedRouter.data?.routerAddress ?? ADDRESS_ZERO
     : trade.data?.[0]?.type === "Toob Finance"
-    ? ROUTE_PROCESSOR_3_ADDRESS[ChainId.ARBITRUM_ONE]
+    ? ROUTE_PROCESSOR_3_ADDRESS[connectedChainId]
     : trade.data?.[0]?.type === "Odos"
     ? ODOS_ROUTER_V2_ADDR
     : trade.data?.[0]?.type === "Camelot V2"

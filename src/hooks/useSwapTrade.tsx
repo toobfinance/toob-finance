@@ -86,28 +86,28 @@ const useSwapTrade = () => {
             );
         } else if (chainId === sankoChainId) {
           const sankoTrades = await Promise.all([
-            getCamelotV2Trade(
-              tokenIn,
-              tokenOut,
-              address ?? "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8",
-              slippage,
-              parsedAmount?.quotient.toString() ?? "0"
-            ),
-            getCamelotV3Trade(
-              tokenIn,
-              tokenOut,
-              address ?? "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8",
-              slippage,
-              parsedAmount?.quotient.toString() ?? "0"
-            ),
-            // getSankoToobFinanceTrade(
+            // getCamelotV2Trade(
             //   tokenIn,
             //   tokenOut,
             //   address ?? "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8",
-            //   slippage * 2,
-            //   parsedAmount.quotient.toString(),
-            //   poolsCodeMap
+            //   slippage,
+            //   parsedAmount?.quotient.toString() ?? "0"
             // ),
+            // getCamelotV3Trade(
+            //   tokenIn,
+            //   tokenOut,
+            //   address ?? "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8",
+            //   slippage,
+            //   parsedAmount?.quotient.toString() ?? "0"
+            // ),
+            getSankoToobFinanceTrade(
+              tokenIn,
+              tokenOut,
+              address ?? "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8",
+              slippage * 2,
+              parsedAmount.quotient.toString(),
+              poolsCodeMap
+            ),
           ]);
 
           return sankoTrades

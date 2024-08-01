@@ -11,7 +11,6 @@ import {
   USDT_ADDRESS,
   WBTC_ADDRESS,
   WETH9_ADDRESS,
-  WDMT_ADDRESS,
   TOOB_ADDRESS,
 } from "./token-addresses";
 
@@ -52,8 +51,8 @@ export const WDMT = addressMapToTokenMap(
     name: "Wrapped DMT",
     icon: "/media/dmt.png",
   },
-  WDMT_ADDRESS
-) as Record<keyof typeof WDMT_ADDRESS, Token>;
+  WETH9_ADDRESS
+) as Record<keyof typeof WETH9_ADDRESS, Token>;
 
 export const WNATIVE = {
   [ChainId.ARBITRUM_ONE]: WETH9[ChainId.ARBITRUM_ONE],

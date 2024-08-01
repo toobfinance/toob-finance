@@ -1,24 +1,24 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import Moon from "./svgs/Moon"
-import Sun from "./svgs/Sun"
+import { useState } from "react";
+import Moon from "./svgs/Moon";
+import Sun from "./svgs/Sun";
 
 interface ThemeSwitcherProps {
-  className?: string
+  className?: string;
 }
 
 const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ className }) => {
-  const [darkMode, setDarkMode] = useState(false)
+  const [darkMode, setDarkMode] = useState(false);
 
   const onChangeMode = () => {
     if (darkMode) {
-      document.documentElement.classList.remove("dark")
+      document.documentElement.classList.remove("dark");
     } else {
-      document.documentElement.classList.add("dark")
+      document.documentElement.classList.add("dark");
     }
-    setDarkMode(!darkMode)
-  }
+    setDarkMode(!darkMode);
+  };
 
   return (
     <button
@@ -29,7 +29,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ className }) => {
     >
       {darkMode ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
     </button>
-  )
-}
+  );
+};
 
-export default ThemeSwitcher
+export default ThemeSwitcher;
