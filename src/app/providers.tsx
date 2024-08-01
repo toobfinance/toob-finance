@@ -39,7 +39,7 @@ export const sanko = defineChain({
   },
 });
 
-const chains = [sanko, arbitrum] as const;
+const chains = [arbitrum, sanko] as const;
 
 export const config = defaultWagmiConfig({
   chains,

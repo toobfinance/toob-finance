@@ -9,8 +9,6 @@ import useSwapTrade from "@/hooks/useSwapTrade";
 import { Amount } from "@/packages/currency";
 import SwapDetails from "./SwapDetails";
 import SwapTrades from "./SwapTrades";
-import { useAccount } from "wagmi";
-import { ChainId } from "@/packages/chain";
 
 const SwapPanel = () => {
   const {

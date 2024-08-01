@@ -40,7 +40,7 @@ const NetworkSelector: React.FC<NetworkSelectorProps> = ({ className }) => {
 
   const onSwitchChain = () => {
     if (chainId !== 42161 && chainId !== 1996) {
-      switchChainAsync?.({ chainId: 1996 }); // Default to Sanko Mainnet for switching
+      switchChainAsync?.({ chainId: 42161 }); // Default to Arbitrum One for switching
     } else {
       open?.({
         view: "Networks",
@@ -57,49 +57,43 @@ const NetworkSelector: React.FC<NetworkSelectorProps> = ({ className }) => {
     : Sanko_Dark.src;
 
   return (
-    <>
-      {chainId != undefined ? (
-        <button
-          data-wrong={address && chainId !== 42161 && chainId !== 1996}
-          className={`flex items-center bg-transparent border rounded-xl border-black dark:border-white data-[wrong=true]:border-[#ff9b9b] px-4 py-3 outline-none hover:bg-black dark:hover:bg-white text-black dark:text-white hover:text-white dark:hover:text-black transition-all ${
-            className ?? ""
-          }`}
-          onClick={onSwitchChain}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          {!address || chainId === 42161 ? (
-            <div className="flex items-center max-sm:hidden">
-              <Image
-                src={Arb.src}
-                width={Arb.width}
-                height={Arb.blurHeight}
-                alt="arbitrum"
-                className="w-5 h-5"
-              />
-              <span className="font-semibold ml-2">Arbitrum</span>
-            </div>
-          ) : chainId === 1996 ? (
-            <div className="flex items-center max-sm:hidden">
-              <Image
-                src={sankoLogoSrc}
-                width={Sanko.width}
-                height={Sanko.blurHeight}
-                alt="sanko"
-                className="w-5 h-5"
-              />
-              <span className="font-semibold ml-2">Sanko Mainnet</span>
-            </div>
-          ) : (
-            <span className="text-[#ff5b5b] font-semibold max-sm:hidden">
-              Wrong Network
-            </span>
-          )}
-        </button>
+    <button
+      data-wrong={address && chainId !== 42161 && chainId !== 1996}
+      className={`flex items-center bg-transparent border rounded-xl border-black dark:border-white data-[wrong=true]:border-[#ff9b9b] px-4 py-3 outline-none hover:bg-black dark:hover:bg-white text-black dark:text-white hover:text-white dark:hover:text-black transition-all ${
+        className ?? ""
+      }`}
+      onClick={onSwitchChain}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {!address || chainId === 42161 ? (
+        <div className="flex items-center max-sm:hidden">
+          <Image
+            src={Arb.src}
+            width={Arb.width}
+            height={Arb.blurHeight}
+            alt="arbitrum"
+            className="w-5 h-5"
+          />
+          <span className="font-semibold ml-2">Arbitrum</span>
+        </div>
+      ) : chainId === 1996 ? (
+        <div className="flex items-center max-sm:hidden">
+          <Image
+            src={sankoLogoSrc}
+            width={Sanko.width}
+            height={Sanko.blurHeight}
+            alt="sanko"
+            className="w-5 h-5"
+          />
+          <span className="font-semibold ml-2">Sanko Mainnet</span>
+        </div>
       ) : (
-        <></>
+        <span className="text-[#ff5b5b] font-semibold max-sm:hidden">
+          Wrong Network
+        </span>
       )}
-    </>
+    </button>
   );
 };
 

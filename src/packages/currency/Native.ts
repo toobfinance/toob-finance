@@ -49,11 +49,11 @@ export class Native extends Currency {
 
     let nativeCurrency;
 
-    // if (chainId == 1996) {
-    //   nativeCurrency = { name: "DMT", symbol: "DMT", decimals: 18 };
-    // } else {
+    if (chainId != 1996 && chainId != 42161) {
+      nativeCurrency = { name: "Ether", symbol: "ETH", decimals: 18 };
+    } else {
       nativeCurrency = natives?.[chainId];
-    // }
+    }
 
     invariant(!!nativeCurrency, "NATIVE_CURRENCY");
 

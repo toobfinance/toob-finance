@@ -315,8 +315,6 @@ export const getSankoToobFinanceTrade = async (
     100
   );
 
-  console.log("route", route);
-
   let args = Router.routeProcessor3Params(
     poolsCodeMap,
     route,
