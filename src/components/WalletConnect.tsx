@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { useWeb3Modal } from "@web3modal/wagmi/react"
-import Wallet from "./svgs/Wallet"
-import { useAccount } from "wagmi"
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import Wallet from "./svgs/Wallet";
+import { useAccount } from "wagmi";
 
 const WalletConnect = () => {
-  const { address } = useAccount()
-  const { open } = useWeb3Modal()
+  const { address } = useAccount();
+  const { open } = useWeb3Modal();
   const onConnect = () => {
-    open?.()
-  }
+    open?.();
+  };
 
   return (
     <button
@@ -21,7 +21,7 @@ const WalletConnect = () => {
         ? `${address.slice(0, 4)}...${address.slice(-4)}`
         : "Connect Wallet"}
     </button>
-  )
-}
+  );
+};
 
-export default WalletConnect
+export default WalletConnect;
