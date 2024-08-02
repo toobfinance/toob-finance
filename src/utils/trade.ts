@@ -16,7 +16,7 @@ import { ChainId } from "@/packages/chain";
 import { ROUTE_PROCESSOR_3_ADDRESS } from "@/packages/config";
 import { Amount, Token, Type, WETH9_ADDRESS } from "@/packages/currency";
 import { Percent } from "@/packages/math";
-import { CamelotSwapV2Provider, PoolCode, Router } from "@/packages/router";
+import { PoolCode, Router } from "@/packages/router";
 import { RouteStatus } from "@/packages/tines";
 import axios from "axios";
 import {
@@ -26,6 +26,30 @@ import {
   formatUnits,
   http,
 } from "viem";
+
+interface TokenData {
+  address: string;
+  symbol: string;
+  name: string;
+  decimals: number;
+  price: number;
+  volumeUSD: number;
+  tvlUSD: number;
+  whitelisted: boolean;
+  chainId: number;
+  logoURI: string;
+  common: boolean;
+  defaultSwapInput?: boolean;
+  defaultSwapOutput?: boolean;
+  isWNative?: boolean;
+  quote: string;
+}
+
+interface CamelotApiResponse {
+  data: {
+    tokens: Record<string, TokenData>;
+  };
+}
 
 // Arbitrum One
 export const getOdosTrade = async (
@@ -315,7 +339,30 @@ export const getSankoToobFinanceTrade = async (
     100
   );
 
-  console.log(route);
+  let tokenInPrice = 0;
+  let tokenOutPrice = 0;
+
+  try {
+    const priceFeed = await axios.get<CamelotApiResponse>(
+      `https://api.camelot.exchange/v2/tokens?chainId=${ChainId.SANKO_MAINNET}`
+    );
+
+    const tokens = priceFeed.data.data.tokens;
+
+    const tokenInAddress =
+      tokenIn instanceof Token
+        ? tokenIn.address
+        : WETH9_ADDRESS[ChainId.SANKO_MAINNET];
+    const tokenOutAddress =
+      tokenOut instanceof Token
+        ? tokenOut.address
+        : WETH9_ADDRESS[ChainId.SANKO_MAINNET];
+
+    tokenInPrice = tokens[tokenInAddress]?.price ?? 0;
+    tokenOutPrice = tokens[tokenOutAddress]?.price ?? 0;
+  } catch (e) {
+    console.log(e);
+  }
 
   let args = Router.routeProcessor3Params(
     poolsCodeMap,
@@ -346,15 +393,22 @@ export const getSankoToobFinanceTrade = async (
       +slippage / 100
     );
 
+    const amountInFormatted = Number(
+      formatUnits(amountIn.quotient, tokenIn.decimals)
+    );
+    const amountOutFormatted = Number(
+      formatUnits(amountOut.quotient, tokenOut.decimals)
+    );
+
     return {
       tokenIn,
       tokenOut,
       recipient,
       slippage,
       amountIn: amountIn.quotient.toString(),
-      amountInValue: 0,
+      amountInValue: tokenInPrice * amountInFormatted,
       amountOut: amountOut.quotient.toString(),
-      amountOutValue: 0,
+      amountOutValue: tokenOutPrice * amountOutFormatted,
       priceImpact: Number(
         (route.priceImpact
           ? new Percent(BigInt(Math.round(route.priceImpact * 10000)), 10000n)
@@ -390,21 +444,26 @@ export const getSankoToobFinanceTrade = async (
 
     const amountOut = result[0] ?? "0";
 
+    const amountInFormatted = Number(
+      formatUnits(BigInt(amountIn), tokenIn.decimals)
+    );
+    const amountOutFormatted = Number(
+      formatUnits(BigInt(amountOut), tokenOut.decimals)
+    );
+
+    const amountInValue = tokenInPrice * amountInFormatted;
+    const amountOutValue = tokenOutPrice * amountOutFormatted;
+
     return {
       tokenIn,
       tokenOut,
       recipient,
       slippage,
       amountIn: amountIn,
-      amountInValue: 0,
+      amountInValue: amountInValue,
       amountOut: amountOut,
-      amountOutValue: 0,
-      priceImpact: Number(
-        (route.priceImpact
-          ? new Percent(BigInt(Math.round(route.priceImpact * 10000)), 10000n)
-          : new Percent(0)
-        ).toFixed(6)
-      ),
+      amountOutValue: amountOutValue,
+      priceImpact: (1 - amountOutValue / amountInValue) * 100,
       data: args,
       type: "Toob Finance",
     };
