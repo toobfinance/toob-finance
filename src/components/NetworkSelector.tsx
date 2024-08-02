@@ -7,6 +7,7 @@ import Sanko_Dark from "@/assets/sanko_dark.png";
 import { useAccount, useSwitchChain } from "wagmi";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useEffect, useState } from "react";
+import ChevronDown from "./svgs/ChevronDown";
 
 interface NetworkSelectorProps {
   className?: string;
@@ -99,6 +100,13 @@ const NetworkSelector: React.FC<NetworkSelectorProps> = ({ className }) => {
         height={chainId === 1996 ? Sanko.blurHeight : Arb.blurHeight}
         alt={chainId === 1996 ? "sanko" : "arbitrum"}
         className="w-5 h-5 sm:hidden"
+      />
+      <ChevronDown
+        className={`w-5 h-5 ml-1 transition-colors duration-300 ${
+          isHovered
+            ? "text-white dark:text-black"
+            : "text-black dark:text-white"
+        }`}
       />
     </button>
   );

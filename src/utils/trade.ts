@@ -362,6 +362,50 @@ export const getSankoToobFinanceTrade = async (
       data: args,
       type: "Toob Finance",
     };
+  } else {
+    const Quoter = "0x52CFD1d72A64f8D13711bb7Dc3899653dbd4191B";
+
+    const publicClient = createPublicClient({
+      chain: sanko,
+      transport: http(),
+    });
+
+    const { result } = await publicClient.simulateContract({
+      address: Quoter,
+      abi: camelotV3QuoterAbi,
+      functionName: "quoteExactInputSingle",
+      args: [
+        tokenIn instanceof Token
+          ? tokenIn.address
+          : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
+        tokenOut instanceof Token
+          ? tokenOut.address
+          : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
+        BigInt(amountIn),
+        BigInt(0),
+      ],
+    });
+
+    const amountOut = result[0] ?? "0";
+
+    return {
+      tokenIn,
+      tokenOut,
+      recipient,
+      slippage,
+      amountIn: amountIn,
+      amountInValue: 0,
+      amountOut: amountOut,
+      amountOutValue: 0,
+      priceImpact: Number(
+        (route.priceImpact
+          ? new Percent(BigInt(Math.round(route.priceImpact * 10000)), 10000n)
+          : new Percent(0)
+        ).toFixed(6)
+      ),
+      data: args,
+      type: "Toob Finance",
+    };
   }
 };
 
