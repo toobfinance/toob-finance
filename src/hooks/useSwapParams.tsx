@@ -49,6 +49,11 @@ export const SwapParamsProvider: React.FC<{ children: React.ReactNode }> = ({
       setAmountIn("");
       setAmountOut("");
       setTokenOut(undefined);
+    } else {
+      setTokenIn(Native.onChain(ChainId.ARBITRUM_ONE));
+      setAmountIn("");
+      setAmountOut("");
+      setTokenOut(undefined);
     }
   }, [chainId]);
 

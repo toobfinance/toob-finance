@@ -1083,8 +1083,6 @@ export class Graph {
       /* skip division by 0 errors*/
     }
 
-    console.log("amountInBI: ", amountInBI);
-
     return {
       status,
       fromToken: from,

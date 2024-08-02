@@ -36,8 +36,7 @@ const TokenListModal: React.FC<TokenListModalProps> = ({
   const sankoTokenList = useSankoTokenList(primaryTokens);
 
   const isSanko: boolean = chainId === ChainId.SANKO_MAINNET;
-  const activeTokenList =
-    chainId === ChainId.SANKO_MAINNET ? sankoTokenList : tokenList;
+  const activeTokenList = isSanko ? sankoTokenList : tokenList;
 
   const { data: tokenInfo } = useReadContracts({
     contracts: [

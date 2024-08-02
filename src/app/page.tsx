@@ -11,7 +11,7 @@ export default function Home() {
   const { chainId } = useAccount();
   const [selectedTab, setSelectedTab] = useState(1);
 
-  const buyDisabled = chainId === ChainId.ARBITRUM_ONE ? false : true;
+  const buyDisabled = chainId === ChainId.SANKO_MAINNET ? true : false;
 
   useEffect(() => {
     if (buyDisabled) {

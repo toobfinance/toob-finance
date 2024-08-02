@@ -143,7 +143,18 @@ const SwapSide: React.FC<SwapSideProps> = ({
             ) : null}
             {fastTokens ? (
               <div className="flex items-center space-x-2 max-sm:mb-2">
-                {chainId === ChainId.ARBITRUM_ONE ? (
+                {chainId === ChainId.SANKO_MAINNET ? (
+                  <>
+                    <Image
+                      src="/media/usdc.png"
+                      width={32}
+                      height={32}
+                      alt="usdc"
+                      className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
+                      onClick={() => setToken(USDC[ChainId.SANKO_MAINNET])}
+                    />
+                  </>
+                ) : (
                   <>
                     <Image
                       src="/media/arb.png"
@@ -168,17 +179,6 @@ const SwapSide: React.FC<SwapSideProps> = ({
                       alt="usdt"
                       className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
                       onClick={() => setToken(USDT[ChainId.ARBITRUM_ONE])}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Image
-                      src="/media/usdc.png"
-                      width={32}
-                      height={32}
-                      alt="usdc"
-                      className="w-8 h-8 rounded-full bg-black/20 dark:bg-white/40 p-1 hover:bg-black/30 dark:hover:bg-white/60 active:bg-black/50 dark:active:bg-white/70 transition-all cursor-pointer"
-                      onClick={() => setToken(USDC[ChainId.SANKO_MAINNET])}
                     />
                   </>
                 )}
