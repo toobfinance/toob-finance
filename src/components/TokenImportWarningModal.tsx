@@ -1,15 +1,23 @@
-import { Dialog, DialogPanel, DialogTitle, Transition } from "@headlessui/react"
-import ExternalLink from "./svgs/ExternalLink"
-import Clipboard from "./svgs/Clipboard"
-import Alert from "./svgs/Alert"
-import Link from "next/link"
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  Transition,
+} from "@headlessui/react";
+import ExternalLink from "./svgs/ExternalLink";
+import Clipboard from "./svgs/Clipboard";
+import Alert from "./svgs/Alert";
+import Link from "next/link";
+import { useAccount } from "wagmi";
+import useNetwork from "@/hooks/useNetwork";
+import { ChainId } from "@/packages/chain";
 
 interface TokenImportWarningModalProps {
-  token: string
-  onConfirm: any
-  open: boolean
-  onClose: any
-  className?: string
+  token: string;
+  onConfirm: any;
+  open: boolean;
+  onClose: any;
+  className?: string;
 }
 
 const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
@@ -19,9 +27,30 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
   onClose,
   className,
 }) => {
-  const onCopy = () => {
-    window.navigator.clipboard.writeText(token)
+  const { chainId } = useAccount();
+  const { offWalletChainId, setOffWalletChainId } = useNetwork();
+  let connectedChainId =
+    chainId === ChainId.ARBITRUM_ONE
+      ? ChainId.ARBITRUM_ONE
+      : chainId === ChainId.SANKO_MAINNET
+      ? ChainId.SANKO_MAINNET
+      : undefined;
+  if (connectedChainId == undefined) {
+    connectedChainId = offWalletChainId;
+  } else {
+    setOffWalletChainId(connectedChainId);
   }
+
+  const ARBISCAN_URL = "https://arbiscan.io/token/";
+  const SANKO_EXPLORER_URL = "https://explorer.sanko.xyz/token/";
+  const SCAN_URL =
+    connectedChainId === ChainId.ARBITRUM_ONE
+      ? ARBISCAN_URL
+      : SANKO_EXPLORER_URL;
+
+  const onCopy = () => {
+    window.navigator.clipboard.writeText(token);
+  };
 
   return (
     <Transition appear show={open}>
@@ -55,13 +84,13 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
               </p>
               <div className="flex overflow-hidden cursor-pointer bg-black/50 dark:bg-white/15 py-1 px-2 rounded-lg text-white mt-3">
                 <Link
-                  href={`https://arbiscan.com/token/${token}`}
+                  href={`${SCAN_URL}${token}`}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center overflow-hidden hover:brightness-75 transition-all"
                 >
                   <span className="overflow-hidden text-ellipsis text-sm">
-                    https://arbiscan.com/token/{token}
+                    {SCAN_URL}{token}
                   </span>
                   <button className="ml-1">
                     <ExternalLink className="w-4 h-4" />
@@ -77,8 +106,8 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
               <button
                 className="w-full bg-black dark:bg-white text-white dark:text-black py-3 rounded-xl mt-4 hover:brightness-75 transition-all"
                 onClick={() => {
-                  onConfirm()
-                  onClose()
+                  onConfirm();
+                  onClose();
                 }}
               >
                 I understand
@@ -93,7 +122,7 @@ const TokenImportWarningModal: React.FC<TokenImportWarningModalProps> = ({
         </div>
       </Dialog>
     </Transition>
-  )
-}
+  );
+};
 
-export default TokenImportWarningModal
+export default TokenImportWarningModal;
