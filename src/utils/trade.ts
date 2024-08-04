@@ -26,6 +26,7 @@ import {
   formatUnits,
   http,
 } from "viem";
+import camelotYakRouterAbi from "@/packages/abi/camelotYakRouterAbi";
 
 interface TokenData {
   address: string;
@@ -161,6 +162,9 @@ export const getToobFinanceTrade = async (
   poolsCodeMap?: Map<string, PoolCode>
 ) => {
   if (!poolsCodeMap) return undefined;
+
+  console.log(poolsCodeMap);
+
   const route = Router.findBestRoute(
     poolsCodeMap,
     ChainId.ARBITRUM_ONE,
@@ -170,6 +174,8 @@ export const getToobFinanceTrade = async (
     10000000,
     100
   );
+
+  console.log(route);
 
   let args = Router.routeProcessor3Params(
     poolsCodeMap,
@@ -289,20 +295,38 @@ export const getCamelotV3Trade = async (
     transport: http(),
   });
 
+  function encodePath(tokens: Address[], fees: number[]): string {
+    const FEE_SIZE = 3;
+    let encoded = "";
+    tokens.forEach((token, index) => {
+      encoded += token.slice(2); // Add token address without '0x'
+      if (index < fees.length) {
+        encoded += fees[index].toString(16).padStart(FEE_SIZE * 2, "0"); // Add fee in hex
+      }
+    });
+    return encoded.toLowerCase();
+  }
+
+  const tokenInAddress =
+    tokenIn instanceof Token
+      ? tokenIn.address
+      : (WETH9_ADDRESS[ChainId.SANKO_MAINNET] as Address);
+  const tokenOutAddress =
+    tokenOut instanceof Token
+      ? tokenOut.address
+      : (WETH9_ADDRESS[ChainId.SANKO_MAINNET] as Address);
+  const fees = [3000];
+
+  const encodedPath = `0x${encodePath(
+    [tokenInAddress, tokenOutAddress],
+    fees
+  )}`;
+
   const { result } = await publicClient.simulateContract({
     address: Quoter,
     abi: camelotV3QuoterAbi,
-    functionName: "quoteExactInputSingle",
-    args: [
-      tokenIn instanceof Token
-        ? tokenIn.address
-        : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
-      tokenOut instanceof Token
-        ? tokenOut.address
-        : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
-      BigInt(amountIn),
-      BigInt(0),
-    ],
+    functionName: "quoteExactInput",
+    args: [encodedPath as Address, BigInt(amountIn)],
   });
 
   const amountOut = result[0] ?? "0";
@@ -329,15 +353,20 @@ export const getSankoToobFinanceTrade = async (
   poolsCodeMap?: Map<string, PoolCode>
 ) => {
   if (!poolsCodeMap) return undefined;
+
+  console.log(poolsCodeMap);
+
   const route = Router.findBestRoute(
     poolsCodeMap,
     ChainId.SANKO_MAINNET,
     tokenIn,
     BigInt(amountIn),
     tokenOut,
-    10000000,
+    100000,
     100
   );
+
+  console.log(route);
 
   let tokenInPrice = 0;
   let tokenOutPrice = 0;
@@ -419,30 +448,39 @@ export const getSankoToobFinanceTrade = async (
       type: "Toob Finance",
     };
   } else {
-    const Quoter = "0x52CFD1d72A64f8D13711bb7Dc3899653dbd4191B";
-
     const publicClient = createPublicClient({
       chain: sanko,
       transport: http(),
     });
 
-    const { result } = await publicClient.simulateContract({
-      address: Quoter,
-      abi: camelotV3QuoterAbi,
-      functionName: "quoteExactInputSingle",
+    const tokenInAddress =
+      tokenIn instanceof Token
+        ? tokenIn.address
+        : WETH9_ADDRESS[ChainId.SANKO_MAINNET];
+    const tokenOutAddress =
+      tokenOut instanceof Token
+        ? tokenOut.address
+        : WETH9_ADDRESS[ChainId.SANKO_MAINNET];
+
+    const YakRouter = "0xcABa97C49d3e08c4CA21938F1761A66454432eaD";
+
+    const result = await publicClient.readContract({
+      address: YakRouter,
+      abi: camelotYakRouterAbi,
+      functionName: "findBestPath",
       args: [
-        tokenIn instanceof Token
-          ? tokenIn.address
-          : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
-        tokenOut instanceof Token
-          ? tokenOut.address
-          : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
         BigInt(amountIn),
-        BigInt(0),
+        tokenInAddress,
+        tokenOutAddress,
+        [tokenInAddress, tokenOutAddress],
+        4n,
       ],
     });
 
-    const amountOut = result[0] ?? "0";
+    const amountOut =
+      result.amounts && result.amounts.length > 0
+        ? result.amounts[result.amounts.length - 1]
+        : "0";
 
     const amountInFormatted = Number(
       formatUnits(BigInt(amountIn), tokenIn.decimals)
