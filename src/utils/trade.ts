@@ -1,16 +1,9 @@
 import { sanko } from "@/app/providers";
 import {
-  CAMELOT_V2_ROUTER_ADDR_SANKO,
-  CAMELOT_V3_ROUTER_ADDR_SANKO,
   ODOS_EXECUTOR_V2_ADDR,
   ODOS_ROUTER_V2_ADDR,
 } from "@/contracts";
 import { routeProcessor3Abi } from "@/packages/abi";
-import camelotV2FactoryAbi from "@/packages/abi/camelotV2FactoryAbi";
-import camelotV2PairAbi from "@/packages/abi/camelotV2PairAbi";
-import camelotV2RouterAbi from "@/packages/abi/camelotV2RouterAbi";
-import camelotV3QuoterAbi from "@/packages/abi/camelotV3QuoterAbi";
-import camelotV3RouterAbi from "@/packages/abi/camelotV3RouterAbi";
 import odosRouterV2Abi from "@/packages/abi/odosRouterV2Abi";
 import { ChainId } from "@/packages/chain";
 import { ROUTE_PROCESSOR_3_ADDRESS } from "@/packages/config";
@@ -163,8 +156,6 @@ export const getToobFinanceTrade = async (
 ) => {
   if (!poolsCodeMap) return undefined;
 
-  console.log(poolsCodeMap);
-
   const route = Router.findBestRoute(
     poolsCodeMap,
     ChainId.ARBITRUM_ONE,
@@ -174,8 +165,6 @@ export const getToobFinanceTrade = async (
     10000000,
     100
   );
-
-  console.log(route);
 
   let args = Router.routeProcessor3Params(
     poolsCodeMap,
@@ -228,122 +217,6 @@ export const getToobFinanceTrade = async (
 };
 
 // Sanko Mainnet
-export const getCamelotV2Trade = async (
-  tokenIn: Type,
-  tokenOut: Type,
-  recipient: Address,
-  slippage: number,
-  amountIn: string
-) => {
-  const Factory = "0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4";
-
-  const publicClient = createPublicClient({
-    chain: sanko,
-    transport: http(),
-  });
-
-  const pairAddr = await publicClient.readContract({
-    address: Factory,
-    abi: camelotV2FactoryAbi,
-    functionName: "getPair",
-    args: [
-      tokenIn instanceof Token
-        ? tokenIn.address
-        : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
-      tokenOut instanceof Token
-        ? tokenOut.address
-        : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
-    ],
-  });
-
-  const amountOut = await publicClient.readContract({
-    address: pairAddr,
-    abi: camelotV2PairAbi,
-    functionName: "getAmountOut",
-    args: [
-      BigInt(amountIn),
-      tokenIn instanceof Token
-        ? tokenIn.address
-        : WETH9_ADDRESS[ChainId.SANKO_MAINNET],
-    ],
-  });
-
-  return {
-    tokenIn,
-    tokenOut,
-    recipient,
-    slippage,
-    amountIn,
-    amountInValue: formatUnits(BigInt(amountIn), 18),
-    amountOut,
-    amountOutValue: formatUnits(amountOut, 18),
-    type: "Camelot V2",
-  };
-};
-
-export const getCamelotV3Trade = async (
-  tokenIn: Type,
-  tokenOut: Type,
-  recipient: Address,
-  slippage: number,
-  amountIn: string
-) => {
-  const Quoter = "0x52CFD1d72A64f8D13711bb7Dc3899653dbd4191B";
-
-  const publicClient = createPublicClient({
-    chain: sanko,
-    transport: http(),
-  });
-
-  function encodePath(tokens: Address[], fees: number[]): string {
-    const FEE_SIZE = 3;
-    let encoded = "";
-    tokens.forEach((token, index) => {
-      encoded += token.slice(2); // Add token address without '0x'
-      if (index < fees.length) {
-        encoded += fees[index].toString(16).padStart(FEE_SIZE * 2, "0"); // Add fee in hex
-      }
-    });
-    return encoded.toLowerCase();
-  }
-
-  const tokenInAddress =
-    tokenIn instanceof Token
-      ? tokenIn.address
-      : (WETH9_ADDRESS[ChainId.SANKO_MAINNET] as Address);
-  const tokenOutAddress =
-    tokenOut instanceof Token
-      ? tokenOut.address
-      : (WETH9_ADDRESS[ChainId.SANKO_MAINNET] as Address);
-  const fees = [3000];
-
-  const encodedPath = `0x${encodePath(
-    [tokenInAddress, tokenOutAddress],
-    fees
-  )}`;
-
-  const { result } = await publicClient.simulateContract({
-    address: Quoter,
-    abi: camelotV3QuoterAbi,
-    functionName: "quoteExactInput",
-    args: [encodedPath as Address, BigInt(amountIn)],
-  });
-
-  const amountOut = result[0] ?? "0";
-
-  return {
-    tokenIn,
-    tokenOut,
-    recipient,
-    slippage,
-    amountIn,
-    amountInValue: formatUnits(BigInt(amountIn), 18),
-    amountOut,
-    amountOutValue: formatUnits(amountOut, 18),
-    type: "Camelot V3",
-  };
-};
-
 export const getSankoToobFinanceTrade = async (
   tokenIn: Type,
   tokenOut: Type,
@@ -354,8 +227,6 @@ export const getSankoToobFinanceTrade = async (
 ) => {
   if (!poolsCodeMap) return undefined;
 
-  console.log(poolsCodeMap);
-
   const route = Router.findBestRoute(
     poolsCodeMap,
     ChainId.SANKO_MAINNET,
@@ -365,8 +236,6 @@ export const getSankoToobFinanceTrade = async (
     100000,
     100
   );
-
-  console.log(route);
 
   let tokenInPrice = 0;
   let tokenOutPrice = 0;
@@ -621,111 +490,6 @@ export const getToobFinanceTxData = async (trade: any) => {
       fee: false,
     },
     value: trade?.data?.value,
-  };
-};
-
-// Sanko Mainnet
-export const getCamelotV2TxData = async (trade: any) => {
-  const isTokenInNative = trade.tokenIn.isNative;
-  const isTokenOutNative = trade.tokenOut.isNative;
-
-  const targetData = encodeFunctionData({
-    abi: camelotV2RouterAbi,
-    functionName: isTokenInNative
-      ? "swapExactETHForTokens"
-      : isTokenOutNative
-      ? "swapExactTokensForETH"
-      : "swapExactTokensForTokens",
-    args: [
-      BigInt(trade.amountIn),
-      BigInt(trade.amountOutMin),
-      isTokenInNative
-        ? [WETH9_ADDRESS[ChainId.SANKO_MAINNET], trade.tokenOut.address]
-        : isTokenOutNative
-        ? [trade.tokenIn.address, WETH9_ADDRESS[ChainId.SANKO_MAINNET]]
-        : [trade.tokenIn.address, trade.tokenOut.address],
-      trade.recipient,
-      BigInt(Math.floor(Date.now() / 1000) + 60 * 20),
-    ],
-  });
-
-  return {
-    amountIn: BigInt(trade.amountIn),
-    amountOut: BigInt(trade.amountOut),
-    args: {
-      target: CAMELOT_V2_ROUTER_ADDR_SANKO,
-      tokenIn: isTokenInNative
-        ? WETH9_ADDRESS[ChainId.SANKO_MAINNET]
-        : trade.tokenIn.address,
-      targetData,
-      amountIn: BigInt(trade.amountIn),
-      fee: false,
-    },
-    value: isTokenInNative ? BigInt(trade.amountIn) : 0n,
-  };
-};
-
-export const getCamelotV3TxData = async (trade: any) => {
-  console.log(trade);
-  const isTokenInNative = trade.tokenIn.isNative;
-  const isTokenOutNative = trade.tokenOut.isNative;
-
-  const tokenInAddress = isTokenInNative
-    ? WETH9_ADDRESS[ChainId.SANKO_MAINNET]
-    : trade.tokenIn.address;
-  const tokenOutAddress = isTokenOutNative
-    ? WETH9_ADDRESS[ChainId.SANKO_MAINNET]
-    : trade.tokenOut.address;
-
-  console.log(tokenInAddress, tokenOutAddress);
-
-  let targetData;
-
-  // if (!isTokenInNative && !isTokenOutNative) {
-  //   targetData = encodeFunctionData({
-  //     abi: camelotYakRouterAbi,
-  //     functionName: "exactInputSingle",
-  //     args: [
-  //       {
-  //         tokenIn: tokenInAddress,
-  //         tokenOut: tokenOutAddress,
-  //         recipient: trade.recipient,
-  //         deadline: BigInt(Math.floor(Date.now() / 1000) + 60 * 20),
-  //         amountIn: BigInt(trade.amountIn),
-  //         amountOutMinimum: BigInt(0),
-  //         limitSqrtPrice: BigInt(0),
-  //       },
-  //     ],
-  //   });
-  // } else {
-  targetData = encodeFunctionData({
-    abi: camelotV3RouterAbi,
-    functionName: "exactInputSingle",
-    args: [
-      {
-        tokenIn: tokenInAddress,
-        tokenOut: tokenOutAddress,
-        recipient: trade.recipient,
-        deadline: BigInt(Math.floor(Date.now() / 1000) + 60 * 20),
-        amountIn: BigInt(trade.amountIn),
-        amountOutMinimum: BigInt(0),
-        limitSqrtPrice: BigInt(0),
-      },
-    ],
-  });
-  // }
-
-  return {
-    amountIn: BigInt(trade.amountIn),
-    amountOut: BigInt(trade.amountOut),
-    args: {
-      target: CAMELOT_V3_ROUTER_ADDR_SANKO,
-      tokenIn: tokenInAddress,
-      targetData,
-      amountIn: BigInt(trade.amountIn),
-      fee: false,
-    },
-    value: isTokenInNative ? BigInt(trade.amountIn) : 0n,
   };
 };
 
