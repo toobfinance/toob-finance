@@ -9,12 +9,10 @@ import {
 import useSwapParams from "../../hooks/useSwapParams";
 import { Amount, Token, tryParseAmount } from "@/packages/currency";
 import Spinner from "../Spinner";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ApprovalState, useTokenApproval } from "@/hooks/useTokenApproval";
 import { ChainId } from "@/packages/chain";
 import {
-  getCamelotV2TxData,
-  getCamelotV3TxData,
   getKyberTxData,
   getOdosTxData,
   getSankoToobFinanceTxData,
@@ -130,10 +128,6 @@ const SwapButton: React.FC<SwapButtonProps> = ({
             ? chainId === ChainId.SANKO_MAINNET
               ? await getSankoToobFinanceTxData(currentRouter)
               : await getToobFinanceTxData(currentRouter)
-            : currentRouter.type === "Camelot V2"
-            ? await getCamelotV2TxData(currentRouter)
-            : currentRouter.type === "Camelot V3"
-            ? await getCamelotV3TxData(currentRouter)
             : null;
 
         if (!txData) {
