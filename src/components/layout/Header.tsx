@@ -10,7 +10,7 @@ const Header = () => {
       <div className="px-4 flex items-center w-full justify-end">
         <div className="flex items-center">
           <ThemeSwitcher className="mr-3" />
-          <NetworkSelector className="mr-3" />
+          <NetworkSelector />
           <WalletConnect />
         </div>
       </div>

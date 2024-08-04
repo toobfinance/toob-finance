@@ -1,5 +1,6 @@
 "use client";
 
+import { NetworkProvider } from "@/hooks/useNetwork";
 import { SettingsProvider } from "@/hooks/useSettings";
 import { SwapParamsProvider } from "@/hooks/useSwapParams";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -67,7 +68,9 @@ export default function Provider({ children }: { children: React.ReactNode }) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <SettingsProvider>
-          <SwapParamsProvider>{children}</SwapParamsProvider>
+          <NetworkProvider>
+            <SwapParamsProvider>{children}</SwapParamsProvider>
+          </NetworkProvider>
         </SettingsProvider>
       </QueryClientProvider>
     </WagmiProvider>

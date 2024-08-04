@@ -6,10 +6,13 @@ import { Amount } from "@/packages/currency";
 
 interface SwapTradesProps {
   trades: any;
-  lockedRouter: any;
+  // lockedRouter: any;
 }
 
-const SwapTrades: React.FC<SwapTradesProps> = ({ trades, lockedRouter }) => {
+const SwapTrades: React.FC<SwapTradesProps> = ({
+  trades,
+  // lockedRouter
+}) => {
   const [open, setOpen] = useState(false);
 
   const sortTrades = trades
@@ -29,9 +32,11 @@ const SwapTrades: React.FC<SwapTradesProps> = ({ trades, lockedRouter }) => {
       >
         <div className="w-full flex flex-col space-y-1">
           {sortTrades.map((item: any, index: number) => {
-            const isLocked = lockedRouter
-              ? item.type === lockedRouter.type
-              : index === 0;
+            // const isLocked = lockedRouter
+            //   ? item.type === lockedRouter.type
+            //   : index === 0;
+
+            const isLocked = index === 0;
 
             return (
               <div

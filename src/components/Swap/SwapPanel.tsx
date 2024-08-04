@@ -21,7 +21,7 @@ const SwapPanel = () => {
     switchToken,
   } = useSwapParams();
   const trade = useSwapTrade();
-  const [lockedRouter, setLockedRouter] = useState<any>(null);
+  // const [lockedRouter, setLockedRouter] = useState<any>(null);
 
   return (
     <div className="dark:bg-[linear-gradient(180deg,#000000_52%,rgba(47,54,61,0.3)_100%)] relative p-4 md:p-8 mt-4 border border-black/30 dark:border-white/20 rounded-lg md:rounded-[32px]">
@@ -61,11 +61,14 @@ const SwapPanel = () => {
         price={trade.data?.[0]?.amountOutValue.toString()}
       />
       <SwapDetails trade={trade} />
-      <SwapTrades trades={trade.data} lockedRouter={lockedRouter} />
+      <SwapTrades
+        trades={trade.data}
+        // lockedRouter={lockedRouter}
+      />
       <SwapButton
         trade={trade}
-        setLockedRouter={setLockedRouter}
-        lockedRouter={lockedRouter}
+        // setLockedRouter={setLockedRouter}
+        // lockedRouter={lockedRouter}
       />
     </div>
   );

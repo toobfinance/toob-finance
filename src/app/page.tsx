@@ -3,15 +3,25 @@
 import CCPanel from "@/components/CC/CCPanel";
 import SettingPopup from "@/components/SettingPopup";
 import SwapPanel from "@/components/Swap/SwapPanel";
+import useNetwork from "@/hooks/useNetwork";
 import { ChainId } from "@/packages/chain";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
 export default function Home() {
   const { chainId } = useAccount();
+  const { offWalletChainId, setOffWalletChainId } = useNetwork();
   const [selectedTab, setSelectedTab] = useState(1);
 
-  const buyDisabled = chainId === ChainId.SANKO_MAINNET ? true : false;
+  let buyDisabled =
+    chainId === ChainId.ARBITRUM_ONE
+      ? false
+      : chainId === ChainId.SANKO_MAINNET
+      ? true
+      : undefined;
+  if (buyDisabled == undefined) {
+    buyDisabled = offWalletChainId === ChainId.ARBITRUM_ONE ? false : true;
+  }
 
   useEffect(() => {
     if (buyDisabled) {

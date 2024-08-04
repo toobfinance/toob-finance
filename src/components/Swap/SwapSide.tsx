@@ -8,6 +8,7 @@ import { DEFAULT_IMAGE_URL, NATIVE_GAS_FEE } from "@/constants";
 import Image from "next/image";
 import { useAccount, useBalance } from "wagmi";
 import { ChainId } from "@/packages/chain";
+import useNetwork from "@/hooks/useNetwork";
 
 interface SwapSideProps {
   side: "From" | "To";
@@ -37,11 +38,24 @@ const SwapSide: React.FC<SwapSideProps> = ({
   disabled,
 }) => {
   const { address, chainId } = useAccount();
+  const { offWalletChainId, setOffWalletChainId } = useNetwork();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const tokenSelectorRef = useRef<HTMLDivElement>(null);
   const amountInputRef = useRef<HTMLInputElement>(null);
 
   const fastTokens = !token;
+
+  let connectedChainId =
+    chainId === ChainId.ARBITRUM_ONE
+      ? ChainId.ARBITRUM_ONE
+      : chainId === ChainId.SANKO_MAINNET
+      ? ChainId.SANKO_MAINNET
+      : undefined;
+  if (connectedChainId == undefined) {
+    connectedChainId = offWalletChainId;
+  } else {
+    setOffWalletChainId(connectedChainId);
+  }
 
   const { data: balance } = useBalance({
     address,
@@ -143,7 +157,7 @@ const SwapSide: React.FC<SwapSideProps> = ({
             ) : null}
             {fastTokens ? (
               <div className="flex items-center space-x-2 max-sm:mb-2">
-                {chainId === ChainId.SANKO_MAINNET ? (
+                {connectedChainId === ChainId.SANKO_MAINNET ? (
                   <>
                     <Image
                       src="/media/usdc.png"

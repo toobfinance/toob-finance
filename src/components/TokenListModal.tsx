@@ -13,6 +13,7 @@ import { ChainId } from "@/packages/chain";
 import { SANKO_TOKEN_LIST, TOKEN_LIST } from "@/packages/config";
 import HelpToolTip from "./HelpToolTip";
 import Link from "next/link";
+import useNetwork from "@/hooks/useNetwork";
 
 interface TokenListModalProps {
   currentToken?: Type;
@@ -30,12 +31,25 @@ const TokenListModal: React.FC<TokenListModalProps> = ({
   primaryTokens,
 }) => {
   const { chainId } = useAccount();
+  const { offWalletChainId, setOffWalletChainId } = useNetwork();
   const [filter, setFilter] = useState("");
 
   const tokenList = useTokenList(primaryTokens);
   const sankoTokenList = useSankoTokenList(primaryTokens);
 
-  const isSanko: boolean = chainId === ChainId.SANKO_MAINNET;
+  let connectedChainId =
+    chainId === ChainId.ARBITRUM_ONE
+      ? ChainId.ARBITRUM_ONE
+      : chainId === ChainId.SANKO_MAINNET
+      ? ChainId.SANKO_MAINNET
+      : undefined;
+  if (connectedChainId == undefined) {
+    connectedChainId = offWalletChainId;
+  } else {
+    setOffWalletChainId(connectedChainId);
+  }
+
+  const isSanko: boolean = connectedChainId === ChainId.SANKO_MAINNET;
   const activeTokenList = isSanko ? sankoTokenList : tokenList;
 
   const { data: tokenInfo } = useReadContracts({

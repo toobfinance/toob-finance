@@ -4,6 +4,7 @@ import { ChainId } from "@/packages/chain";
 import { Native, Type } from "@/packages/currency";
 import React, { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
+import useNetwork from "./useNetwork";
 
 interface SwapParamsType {
   amountIn: string;
@@ -42,10 +43,27 @@ export const SwapParamsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [amountIn, setAmountIn] = useState("");
   const [amountOut, setAmountOut] = useState("");
   const { chainId } = useAccount();
+  const { offWalletChainId, setOffWalletChainId } = useNetwork();
+
+  let connectedChainId =
+    chainId === ChainId.ARBITRUM_ONE
+      ? ChainId.ARBITRUM_ONE
+      : chainId === ChainId.SANKO_MAINNET
+      ? ChainId.SANKO_MAINNET
+      : undefined;
+  if (connectedChainId == undefined) {
+    connectedChainId = offWalletChainId;
+  } else {
+    setOffWalletChainId(connectedChainId);
+  }
+
+  if (connectedChainId === undefined) {
+    connectedChainId = ChainId.ARBITRUM_ONE;
+  }
 
   useEffect(() => {
-    if (chainId) {
-      setTokenIn(Native.onChain(chainId));
+    if (connectedChainId) {
+      setTokenIn(Native.onChain(connectedChainId));
       setAmountIn("");
       setAmountOut("");
       setTokenOut(undefined);
@@ -55,15 +73,10 @@ export const SwapParamsProvider: React.FC<{ children: React.ReactNode }> = ({
       setAmountOut("");
       setTokenOut(undefined);
     }
-  }, [chainId]);
-
-  const currentChainId =
-    chainId === ChainId.SANKO_MAINNET
-      ? ChainId.SANKO_MAINNET
-      : ChainId.ARBITRUM_ONE;
+  }, [connectedChainId]);
 
   const [tokenIn, setTokenIn] = useState<Type | undefined>(
-    Native.onChain(currentChainId)
+    Native.onChain(connectedChainId)
   );
   const [tokenOut, setTokenOut] = useState<Type | undefined>();
 

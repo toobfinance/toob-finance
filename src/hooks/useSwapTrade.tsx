@@ -13,18 +13,33 @@ import {
 } from "@/utils/trade";
 import { usePoolsCodeMap } from "@/packages/pools";
 import { ChainId } from "@/packages/chain";
+import useNetwork from "./useNetwork";
 
 const useSwapTrade = () => {
   const { amountIn, tokenIn, tokenOut } = useSwapParams();
   const { address, chainId } = useAccount();
+  const { offWalletChainId, setOffWalletChainId } = useNetwork();
   const { slippage } = useSettings();
 
   const parsedAmount = useDebounce(tryParseAmount(amountIn, tokenIn), 200);
-  const sankoChainId: number = ChainId.SANKO_MAINNET;
+  let connectedChainId =
+    chainId === ChainId.ARBITRUM_ONE
+      ? ChainId.ARBITRUM_ONE
+      : chainId === ChainId.SANKO_MAINNET
+      ? ChainId.SANKO_MAINNET
+      : undefined;
+  if (connectedChainId == undefined) {
+    connectedChainId = offWalletChainId;
+  } else {
+    setOffWalletChainId(connectedChainId);
+  }
+
+  if (connectedChainId === undefined) {
+    connectedChainId = ChainId.ARBITRUM_ONE;
+  }
 
   const { data: poolsCodeMap } = usePoolsCodeMap({
-    chainId:
-      chainId == sankoChainId ? ChainId.SANKO_MAINNET : ChainId.ARBITRUM_ONE,
+    chainId: connectedChainId,
     currencyA: tokenIn,
     currencyB: tokenOut,
     enabled: Boolean(parsedAmount?.greaterThan(0)),
@@ -50,7 +65,7 @@ const useSwapTrade = () => {
           return undefined;
         }
 
-        if (chainId === sankoChainId) {
+        if (connectedChainId === ChainId.SANKO_MAINNET) {
           const sankoTrades = await Promise.all([
             getSankoToobFinanceTrade(
               tokenIn,

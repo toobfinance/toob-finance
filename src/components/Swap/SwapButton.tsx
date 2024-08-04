@@ -33,16 +33,16 @@ import {
 
 interface SwapButtonProps {
   trade: UseQueryResult<any, Error>;
-  lockedRouter: any;
-  setLockedRouter: React.Dispatch<React.SetStateAction<any>>;
+  // lockedRouter: any;
+  // setLockedRouter: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 
 const SwapButton: React.FC<SwapButtonProps> = ({
   trade,
-  lockedRouter,
-  setLockedRouter,
+  // lockedRouter,
+  // setLockedRouter,
 }) => {
   const { address, chainId } = useAccount();
   const { open } = useWeb3Modal();
@@ -57,25 +57,35 @@ const SwapButton: React.FC<SwapButtonProps> = ({
       ? ChainId.ARBITRUM_ONE
       : ChainId.SANKO_MAINNET;
 
-  const routerAddress = lockedRouter
-    ? lockedRouter.type === "Toob Finance"
+  // const routerAddress = lockedRouter
+  //   ? lockedRouter.type === "Toob Finance"
+  //     ? ROUTE_PROCESSOR_3_ADDRESS[connectedChainId]
+  //     : lockedRouter.type === "Odos"
+  //     ? ODOS_ROUTER_V2_ADDR
+  //     : lockedRouter.type === "Camelot V2"
+  //     ? CAMELOT_V2_ROUTER_ADDR_SANKO
+  //     : lockedRouter.type === "Camelot V3"
+  //     ? CAMELOT_V3_ROUTER_ADDR_SANKO
+  //     : lockedRouter.data?.routerAddress ?? ADDRESS_ZERO
+  //   : trade.data?.[0]?.type === "Toob Finance"
+  //   ? ROUTE_PROCESSOR_3_ADDRESS[connectedChainId]
+  //   : trade.data?.[0]?.type === "Odos"
+  //   ? ODOS_ROUTER_V2_ADDR
+  //   : trade.data?.[0]?.type === "Camelot V2"
+  //   ? CAMELOT_V2_ROUTER_ADDR_SANKO
+  //   : trade.data?.[0]?.type === "Camelot V3"
+  //   ? CAMELOT_V3_ROUTER_ADDR_SANKO
+  //   : trade.data?.[0]?.data?.routerAddress ?? ADDRESS_ZERO;
+  const routerAddress =
+    trade.data?.[0]?.type === "Toob Finance"
       ? ROUTE_PROCESSOR_3_ADDRESS[connectedChainId]
-      : lockedRouter.type === "Odos"
+      : trade.data?.[0]?.type === "Odos"
       ? ODOS_ROUTER_V2_ADDR
-      : lockedRouter.type === "Camelot V2"
+      : trade.data?.[0]?.type === "Camelot V2"
       ? CAMELOT_V2_ROUTER_ADDR_SANKO
-      : lockedRouter.type === "Camelot V3"
+      : trade.data?.[0]?.type === "Camelot V3"
       ? CAMELOT_V3_ROUTER_ADDR_SANKO
-      : lockedRouter.data?.routerAddress ?? ADDRESS_ZERO
-    : trade.data?.[0]?.type === "Toob Finance"
-    ? ROUTE_PROCESSOR_3_ADDRESS[connectedChainId]
-    : trade.data?.[0]?.type === "Odos"
-    ? ODOS_ROUTER_V2_ADDR
-    : trade.data?.[0]?.type === "Camelot V2"
-    ? CAMELOT_V2_ROUTER_ADDR_SANKO
-    : trade.data?.[0]?.type === "Camelot V3"
-    ? CAMELOT_V3_ROUTER_ADDR_SANKO
-    : trade.data?.[0]?.data?.routerAddress ?? ADDRESS_ZERO;
+      : trade.data?.[0]?.data?.routerAddress ?? ADDRESS_ZERO;
 
   const parsedAmount = tryParseAmount(amountIn, tokenIn);
 
@@ -97,11 +107,15 @@ const SwapButton: React.FC<SwapButtonProps> = ({
       try {
         if (!tokenIn || !tokenOut) return;
 
-        let currentRouter = lockedRouter;
-        if (!currentRouter && trade.data?.[0]) {
-          setLockedRouter(trade.data[0]);
-          currentRouter = trade.data[0];
-        }
+        // let currentRouter = lockedRouter;
+        // if (!currentRouter && trade.data?.[0]) {
+        //   setLockedRouter(trade.data[0]);
+        //   currentRouter = trade.data[0];
+        // }
+
+        // if (!currentRouter) return;
+
+        let currentRouter = trade.data[0];
 
         if (!currentRouter) return;
 
@@ -171,7 +185,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({
         ));
 
         setAmountIn("");
-        setLockedRouter(null);
+        // setLockedRouter(null);
       } catch (err: any) {
         console.log(err);
         if (!err?.message?.includes("User rejected the request.")) {
@@ -194,7 +208,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({
 
   const onApprove = async () => {
     if (trade.data) {
-      setLockedRouter(trade.data[0]);
+      // setLockedRouter(trade.data[0]);
       try {
         await approve(approvalRequest);
       } catch (err) {

@@ -7,7 +7,8 @@ import { usePrice } from "@/packages/prices";
 import Image from "next/image";
 import { useAccount, useBalance } from "wagmi";
 import TokenImportWarningModal from "./TokenImportWarningModal";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
+import useNetwork from "@/hooks/useNetwork";
 
 interface TokenListItemProps {
   token: Type;
@@ -27,13 +28,19 @@ const TokenListItem: React.FC<TokenListItemProps> = ({
     query: { enabled: Boolean(address), refetchInterval: 30000 },
   });
   const [warningOpen, setWarningOpen] = useState(false);
+  const { offWalletChainId, setOffWalletChainId } = useNetwork();
 
-  const connectedChainId =
+  let connectedChainId =
     chainId === ChainId.ARBITRUM_ONE
       ? ChainId.ARBITRUM_ONE
       : chainId === ChainId.SANKO_MAINNET
       ? ChainId.SANKO_MAINNET
       : undefined;
+  if (connectedChainId == undefined) {
+    connectedChainId = offWalletChainId;
+  } else {
+    setOffWalletChainId(connectedChainId);
+  }
 
   const { data: price } = usePrice({
     address: token.wrapped.address,
